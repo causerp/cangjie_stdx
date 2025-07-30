@@ -1,0 +1,4 @@
+{
+    "version": "1",
+    "description": "version will be concatenated to the version number of cjc to form the version number of stdx"
+}

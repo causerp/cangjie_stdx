@@ -1,0 +1,55 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+#
+# This source file is part of the Cangjie project, licensed under Apache-2.0
+# with Runtime Library Exception.
+#
+# See https://cangjie-lang.cn/pages/LICENSE for license information.
+
+file(
+    GLOB
+    tls_ffi_src
+    alpn.c
+    ciphers.c
+    compat.c
+    errors.c
+    hostname.c
+    sessions.c
+    tls_bio.c
+    tls-impl.c
+    tls_keys_certs.c
+    versions.c
+    dhparam.c
+)
+
+set(libname stdx.net.tlsFFI)
+add_library(${libname}-objs OBJECT ${tls_ffi_src})
+target_compile_options(${libname}-objs PRIVATE ${CMAKE_C_COVERAGE_FLAGS})
+target_include_directories(${libname}-objs PRIVATE ${OPENSSL_INCLUDE_DIR})
+target_include_directories(${libname}-objs PRIVATE ${CMAKE_SOURCE_DIR}/src/stdx/dynamicLoader)
+if(CANGJIE_CODEGEN_CJNATIVE_BACKEND)
+    include(AddAndCombineStaticLib)
+
+    add_and_combine_static_lib(
+        TARGET ${libname}
+        OUTPUT_NAME lib${libname}.a
+        LIBRARIES
+            $<TARGET_OBJECTS:${libname}-objs>
+            $<TARGET_OBJECTS:cangjie-dynamicLoader-opensslFFI-objs>
+        DEPENDS ${libname}-objs cangjie-dynamicLoader-opensslFFI)
+    string(TOLOWER ${TARGET_TRIPLE_DIRECTORY_PREFIX} output_lib_dir)
+    set(CJNATIVE_BACKEND "cjnative")
+    install(FILES ${CMAKE_BINARY_DIR}/lib/lib${libname}.a DESTINATION ${output_lib_dir}_${CJNATIVE_BACKEND}${SANITIZER_SUBPATH}/static/stdx)
+
+    add_library(${libname}-shared SHARED $<TARGET_OBJECTS:${libname}-objs>)
+
+    # tls.ffi compile .so
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+    target_link_libraries(${libname}-shared cangjie-dynamicLoader-opensslFFI-shared)
+    target_link_libraries(${libname}-shared boundscheck)
+    if(MINGW)
+        target_link_libraries(${libname}-shared crypt32)
+        target_link_libraries(${libname}-shared ws2_32)
+    endif()
+    set_target_properties(${libname}-shared PROPERTIES OUTPUT_NAME ${libname})
+    install_cangjie_library_ffi_s(${libname}-shared)
+endif()
