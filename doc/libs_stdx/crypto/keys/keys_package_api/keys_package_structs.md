@@ -32,7 +32,7 @@ public struct PSSOption {
 }
 ```
 
-功能: 此结构体为 [PSS](./keys_package_enums.md#enum-padoption) 填充模式需要设置的参数。
+功能：此结构体为 [PSS](./keys_package_enums.md#enum-padoption) 填充模式需要设置的参数。
 
 ### init(Int32)
 

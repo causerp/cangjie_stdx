@@ -166,7 +166,7 @@ public func toString(): String
 
 - String - 转换后的字符串。
 
-### operator func []\(Int64)
+### operator func [](Int64)
 
 ```cangjie
 public operator func [](index: Int64): JsonValue
@@ -623,7 +623,7 @@ public func toString(): String
 
 - String - 转换后的字符串。
 
-### operator func []\(String)
+### operator func [](String)
 
 ```cangjie
 public operator func [](key: String): JsonValue

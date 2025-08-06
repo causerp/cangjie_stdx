@@ -706,7 +706,7 @@ public struct SerialNumber <: Equatable<SerialNumber> & Hashable & ToString {
 }
 ```
 
-功能: 结构体 [SerialNumber](x509_package_structs.md#struct-serialnumber) 为数字证书的序列号，是数字证书中的一个唯一标识符，用于标识数字证书的唯一性。根据规范，证书序列号的长度不应超过 20 字节。详见[rfc5280](https://www.rfc-editor.org/rfc/rfc5280)。
+功能：结构体 [SerialNumber](x509_package_structs.md#struct-serialnumber) 为数字证书的序列号，是数字证书中的一个唯一标识符，用于标识数字证书的唯一性。根据规范，证书序列号的长度不应超过 20 字节。详见[rfc5280](https://www.rfc-editor.org/rfc/rfc5280)。
 
 父类型：
 
@@ -1079,7 +1079,7 @@ public struct X509CertificateRequestInfo {
 }
 ```
 
-功能: [X509CertificateRequestInfo](x509_package_structs.md#struct-x509certificaterequestinfo) 结构包含了证书请求信息，包括证书实体可辨识名称、域名、email 地址和 [IP](x509_package_type.md#type-ip) 地址。
+功能：[X509CertificateRequestInfo](x509_package_structs.md#struct-x509certificaterequestinfo) 结构包含了证书请求信息，包括证书实体可辨识名称、域名、email 地址和 [IP](x509_package_type.md#type-ip) 地址。
 
 ### var IPAddresses
 
