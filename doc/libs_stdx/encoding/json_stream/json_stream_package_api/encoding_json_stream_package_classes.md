@@ -267,7 +267,7 @@ public func flush(): Unit
 public func jsonValue(value: String): JsonWriter
 ```
 
-功能: 将符合JSON value规范的原始字符串写入stream。
+功能：将符合JSON value规范的原始字符串写入stream。
 
 > **注意：**
 >

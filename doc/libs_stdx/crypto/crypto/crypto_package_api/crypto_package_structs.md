@@ -14,7 +14,7 @@ public struct OperationMode <: ToString & Equatable<OperationMode> {
 }
 ```
 
-功能: 对称加解密算法的工作模式。
+功能：对称加解密算法的工作模式。
 
 父类型：
 
@@ -145,7 +145,7 @@ public struct PaddingMode <: Equatable<PaddingMode> {
 }
 ```
 
-功能: 对称加解密算法的填充模式。
+功能：对称加解密算法的填充模式。
 
 父类型：
 
