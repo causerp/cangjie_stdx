@@ -62,7 +62,7 @@ JsNull
 JsObject
 ```
 
-功能：表述 `JSON` 类型中的对象类型。
+功能：表示 `JSON` 类型中的对象类型。
 
 ### JsString
 

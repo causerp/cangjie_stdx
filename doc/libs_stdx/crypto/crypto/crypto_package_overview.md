@@ -41,7 +41,7 @@ crypto 包提供安全随机数功能和提供国密 SM4 对称加解密。
 | 结构体名                                                                                |           功能           |
 |-------------------------------------------------------------------------------------| ------------------------ |
 | [OperationMode](./crypto_package_api/crypto_package_structs.md#struct-operationmode)                     |  对称加解密算法的工作模式。 |
-| [PaddingMode](./crypto_package_api/crypto_package_structs.md#struct-paddingmode)                     |  对称加解密算法的工填充模式。 |
+| [PaddingMode](./crypto_package_api/crypto_package_structs.md#struct-paddingmode)                     |  对称加解密算法的填充模式。 |
 
 ### 异常类
 
