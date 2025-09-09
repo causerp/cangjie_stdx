@@ -68,16 +68,6 @@ Parent Types:
 
 - DataProvider\<T>
 
-### prop isInfinite
-
-```cangjie
-public prop isInfinite: Bool
-```
-
-Function: Whether to generate infinite data.
-
-Bool.
-
 ### func provide()
 
 ```cangjie

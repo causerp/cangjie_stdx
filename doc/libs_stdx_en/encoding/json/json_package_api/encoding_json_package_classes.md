@@ -208,6 +208,10 @@ public init(bv: Bool)
 
 Functionality: Encapsulates the specified Bool instance into a [JsonBool](encoding_json_package_classes.md#class-jsonbool) instance.
 
+Parameters:
+
+- bv: Bool - The Bool type.
+
 ### func getValue()
 
 ```cangjie
@@ -496,6 +500,10 @@ public init(map: HashMap<String, JsonValue>)
 
 Function: Encapsulates the specified HashMap instance into a [JsonObject](encoding_json_package_classes.md#class-jsonobject) instance.
 
+Parameters:
+
+- map: HashMap\<String, [JsonValue](encoding_json_package_classes.md#class-jsonvalue)> - data.
+
 ### func containsKey(String)
 
 ```cangjie
@@ -663,6 +671,10 @@ public init(sv: String)
 ```
 
 Function: Encapsulates the specified `String` instance into a [JsonString](encoding_json_package_classes.md#class-jsonstring) instance.
+
+Parameters:
+
+- sv: String - The String type.
 
 ### func getValue()
 

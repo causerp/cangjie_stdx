@@ -2408,29 +2408,93 @@ public abstract class ProtocolService
 
 Functionality: HTTP protocol service instance that provides HTTP services for a single client connection, including parsing client request messages, dispatching request processing, and sending responses.
 
+### prop distributor
+
+```cangjie
+protected prop distributor: HttpRequestDistributor
+` ` `
+
+Function: Obtain the request distributor. The request distributor will distribute the request to the corresponding handler based on the url.
+
+Type: [HttpRequestDistributor](http_package_interfaces.md#interface-httprequestdistributor)
+
+### prop httpKeepAliveTimeout
+
+```cangjie
+protected prop httpKeepAliveTimeout: Duration
+```
+
+Function: Dedicated to HTTP/1.1, obtaining the timeout period set by the server to maintain a long connection.
+
+Type: Duration
+
+### prop logger
+
+```cangjie
+protected prop logger: Logger
+```
+
+Function: Obtain the server logger. Setting logger.level will take effect immediately. The logger should be thread-safe.
+
+Type: [Logger](..) /.. /.. /log/log_package_api/log_package_classes.md#class-logger)
+
+### prop maxRequestBodySize
+
+```cangjie
+protected prop maxRequestBodySize: Int64
+```
+
+Function: Obtain the maximum request body value of the read request set by the server, which is only effective for HTTP/1.1 requests without setting "Transfer-Encoding: chunked".
+
+Type: Int64
+
+### prop maxRequestHeaderSize
+
+```cangjie
+protected prop maxRequestHeaderSize: Int64
+```
+
+Function: Obtain the maximum value of the request header for the read request set by the server. It only takes effect for HTTP/1.1. There is a dedicated configuration for maxHeaderListSize in HTTP/2.
+
+Type: Int64
+
+### prop readHeaderTimeout
+
+```cangjie
+protected prop readHeaderTimeout: Duration
+```
+
+Function: Obtain the timeout period of the read request header set by the server.
+
+Type: Duration
+
+### prop readTimeout
+
+```cangjie
+protected prop readTimeout: Duration
+```
+
+Function: Obtain the timeout period set by the server for reading the entire request.
+
+Type: Duration
+
 ### prop server
 
 ```cangjie
 protected open mut prop server: Server
 ```
 
-Functionality: Returns the [Server](#class-server) instance, provides default implementation, set as the bound [Server](#class-server) instance.
+Function: Returns the [Server](#class-server) instance, provides the default implementation, and sets it to the bound [Server](#class-server) instance.
 
-### func serve()
-
-```cangjie
-protected func serve(): Unit
-```
-
-Functionality: Processes requests from client connections, no default implementation provided.
-
-### func closeGracefully()
+### prop writeTimeout
 
 ```cangjie
-protected open func closeGracefully(): Unit
+protected prop writeTimeout: Duration
 ```
 
-Functionality: Gracefully closes the connection, provides default implementation with no behavior.
+Function: Obtain the timeout period for write responses set by the server.
+
+Type: Duration
 
 ### func close()
 
@@ -2438,7 +2502,23 @@ Functionality: Gracefully closes the connection, provides default implementation
 protected open func close(): Unit
 ```
 
-Functionality: Forcefully closes the connection, provides default implementation with no behavior.
+Function: Force connection closure, provides default implementation, no action at all.
+
+### func closeGracefully()
+
+```cangjie
+protected open func closeGracefully(): Unit
+```
+
+Function: Elegantly close the connection, provide default implementation, no behavior at all.
+
+### func serve()
+
+```cangjie
+protected func serve(): Unit
+```
+
+Function: Handles requests from client connections. No default implementation is provided.
 
 ## class RedirectHandler
 
