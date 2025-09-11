@@ -107,6 +107,7 @@
             - [log](net/http/http_samples/log.md)
             - [server](net/http/http_samples/http_server.md)
             - [webSocket](net/http/http_samples/webSocket.md)
+            - [h1_gzip](net/http/http_samples/h1_gzip.md)
     - [stdx.net.tls](net/tls/tls_package_overview.md)
         - [类](net/tls/tls_package_api/tls_package_classes.md)
         - [枚举](net/tls/tls_package_api/tls_package_enums.md)
