@@ -63,7 +63,7 @@ stdx编译出二进制，在代码工程的 `cjpm.toml` 进行配置导入。
 
 ### 1. stdx的编译
 
-参考[OHOS 仓颉SDK构建指导书 (Ubuntu 22.04)](https://gitcode.com/Cangjie/cangjie_build/blob/dev/docs/linux_ohos_zh.md)
+参考[OHOS 仓颉SDK构建指导书 (Ubuntu 22.04)](https://gitcode.com/Cangjie/cangjie_build/blob/main/docs/linux_ohos_zh.md)
 
 ### 2. stdx的使用
 
