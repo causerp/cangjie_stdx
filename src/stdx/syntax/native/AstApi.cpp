@@ -61,10 +61,9 @@ ParseRes* getParseResult(ParseRes* result, DiagnosticEngine& diag, SourceManager
     }
 
     AstWriter::NodeWriter nodeWriter(nodePtr);
-    auto astNode = nodeWriter.ExportNode(&sm);
     if (diag.GetErrorCount() == 0 || nodeWriter.isUnsupported) {
         // Serialize ast node
-        result->node = astNode;
+        result->node = nodeWriter.ExportNode(&sm);
     }
     return result;
 }
