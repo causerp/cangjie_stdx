@@ -61,6 +61,7 @@ public func json<T>(fileName: String): JsonStrategy<T> where T <: Serializable<T
 
 <!-- code_no_check -->
 ```cangjie
+import stdx.unittest.data.*
 @Test[user in json("users.json")]
 func test_user_age(user: User): Unit {
     @Expect(user.age, 100)
@@ -82,7 +83,7 @@ json 文件示例：
 
 创建一种被用作测试函数参数的类，该类实现接口 [Serializable](../../../serialization/serialization_package_api/serialization_package_interfaces.md#interface-serializable) 。
 
-<!--compile-->
+<!-- compile -->
 ```cangjie
 import stdx.serialization.serialization.*
 import std.convert.*
@@ -110,14 +111,20 @@ class User <: Serializable<User> {
 
 <!-- compile -->
 ```cangjie
-@Test[user in json("numbers.json")]
-func test(value: Int64)
+import stdx.unittest.data.*
+@Test[value in json("numbers.json")]
+func test(value: Int64) {
+    @Expect(value, 1)
+}
 ```
 
 <!-- compile -->
 ```cangjie
-@Test[user in json("names.json")]
-func test(name: String)
+import stdx.unittest.data.*
+@Test[name in json("names.json")]
+func test(name: String) {
+    @Expect(name, "")
+}
 ```
 
 ## func tsv\<T>(String, Rune, Rune, Option\<Rune>, Option\<Array\<String>>, Array\<UInt64>, Array\<UInt64>, Bool) where T <: Serializable\<T>
@@ -179,29 +186,27 @@ Donald Sweet,28
 
     具体示例为：
 
-    <!--compile-->
-    ```cangjie
-    import std.collection.HashMap
-    import std.unittest.*
-    import std.unittest.testmacro.*
+<!-- compile -->
+```cangjie
+import std.collection.HashMap
+import stdx.unittest.data.*
 
-    @Test[user in csv("testdata.csv")]
-    func testUser(user: HashMap<String, String>) {
-        @Assert(user["username"] == "Alex Great" || user["username"] == "Donald Sweet")
-        @Assert(user["age"] == "21" || user["age"] == "28")
-    }
-    ```
+@Test[user in csv("testdata.csv")]
+func testUser(user: HashMap<String, String>) {
+    @Assert(user["username"] == "Alex Great" || user["username"] == "Donald Sweet")
+    @Assert(user["age"] == "21" || user["age"] == "28")
+}
+```
 
 2. 将数据表示为 [Serializable](../../../serialization/serialization_package_api/serialization_package_interfaces.md#interface-serializable)\<T> 类型数据，其 String 类型的数据可被反序列化为 [DataModelStruct](../../../serialization/serialization_package_api/serialization_package_classes.md#class-datamodelstruct) 格式对象。
 
 具体示例为：
 
-<!--compile-->
+<!-- compile -->
 ```cangjie
-import serialization.serialization.*
+import stdx.serialization.serialization.*
 import std.convert.*
-import std.unittest.*
-import std.unittest.testmacro.*
+import stdx.unittest.data.*
 
 public class User <: Serializable<User> {
     public User(let name: String, let age: UInt32) {}
