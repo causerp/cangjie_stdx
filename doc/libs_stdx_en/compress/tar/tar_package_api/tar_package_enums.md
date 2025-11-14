@@ -208,7 +208,7 @@ Return value:
 
 - TarEntryType - The corresponding entry type enum instance. If unrecognized, returns `Unknown(flag)`.
 
-## func toString(): String
+### func toString(): String
 
 ```cangjie
 public func toString(): String
@@ -299,7 +299,7 @@ Gnu
 
 Function: Construct a GNU extended format enum instance.
 
-## func toString(): String
+### func toString(): String
 
 ```cangjie
 public func toString(): String
@@ -311,7 +311,7 @@ Return value:
 
 - String - The string representation of the current tar file header format enum instance.
 
-## operator func ==(TarEntryFormat): Bool
+### operator func ==(TarEntryFormat): Bool
 
 ```cangjie
 operator func ==(rhs: TarEntryFormat): Bool
@@ -327,7 +327,7 @@ Return value:
 
 - Bool - Returns true if the two tar file header format enum instances are equal; otherwise, returns false.
 
-## operator func !=(TarEntryFormat): Bool
+### operator func !=(TarEntryFormat): Bool
 
 ```cangjie
 operator func !=(rhs: TarEntryFormat): Bool

@@ -208,7 +208,7 @@ public static func fromFlag(flag: UInt8): TarEntryType
 
 - TarEntryType - 对应的条目类型枚举实例。如果无法识别，将返回 `Unknown(flag)`。
 
-## func toString(): String
+### func toString(): String
 
 ```cangjie
 public func toString(): String
@@ -299,7 +299,7 @@ Gnu
 
 功能：构造一个 GNU 扩展格式枚举实例。
 
-## func toString(): String
+### func toString(): String
 
 ```cangjie
 public func toString(): String
@@ -311,7 +311,7 @@ public func toString(): String
 
 - String - 当前 tar 文件头部格式枚举实例的 字符串表示。
 
-## operator func ==(TarEntryFormat): Bool
+### operator func ==(TarEntryFormat): Bool
 
 ```cangjie
 operator func ==(rhs: TarEntryFormat): Bool
@@ -327,7 +327,7 @@ operator func ==(rhs: TarEntryFormat): Bool
 
 - Bool - 如果两个 tar 文件头部格式枚举实例相等，则返回 true；否则返回 false。
 
-## operator func !=(TarEntryFormat): Bool
+### operator func !=(TarEntryFormat): Bool
 
 ```cangjie
 operator func !=(rhs: TarEntryFormat): Bool
