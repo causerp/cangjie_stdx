@@ -157,6 +157,8 @@
     - [结构体](libs_stdx/syntax/syntax_package_api/syntax_package_structs.md)
     - [示例教程]()
         - [将仓颉源码解析为 AST 对象示例](libs_stdx/syntax/syntax_samples/parse.md)
+        - [遍历节点示例](libs_stdx/syntax/syntax_samples/visit.md)
+        - [遍历时修改节点示例](libs_stdx/syntax/syntax_samples/rewrite.md)
 - [stdx.unittest.data](libs_stdx/unittest/data/data_package_overview.md)
     - [函数](libs_stdx/unittest/data/data_package_api/data_package_functions.md)
     - [类](libs_stdx/unittest/data/data_package_api/data_package_classes.md)
