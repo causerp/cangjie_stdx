@@ -13,15 +13,14 @@ import std.time.DateTime
 import std.collection.concurrent.{ConcurrentHashMap, ArrayBlockingQueue}
 import stdx.crypto.x509.*
 import stdx.encoding.hex.toHexString
-import stdx.net.tls.common.*
 
 /**
  * Represents a client session established. This type is opaque and it's internals are implementation specific.
  * Instances of this type are never created by users: instead one should borrow instance from a successfully
  * negotiated TlsSocket after handshake() invocation.
  */
-public class TlsClientSession <: TlsSession & Equatable<TlsClientSession> & ToString & Hashable {
-    private TlsClientSession(
+public struct TlsSession <: Equatable<TlsSession> & ToString & Hashable {
+    private TlsSession(
         let holder: SessionHolder,
         let id: Array<Byte>
     ) {}
@@ -36,16 +35,16 @@ public class TlsClientSession <: TlsSession & Equatable<TlsClientSession> & ToSt
         holder = SessionHolder(pointer)
     }
 
-    public override operator func ==(other: TlsClientSession): Bool {
+    public override operator func ==(other: TlsSession): Bool {
         id == other.id
     }
 
-    public override operator func !=(other: TlsClientSession): Bool {
+    public override operator func !=(other: TlsSession): Bool {
         id != other.id
     }
 
     public override func toString(): String {
-        "TlsClientSession(${toHexString(id)})"
+        "TlsSession(${toHexString(id)})"
     }
 
     public override func hashCode(): Int64 {
@@ -65,7 +64,7 @@ public class TlsClientSession <: TlsSession & Equatable<TlsClientSession> & ToSt
 }
 
 extend TlsRawSocket {
-    func setSession(session: TlsClientSession): Unit {
+    func setSession(session: TlsSession): Unit {
         otherNonIO<Unit> {
             ssl, _ => session.holder.setSessoinAt(ssl)
         }
@@ -381,7 +380,7 @@ func CJ_TLS_put_session(
             bridge.socket.newSessionId = unsafe { toArray(id, idLength) }
             sessionStore.put(SessionKey.copyFrom(id, idLength), session)
         } else if (!bridge.server) {
-            bridge.socket.negotiatedSession = TlsClientSession(session)
+            bridge.socket.negotiatedSession = TlsSession(session)
         }
     }
 }
@@ -396,7 +395,7 @@ func CJ_TLS_assign_session(
 
     if (let Some(bridge) <- Bridge.findByStream(ssl)) {
         if (!bridge.server) {
-            bridge.socket.negotiatedSession = TlsClientSession(session)
+            bridge.socket.negotiatedSession = TlsSession(session)
         }
     }
 }
@@ -493,8 +492,8 @@ struct SessionStore {
         queue = ArrayBlockingQueue(capacity)
     }
 
-    func put(key: SessionKey, session: CPointer<NativeSession>): TlsClientSession {
-        let apiSession = TlsClientSession(session)
+    func put(key: SessionKey, session: CPointer<NativeSession>): TlsSession {
+        let apiSession = TlsSession(session)
         sessions.add(key, apiSession.holder)
 
         enqueue(key)
@@ -569,7 +568,7 @@ struct SessionStore {
  * For a stateful sessions they are literally stored in this context instance so an instance of a session context
  * should be shared between server TlsSocket instances inside of a single server node.
  */
-public class TlsServerSession <: TlsSession & Equatable<TlsServerSession> & ToString {
+public class TlsSessionContext <: Equatable<TlsSessionContext> & ToString {
     let name: String
     let store = SessionStore(capacity: 600, timeout: Duration.hour)
 
@@ -601,19 +600,19 @@ public class TlsServerSession <: TlsSession & Equatable<TlsServerSession> & ToSt
      * So a server instance should create a single session context for the whole lifetime and
      * use it with every TlsSocket.server() invocation.
      */
-    public static func fromName(name: String): TlsServerSession {
-        TlsServerSession(name)
+    public static func fromName(name: String): TlsSessionContext {
+        TlsSessionContext(name)
     }
 
-    public override operator func ==(other: TlsServerSession): Bool {
+    public override operator func ==(other: TlsSessionContext): Bool {
         this.name == other.name
     }
 
-    public override operator func !=(other: TlsServerSession): Bool {
+    public override operator func !=(other: TlsSessionContext): Bool {
         this.name != other.name
     }
 
     public override func toString(): String {
-        "TlsServerSession(${name})"
+        "TlsSessionContext(${name})"
     }
 }
