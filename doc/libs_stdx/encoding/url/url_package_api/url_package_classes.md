@@ -456,7 +456,7 @@ println(URL.encode("你#!")) // output: %E4%BD%A0#!
 ### static func encodeComponent(String): String
 
 ```cangjie
-static func encode(component: String): String
+static func encodeComponent(component: String): String
 ```
 
 功能：对普通字符串进行 `URL` 编码（也称为 `%` 编码）。`URL` 编码的目的是将字符串中的特殊字符、非 `ASCII` 字符等转换为符合 `URL` 规范的格式，以确保这些字符串能在 `URL` 中安全地传输和使用。

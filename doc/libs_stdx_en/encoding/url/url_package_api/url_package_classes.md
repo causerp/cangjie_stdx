@@ -429,7 +429,7 @@ Returns:
 ### static func encodeComponent(String): String
 
 ```cangjie
-static func encode(component: String): String
+static func encodeComponent(component: String): String
 ```
 
 Function: Perform URL encoding (also known as percent-encoding) on regular strings. The purpose of URL encoding is to convert special characters, non-ASCII characters, and other such characters in the string into a format that complies with URL specifications, thereby ensuring these strings can be safely transmitted and used within a URL.
