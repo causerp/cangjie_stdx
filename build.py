@@ -39,6 +39,7 @@ MAKE_JOBS = multiprocessing.cpu_count() + 2
 TARGET_DICTIONARY = {
     "native": None,
     "ohos-aarch64": "aarch64-linux-ohos",
+    "ohos-arm": "arm-linux-ohos",
     "ohos-x86_64": "x86_64-linux-ohos",
     "windows-x86_64": "x86_64-w64-mingw32",
     "ios-simulator-aarch64": "arm64-apple-ios11-simulator",
@@ -81,6 +82,8 @@ def generate_cmake_defs(args):
     if args.target:
         if args.target == "aarch64-linux-ohos":
             toolchain_file = "ohos_aarch64_clang_toolchain.cmake"
+        elif args.target == "arm-linux-ohos":
+            toolchain_file = "ohos_arm_clang_toolchain.cmake"
         elif args.target == "x86_64-linux-ohos":
             toolchain_file = "ohos_x86_64_clang_toolchain.cmake"
         elif args.target == "x86_64-w64-mingw32":
@@ -138,7 +141,7 @@ def build(args):
     """build cangjie compiler"""
     LOG.info("begin build...")
 
-    if args.target == "aarch64-linux-ohos" or args.target == "x86_64-linux-ohos":
+    if args.target == "aarch64-linux-ohos" or args.target == "x86_64-linux-ohos" or args.target == "arm-linux-ohos":
         # Frontend supports cross compilation in a general way by asking path to required tools
         # and libraries. However, Runtime supports cross compilation in a speific way, which asks
         # for the root path of OHOS toolchain. Since we asked for a path to tools, the root path of
