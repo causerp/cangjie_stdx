@@ -4016,7 +4016,7 @@ public prop typeAnnotation: Option<TypeAnnotation>
 
 类型：Option\<[TypeAnnotation](#class-typeannotation)>
 
-### init(String, Option\<TypeAnnotation>, Array<Annotation>, Array\<Comment>)
+### init(String, Option\<TypeAnnotation>, Array\<Annotation>, Array\<Comment>)
 
 ```cangjie
 public init(name: String, typeAnnotation: Option<TypeAnnotation>, annotations!: Array<Annotation> = [], comments!: Array<Comment> = [])
