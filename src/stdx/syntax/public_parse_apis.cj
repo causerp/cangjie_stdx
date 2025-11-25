@@ -8,7 +8,7 @@
 
 package stdx.syntax
 
-import std.collection.{ArrayList, HashSet}
+import std.collection.HashSet
 
 /**
  * @brief Parses a source file located at the specified path and returns the parsing result.
@@ -65,7 +65,7 @@ func checkPos(tokens: Tokens): Bool {
     for (token in tokens) {
         let pos = token.pos
         // For tokens from the same file, they must appear consecutively;
-        //otherwise, their positions are considered invalid.
+        // otherwise, their positions are considered invalid.
         if (pos.fileID != curFileId && set.contains(pos.fileID)) {
             return false
         }
