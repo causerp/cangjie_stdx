@@ -193,12 +193,12 @@ extend TlsContext {
         setProtoVersions(context, minVersion, maxVersion)
 
         let cipherSuitesV1_2 = cfg.cipherSuitesV1_2
-        if (cipherSuitesV1_2.isEmpty()) {
+        if (!cipherSuitesV1_2.isEmpty()) {
             setCipherSuitesV1_2(context, minVersion, maxVersion, cipherSuitesV1_2)
         }
 
         let cipherSuitesV1_3 = cfg.cipherSuitesV1_3
-        if (cipherSuitesV1_3.isEmpty()) {
+        if (!cipherSuitesV1_3.isEmpty()) {
             setCipherSuitesV1_3(context, minVersion, maxVersion, cipherSuitesV1_3)
         }
 
