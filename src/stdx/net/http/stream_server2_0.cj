@@ -600,6 +600,10 @@ class HttpEngineConn2 <: HttpEngineConn & InputStream {
         }
     }
 
+    public func isClosed(): Bool {
+        return stream.isClosed()
+    }
+
     public func getSocket(): StreamingSocket {
         stream.writeTimer.cancel()
         return StreamingSocket2(this)

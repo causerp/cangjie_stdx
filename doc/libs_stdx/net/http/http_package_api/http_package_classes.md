@@ -943,7 +943,7 @@ public init(name: String, value: String, expires!: ?DateTime = None, maxAge!: ?I
 - name: String - cookie-name 属性。
 
     ```cangjie
-    name         = token 
+    name         = token
     token        = 1*tchar
     tchar        = "!" / "#" / "$" / "%" / "&" / "'" / "*"
                    / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
@@ -1159,6 +1159,18 @@ public prop responseBuilder: HttpResponseBuilder
 
 类型：[HttpResponseBuilder](http_package_classes.md#class-httpresponsebuilder)
 
+### func isClosed()
+
+```cangjie
+public func isClosed(): Bool
+```
+
+功能：使用 HTTP/1.1协议时，判断 socket 是否已关闭；使用 HTTP/2 协议时，判断 HTTP/2 流是否已关闭。
+
+返回值：
+
+- Bool - 如果 HTTP/1.1 的 socket 或 HTTP/2 的流已关闭，返回true，否则返回 false。
+
 ## class HttpHeaders
 
 ```cangjie
@@ -1338,16 +1350,16 @@ public prop bodySize: Option<Int64>
 
 类型：Option\<Int64>
 
-### prop close
+### prop isPersistent
 
 ```cangjie
-public prop close: Bool
+public prop isPersistent: Bool
 ```
 
-功能：表示该请求 header 是否包含 `Connection: close`。
+功能：表示该请求是否为长连接，即请求 header 是否不包含 `Connection: close`。包含 `Connection: close` 为 false，否则为 true。
 
-- 对于服务端，close 为 true 表示处理完该请求应该关闭连接。
-- 对于客户端，close 为 true 表示如果收到响应后服务端未关闭连接，客户端应主动关闭连接。
+- 对于服务端，isPersistent 为 false 表示处理完该请求应该关闭连接。
+- 对于客户端，isPersistent 为 false 表示如果收到响应后服务端未关闭连接，客户端应主动关闭连接。
 
 类型：Bool
 
@@ -1924,17 +1936,17 @@ public prop bodySize: Option<Int64>
 
 类型：Option\<Int64>
 
-### prop close
+### prop isPersistent
 
 ```cangjie
-public prop close: Bool
+public prop isPersistent: Bool
 ```
 
-功能：表示该响应 header 是否包含 Connection: close。
+功能：表示该响应是否为长连接，即响应 header 是否不包含 `Connection: close`。包含 `Connection: close` 为 false，否则为 true。
 
-对于服务端，close 为 true 表示处理完该请求应该关闭连接；
+对于服务端，isPersistent 为 false 表示处理完该请求应关闭连接；
 
-对于客户端，close 为 true 表示如果收到响应后服务端未关闭连接，客户端应主动关闭连接。
+对于客户端，isPersistent 为 false 表示读完响应体后客户端应主动关闭连接。
 
 类型：Bool
 
@@ -1987,6 +1999,18 @@ public prop version: Protocol
 功能：获取响应的协议版本，默认值为 [HTTP1_1](./http_package_enums.md#enum-protocol)。
 
 类型：[Protocol](http_package_enums.md#enum-protocol)
+
+### func close()
+
+```cangjie
+public func close(): Unit
+```
+
+功能：如果用户不再需要未读完的 body 数据，可以调用此接口关闭连接以释放资源。如果是 HTTP/2 协议，会发送一个 Reset 帧关闭对应的流。
+
+> **注意：**
+>
+> 如果使用者已读完 body，无需调用此接口再释放资源。
 
 ### func toString()
 
@@ -3375,8 +3399,8 @@ public static func upgradeFromClient(client: Client, url: URL,
 ### static func upgradeFromServer(HttpContext, ArrayList\<String>, ArrayList\<String>, (HttpRequest) -> HttpHeaders)
 
 ```cangjie
-public static func upgradeFromServer(ctx: HttpContext, subProtocols!: ArrayList<String> = ArrayList<String>(), 
-                                        origins!: ArrayList<String> = ArrayList<String>(), 
+public static func upgradeFromServer(ctx: HttpContext, subProtocols!: ArrayList<String> = ArrayList<String>(),
+                                        origins!: ArrayList<String> = ArrayList<String>(),
                                         userFunc!:(HttpRequest) -> HttpHeaders = {_: HttpRequest => HttpHeaders()}): WebSocket
 ```
 
