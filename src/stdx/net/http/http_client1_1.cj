@@ -952,7 +952,7 @@ class ConnNode <: BodyProviderConn {
             case Some(value) =>
                 if (value == -1) {
                     response._bodySize = None
-                    return ResponseBodyProviderUtilConnectionClose(this)
+                    return ResponseBodyProviderUtilConnectionClose(this, readTimer)
                 }
                 // Content-Length = 0
                 if (value == 0) {
@@ -1092,8 +1092,8 @@ func toHeaderString(httpHeaders: HttpHeaders): StringBuilder {
     return stringBuilder
 }
 
-class ResponseBodyProviderUtilConnectionClose <: InputStream {
-    ResponseBodyProviderUtilConnectionClose(let connNode: ConnNode) {}
+class ResponseBodyProviderUtilConnectionClose <: InputStream & Resource {
+    ResponseBodyProviderUtilConnectionClose(let connNode: ConnNode, let timer: HttpTimer) {}
     // if there is data in the cache,
     // the value is returned immediately
     public func read(buf: Array<Byte>): Int64 {
@@ -1110,5 +1110,14 @@ class ResponseBodyProviderUtilConnectionClose <: InputStream {
             }
             throw e
         }
+    }
+
+    public func close(): Unit {
+        timer.cancel()
+        connNode.h1Engine.closeConnInUse(connNode)
+    }
+
+    public func isClosed(): Bool {
+        connNode.getBufferConn().isClosed()
     }
 }

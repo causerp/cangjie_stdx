@@ -36,7 +36,7 @@ public class HttpResponseBuilder {
 
     public init() {}
 
-    /** 
+    /**
      * Sets the HTTP-version of this response.
      *
      * @param version the protocol version of the response.
@@ -335,12 +335,19 @@ public class HttpResponse <: ToString {
      * If headers contains "Connection: close", this value is set true.
      * It indicates that the connection be closed after reading Body.
      */
-    public prop close: Bool {
+    public prop isPersistent: Bool {
         get() {
             if (let Some(h) <- _headers) {
-                return h.get("connection") |> splitValuesByComma |> "close".caseInsensitiveMatchOne
+                return !(h.get("connection") |> splitValuesByComma |> "close".caseInsensitiveMatchOne)
             }
-            return false
+            return true
+        }
+    }
+
+    public func close(): Unit {
+        match (_body) {
+            case closable: Resource => closable.close()
+            case _ => ()
         }
     }
 

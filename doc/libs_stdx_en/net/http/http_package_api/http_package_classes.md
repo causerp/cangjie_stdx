@@ -945,7 +945,7 @@ Parameters:
 - name: String - The cookie-name attribute.
 
     ```cangjie
-    name         = token 
+    name         = token
     token        = 1*tchar
     tchar        = "!" / "#" / "$" / "%" / "&" / "'" / "*"
                    / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
@@ -1161,6 +1161,18 @@ Function: Retrieves the HTTP response builder.
 
 Type: [HttpResponseBuilder](http_package_classes.md#class-httpresponsebuilder)
 
+### func isClosed()
+
+```cangjie
+public func isClosed(): Bool
+```
+
+Function: When using the HTTP/1.1 protocol, determine whether the socket has been closed; when using the HTTP/2 protocol, determine whether the HTTP/2 stream has been closed.
+
+Return Value:
+
+- Bool - If the HTTP/1.1 socket or HTTP/2 stream is closed, return true; otherwise, return false.
+
 ## class HttpHeaders
 
 ```cangjie
@@ -1340,16 +1352,16 @@ Function: Retrieve the length of the request body.
 
 Type: Option\<Int64>
 
-### prop close
+### prop isPersistent
 
 ```cangjie
-public prop close: Bool
+public prop isPersistent: Bool
 ```
 
-Function: Indicates whether the request header contains `Connection: close`.
+Function: Indicates whether the request use a persistent connection. If it contains `Connection: close`, it is false; otherwise, it is true.
 
-- For the server, close being true means the connection should be closed after processing the request.
-- For the client, close being true means the client should actively close the connection if the server does not close it after receiving the response.
+- For the server, isPersistent being false means the connection should be closed after processing the request.
+- For the client, isPersistent being false means the client should actively close the connection if the server does not close it after receiving the response.
 
 Type: Bool
 
@@ -1925,17 +1937,17 @@ Function: Retrieves the length of the response body.
 
 Type: `Option<Int64>`
 
-### prop close
+### prop isPersistent
 
 ```cangjie
-public prop close: Bool
+public prop isPersistent: Bool
 ```
 
-Function: Indicates whether the response header contains `Connection: close`.
+Function: Indicates whether the response use a persistent connection. If it contains `Connection: close`, it is false; otherwise, it is true.
 
-For the server, `close` being `true` means the connection should be closed after processing the request.
+- For the server, isPersistent being false means the connection should be closed after processing the request.
 
-For the client, `close` being `true` means the client should actively close the connection if the server does not close it after receiving the response.
+- For the client, isPersistent being false means the client should actively close the connection if the server does not close it after receiving the response.
 
 Type: `Bool`
 
@@ -1988,6 +2000,18 @@ public prop version: Protocol
 Function: Retrieves the protocol version of the response. The default value is [HTTP1_1](./http_package_enums.md#enum-protocol).
 
 Type: [Protocol](http_package_enums.md#enum-protocol)
+
+### func close()
+
+```cangjie
+public func close(): Unit
+```
+
+Function：If the user no longer needs the unread body data, they can call this API to close the connection and release resources. For the HTTP/2 protocol, a Reset frame will be sent to close the corresponding stream.
+
+> **Note：**
+>
+> There is no need to call this API to release resources again if the user has already read the body.
 
 ### func toString()
 
@@ -3461,7 +3485,7 @@ Type: String
 ```cangjie
 public static func upgradeFromClient(client: Client, url: URL,
  version!: Protocol = HTTP1_1,
- subProtocols!: ArrayList<String> = ArrayList<String>(), 
+ subProtocols!: ArrayList<String> = ArrayList<String>(),
  headers!: HttpHeaders = HttpHeaders()): (WebSocket, HttpHeaders)
 ```
 
@@ -3492,8 +3516,8 @@ Exceptions:
 ### static func upgradeFromServer(HttpContext, ArrayList\<String>, ArrayList\<String>, (HttpRequest) -> HttpHeaders)
 
 ```cangjie
-public static func upgradeFromServer(ctx: HttpContext, subProtocols!: ArrayList<String> = ArrayList<String>(), 
-                                        origins!: ArrayList<String> = ArrayList<String>(), 
+public static func upgradeFromServer(ctx: HttpContext, subProtocols!: ArrayList<String> = ArrayList<String>(),
+                                        origins!: ArrayList<String> = ArrayList<String>(),
                                         userFunc!:(HttpRequest) -> HttpHeaders = {_: HttpRequest => HttpHeaders()}): WebSocket
 ```
 
