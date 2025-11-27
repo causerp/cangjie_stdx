@@ -8,37 +8,6 @@ The standard library offers the most commonly used APIs for developers, while th
 >
 > Currently, the officially provided extension libraries are not bundled with the Cangjie compiler and toolchain. Users need to download them separately.
 
-## Package List
-
-stdx includes several packages that offer rich extension functionalities:
-
-| Package Name                                                     | Functionality      |
-| ---------------------------------------------------------- | --------- |
-| [actors](./actors/actors_package_overview.md)    | The `actors` package provides the foundational capabilities for the actor programming model. |
-| [actors.macros](./actors/macros/macros_package_overview.md) | The `actors.macros` package provides the ability to transform a class into an active object. |
-| [aspectCJ](./aspectCJ/aspectCJ_package_overview.md) | The aspectCJ package provides Aspect-Oriented Programming (AOP) capabilities in Cangjie. |
-| [compress.zlib](./compress/zlib/zlib_package_overview.md)                        | The compress package provides compression and decompression functionalities. |
-| [crypto.common](./crypto/common/crypto_common_package_overview.md)             | The common package provides interfaces related to encryption and decryption.  |
-| [crypto.crypto](./crypto/crypto/crypto_package_overview.md)                        | The crypto package provides secure encryption capabilities. |
-| [crypto.digest](./crypto/digest/crypto_digest_package_overview.md)                        | The digest package provides commonly used message digest algorithms. |
-| [crypto.keys](./crypto/keys/keys_package_overview.md)                        | The keys package provides asymmetric encryption and signature algorithms. |
-| [crypto.kit](./crypto/kit/crypto_kit_package_overview.md)                      | The kit package provides a default implementation of [CryptoKit](./crypto/common/crypto_common_package_api/crypto_common_package_interfaces.md#interface-cryptokit), along with the capabilities of a random number generator and decoding DER and PEM. |
-| [crypto.x509](./crypto/x509/x509_package_overview.md)                        | The x509 package provides functionalities for handling digital certificates. |
-| [effect](./effect/effect_package_overview.md)                                | The effect package is a user-level API in Cangjie for using Effect Handlers. It is an experimental feature and requires the use of a Cangjie compiler that supports this mechanism. |
-| [encoding.base64](./encoding/base64/base64_package_overview.md)                        | The base package provides Base64 encoding and decoding for strings.|
-| [encoding.hex](./encoding/hex/hex_package_overview.md)                        | The hex package provides Hex encoding and decoding for strings.|
-| [encoding.json](./encoding/json/json_package_overview.md)                        | The json package is used for processing JSON data, enabling mutual conversion between String, JsonValue, and DataModel.|
-| [encoding.json.stream](./encoding/json_stream/json_stream_package_overview.md)                        | The json.stream package is primarily used for mutual conversion between Cangjie objects and JSON data streams.|
-| [encoding.url](./encoding/url/url_package_overview.md)                        | The url package provides URL-related capabilities, including parsing URL components, encoding and decoding URLs, and merging URLs or paths.|
-| [fuzz](./fuzz/fuzz_package_overview.md)                        | The fuzz package provides developers with a coverage-guided fuzz engine for Cangjie and corresponding interfaces, allowing developers to write code to test APIs. |
-| [log](./log/log_package_overview.md) | The log package provides logging-related capabilities. |
-| [logger](./logger/logger_package_overview.md) | The logger package provides text and JSON format logging functionalities. |
-| [net.http](./net/http/http_package_overview.md)                        | The http package provides server and client implementations for HTTP/1.1, HTTP/2, and WebSocket protocols. |
-| [net.tls](./net/tls/tls_package_overview.md)                        | The tls package is used for secure encrypted network communication, providing capabilities such as creating TLS servers, performing TLS handshakes based on protocols, sending and receiving encrypted data, and resuming TLS sessions.|
-| [net.tls.common](./net/tls/common/tls_common_package_overview.md)   | The common package provides TLS-related abstract interfaces for adapting to multiple TLS implementations. |
-| [serialization](./serialization/serialization_package_overview.md)                        | The serialization package provides serialization and deserialization capabilities. |
-| [unittest.data](./unittest/data/data_package_overview.md)                        | The unittest module provides extended unit testing capabilities. |
-
 ## Usage Guide
 
 The Cangjie programming language extension library stdx binary package includes both static and dynamic components. Please reference them as needed.
@@ -151,3 +120,34 @@ Add the following configuration to `cjpm.toml`:
 
 In the above configuration, `x86_64-unknown-linux-gnu` represents the system architecture information, which can be obtained via `cjc -v`. Replace it with your system's architecture information.
 `CANGJIE_STDX_PATH` is the path to the stdx library.
+
+## Package List
+
+stdx includes several packages that offer rich extension functionalities:
+
+| Package Name                                                     | Functionality      |
+| ---------------------------------------------------------- | --------- |
+| [actors](./actors/actors_package_overview.md)    | The `actors` package provides the foundational capabilities for the actor programming model. |
+| [actors.macros](./actors/macros/macros_package_overview.md) | The `actors.macros` package provides the ability to transform a class into an active object. |
+| [aspectCJ](./aspectCJ/aspectCJ_package_overview.md) | The aspectCJ package provides Aspect-Oriented Programming (AOP) capabilities in Cangjie. |
+| [compress.zlib](./compress/zlib/zlib_package_overview.md)                        | The compress package provides compression and decompression functionalities. |
+| [crypto.common](./crypto/common/crypto_common_package_overview.md)             | The common package provides interfaces related to encryption and decryption.  |
+| [crypto.crypto](./crypto/crypto/crypto_package_overview.md)                        | The crypto package provides secure encryption capabilities. |
+| [crypto.digest](./crypto/digest/crypto_digest_package_overview.md)                        | The digest package provides commonly used message digest algorithms. |
+| [crypto.keys](./crypto/keys/keys_package_overview.md)                        | The keys package provides asymmetric encryption and signature algorithms. |
+| [crypto.kit](./crypto/kit/crypto_kit_package_overview.md)                      | The kit package provides a default implementation of [CryptoKit](./crypto/common/crypto_common_package_api/crypto_common_package_interfaces.md#interface-cryptokit), along with the capabilities of a random number generator and decoding DER and PEM. |
+| [crypto.x509](./crypto/x509/x509_package_overview.md)                        | The x509 package provides functionalities for handling digital certificates. |
+| [effect](./effect/effect_package_overview.md)                                | The effect package is a user-level API in Cangjie for using Effect Handlers. It is an experimental feature and requires the use of a Cangjie compiler that supports this mechanism. |
+| [encoding.base64](./encoding/base64/base64_package_overview.md)                        | The base package provides Base64 encoding and decoding for strings.|
+| [encoding.hex](./encoding/hex/hex_package_overview.md)                        | The hex package provides Hex encoding and decoding for strings.|
+| [encoding.json](./encoding/json/json_package_overview.md)                        | The json package is used for processing JSON data, enabling mutual conversion between String, JsonValue, and DataModel.|
+| [encoding.json.stream](./encoding/json_stream/json_stream_package_overview.md)                        | The json.stream package is primarily used for mutual conversion between Cangjie objects and JSON data streams.|
+| [encoding.url](./encoding/url/url_package_overview.md)                        | The url package provides URL-related capabilities, including parsing URL components, encoding and decoding URLs, and merging URLs or paths.|
+| [fuzz](./fuzz/fuzz_package_overview.md)                        | The fuzz package provides developers with a coverage-guided fuzz engine for Cangjie and corresponding interfaces, allowing developers to write code to test APIs. |
+| [log](./log/log_package_overview.md) | The log package provides logging-related capabilities. |
+| [logger](./logger/logger_package_overview.md) | The logger package provides text and JSON format logging functionalities. |
+| [net.http](./net/http/http_package_overview.md)                        | The http package provides server and client implementations for HTTP/1.1, HTTP/2, and WebSocket protocols. |
+| [net.tls](./net/tls/tls_package_overview.md)                        | The tls package is used for secure encrypted network communication, providing capabilities such as creating TLS servers, performing TLS handshakes based on protocols, sending and receiving encrypted data, and resuming TLS sessions.|
+| [net.tls.common](./net/tls/common/tls_common_package_overview.md)   | The common package provides TLS-related abstract interfaces for adapting to multiple TLS implementations. |
+| [serialization](./serialization/serialization_package_overview.md)                        | The serialization package provides serialization and deserialization capabilities. |
+| [unittest.data](./unittest/data/data_package_overview.md)                        | The unittest module provides extended unit testing capabilities. |

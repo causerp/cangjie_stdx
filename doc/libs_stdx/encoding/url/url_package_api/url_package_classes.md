@@ -379,14 +379,6 @@ static func decode(url: String): String
 > 
 > `#` `$` `&` `+` `,` `/` `:` `;` `=` `?` `@`
 
-例如：
-
-```cangjie
-println(URL.decode("%E4%BD%A0%23")) // output: 你%23
-```
-
-解释：“你”的编码是`%E4%BD%A0`，`#`的编码是`%23`。经过解码，`%E4%BD%A0`变成了“你”，但是`%23`因为被保留，所以原样输出。
-
 参数：
 
 - url: String - 待解码的字符串。
@@ -402,14 +394,6 @@ static func decodeComponent(component: String): String
 ```
 
 功能：对经过 `URL` 编码（也就是 `%` 编码）的字符串进行解码操作，将编码后的字符串还原成原始的字符串。
-
-例如：
-
-```cangjie
-println(URL.decodeComponent("%E4%BD%A0%23")) // output: 你#
-```
-
-解释：“你”的编码是`%E4%BD%A0`，`#`的编码是`%23`。
 
 参数：
 
@@ -437,14 +421,6 @@ static func encode(url: String): String
 > 
 > `#` `$` `&` `+` `,` `/` `:` `;` `=` `?` `@`
 
-例如：
-
-```cangjie
-println(URL.encode("你#!")) // output: %E4%BD%A0#!
-```
-
-解释：“你”的编码是`%E4%BD%A0`，其余字符 `#!` 不进行编码。
-
 参数：
 
 - url: String - 待编码的字符串。
@@ -468,14 +444,6 @@ static func encodeComponent(component: String): String
 > `0-9` `A-Z` `a-z`
 >
 > `!` `'` `-` `.` `*` `(` `)` `_` `~`
-
-例如：
-
-```cangjie
-println(URL.encode("你#!")) // output: %E4%BD%A0%23!
-```
-
-解释：“你”的编码是`%E4%BD%A0`，`#` 的编码是 `%23`，其余字符 `!` 不进行编码。
 
 参数：
 
