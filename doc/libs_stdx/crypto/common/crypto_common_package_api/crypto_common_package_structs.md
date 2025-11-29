@@ -106,16 +106,6 @@ public struct Pem <: Collection<PemEntry> & ToString {
 - Collection\<[PemEntry](#struct-pementry)>
 - ToString
 
-### prop size
-
-```cangjie
-public override prop size: Int64
-```
-
-功能：条目序列的数量。
-
-类型：Int64
-
 ### Pem(Array\<PemEntry>)
 
 ```cangjie
@@ -127,6 +117,16 @@ public Pem(private let items: Array<PemEntry>)
 参数：
 
 - items: Array\<[PemEntry](#struct-pementry)> - 多个 [PemEntry](#struct-pementry) 对象。
+
+### prop size
+
+```cangjie
+public override prop size: Int64
+```
+
+功能：条目序列的数量。
+
+类型：Int64
 
 ### static func decode(String)
 
@@ -232,6 +232,24 @@ public struct PemEntry <: ToString {
 父类型：
 
 - ToString
+
+### PemEntry(String, Array\<(String, String)>, ?DerBlob)
+
+```cangjie
+public PemEntry(
+    public let label: String,
+    public let headers: Array<(String, String)>,
+    public let body: ?DerBlob
+)
+```
+
+功能：构造 [PemEntry](#struct-pementry) 对象。
+
+参数：
+
+- label: String - 标签。
+- headers: Array\<(String, String)> - 条目头。
+- body: ?[DerBlob](#struct-derblob) - 二进制内容。
 
 ### static let LABEL_CERTIFICATE
 
@@ -342,24 +360,6 @@ public static let LABEL_X509_CRL: String = "X509 CRL"
 功能：记录条目类型为证书吊销列表。
 
 类型：String
-
-### PemEntry(String, Array\<(String, String)>, ?DerBlob)
-
-```cangjie
-public PemEntry(
-    public let label: String,
-    public let headers: Array<(String, String)>,
-    public let body: ?DerBlob
-)
-```
-
-功能：构造 [PemEntry](#struct-pementry) 对象。
-
-参数：
-
-- label: String - 标签。
-- headers: Array\<(String, String)> - 条目头。
-- body: ?[DerBlob](#struct-derblob) - 二进制内容。
 
 ### let body
 

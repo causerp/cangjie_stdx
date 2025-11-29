@@ -1146,6 +1146,22 @@ public func encodeToDer(password!: ?String): DerBlob
 
 - [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 编码失败、加密失败或者参数密码为空字符串，抛出异常。
 
+### func encodeToPem()
+
+```cangjie
+public func encodeToPem(): PemEntry
+```
+
+功能：将私钥编码为 PEM 格式。
+
+返回值：
+
+- [PemEntry](../../common/crypto_common_package_api/crypto_common_package_structs.md#struct-pementry) - 私钥 PEM 格式的对象。
+
+异常：
+
+- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 编码失败，抛出异常。
+
 ### func encodeToPem(?String)
 
 ```cangjie
@@ -1165,22 +1181,6 @@ public func encodeToPem(password!: ?String): PemEntry
 异常：
 
 - [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 编码失败、加密失败或者参数密码为空字符串，抛出异常。
-
-### func encodeToPem()
-
-```cangjie
-public func encodeToPem(): PemEntry
-```
-
-功能：将私钥编码为 PEM 格式。
-
-返回值：
-
-- [PemEntry](../../common/crypto_common_package_api/crypto_common_package_structs.md#struct-pementry) - 私钥 PEM 格式的对象。
-
-异常：
-
-- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 编码失败，抛出异常。
 
 ### func sign(Array\<Byte>)
 

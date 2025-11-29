@@ -580,336 +580,6 @@ public static func wrap(dp: FuzzDataProvider): DebugDataProvider
 
 - [DebugDataProvider](fuzz_package_classes.md#class-debugdataprovider) - 类型实例。
 
-## class Fuzzer
-
-```cangjie
-public class Fuzzer {
-    public init(targetFunction: (Array<UInt8>) -> Int32)
-    public init(targetFunction: (Array<UInt8>) -> Int32, args: Array<String>)
-    public init(targetFunction: (FuzzDataProvider) -> Int32)
-    public init(targetFunction: (FuzzDataProvider) -> Int32, args: Array<String>)
-}
-```
-
-功能：[Fuzzer](fuzz_package_classes.md#class-fuzzer) 类提供了 fuzz 工具的创建。用户提供需要进行 fuzz 测试的函数 `targetFunction`，以及设置特定的 fuzz 运行参数 `args` 比如 fuzz 执行次数、初始种子、生成数据最大长度等，可创建相应类型的 [Fuzzer](fuzz_package_classes.md#class-fuzzer)。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### init((Array\<UInt8>) -> Int32)
-
-```cangjie
-public init(targetFunction: (Array<UInt8>) -> Int32)
-```
-
-功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
-
-### init((Array\<UInt8>) -> Int32, Array\<String>)
-
-```cangjie
-public init(targetFunction: (Array<UInt8>) -> Int32, args: Array<String>)
-```
-
-功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，以及 Fuzz 运行参数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
-- args: Array\<String> - Fuzz 运行参数。
-
-### init((FuzzDataProvider) -> Int32)
-
-```cangjie
-public init(targetFunction: (FuzzDataProvider) -> Int32)
-```
-
-功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
-
-### init((FuzzDataProvider) -> Int32, Array\<String>)
-
-```cangjie
-public init(targetFunction: (FuzzDataProvider) -> Int32, args: Array<String>)
-```
-
-功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，以及 Fuzz 运行参数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
-- args: Array\<String> - Fuzz 运行参数。
-
-### func disableDebugDataProvider()
-
-```cangjie
-public func disableDebugDataProvider(): Unit
-```
-
-功能：关闭调试信息打印功能，当 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider).consumeXXX 被调用时，返回值将不被打印到 `stdout`。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### func disableFakeCoverage()
-
-```cangjie
-public func disableFakeCoverage(): Unit
-```
-
-功能：关闭调用 `enableFakeCoverage` 对 Fuzz 的影响。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### func enableDebugDataProvider()
-
-```cangjie
-public func enableDebugDataProvider(): Unit
-```
-
-功能：启用调试信息打印功能，当 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider).consumeXXX 被调用时，返回值将被打印到 `stdout`。该功能默认为关闭。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### func enableFakeCoverage()
-
-```cangjie
-public func enableFakeCoverage(): Unit
-```
-
-功能：创建一块虚假的覆盖率反馈区域，保持 Fuzz 持续进行。在 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 模式下，前几轮运行时可能由于数据不足而导致没有覆盖率，libfuzzer 会退出。该功能默认为关闭。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### func getArgs()
-
-```cangjie
-public func getArgs(): Array<String>
-```
-
-功能：获取 Fuzz 运行参数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-返回值：
-
-- Array\<String> - 当前 Fuzz 运行参数。
-
-### func setArgs(Array\<String>)
-
-```cangjie
-public func setArgs(args: Array<String>): Unit
-```
-
-功能：设置 Fuzz 运行参数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- args: Array\<String> - Fuzz 运行参数。
-
-### func setTargetFunction((Array\<UInt8>) -> Int32)
-
-```cangjie
-public func setTargetFunction(targetFunction: (Array<UInt8>) -> Int32): Unit
-```
-
-功能：设置 Fuzz 目标函数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
-
-### func setTargetFunction((FuzzDataProvider) -> Int32)
-
-```cangjie
-public func setTargetFunction(targetFunction: (FuzzDataProvider) -> Int32): Unit
-```
-
-功能：设置 Fuzz 目标函数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
-
-### func startFuzz()
-
-```cangjie
-public func startFuzz(): Unit
-```
-
-功能：执行 Fuzz。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-## class FuzzerBuilder
-
-```cangjie
-public class FuzzerBuilder {
-    public init(targetFunction: (Array<UInt8>) -> Int32)
-    public init(targetFunction: (FuzzDataProvider) -> Int32)
-}
-```
-
-功能：此类用于 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 类的构建。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-### init((Array\<UInt8>) -> Int32)
-
-```cangjie
-public init(targetFunction: (Array<UInt8>) -> Int32)
-```
-
-功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，创建 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
-
-### init((FuzzDataProvider) -> Int32)
-
-```cangjie
-public init(targetFunction: (FuzzDataProvider) -> Int32)
-```
-
-功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，创建 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
-
-### func build()
-
-```cangjie
-public func build(): Fuzzer
-```
-
-功能：生成一个 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-返回值：
-
-- [Fuzzer](fuzz_package_classes.md#class-fuzzer) - [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
-
-### func setArgs(Array\<String>)
-
-```cangjie
-public func setArgs(args: Array<String>): FuzzerBuilder
-```
-
-功能：设置 Fuzz 运行参数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- args: Array\<String> - Fuzz 运行参数。
-
-返回值：
-
-- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
-
-### func setTargetFunction((Array\<UInt8>) -> Int32)
-
-```cangjie
-public func setTargetFunction(targetFunction: (Array<UInt8>) -> Int32): FuzzerBuilder
-```
-
-功能：设置 Fuzz 目标函数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
-
-返回值：
-
-- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
-
-### func setTargetFunction((FuzzDataProvider) -> Int32)
-
-```cangjie
-public func setTargetFunction(targetFunction: (FuzzDataProvider) -> Int32): FuzzerBuilder
-```
-
-功能：设置 Fuzz 目标函数。
-
-> **注意：**
->
-> 不支持平台：Windows。
-
-参数：
-
-- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
-
-返回值：
-
-- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
-
 ## class FuzzDataProvider
 
 ```cangjie
@@ -1004,6 +674,47 @@ public var remainingBytes: Int64
 > 不支持平台：Windows。
 
 类型：Int64
+
+### static func withCangjieData(Array\<UInt8>)
+
+```cangjie
+public static func withCangjieData(data: Array<UInt8>): FuzzDataProvider
+```
+
+功能：使用 Array\<UInt8> 类型的数据生成 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- data: Array\<UInt8> - 输入的外部数据。
+
+返回值：
+
+- [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) - 构造的 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+
+### static func withNativeData(CPointer\<UInt8>, Int64)
+
+```cangjie
+public static unsafe func withNativeData(data: CPointer<UInt8>, length: Int64): FuzzDataProvider
+```
+
+功能：使用 C 指针数据生成 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- data: CPointer\<UInt8> - 输入的外部数据。
+- length: Int64 - 数据长度。
+
+返回值：
+
+- [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) - 构造的 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
 
 ### func consumeAll()
 
@@ -1549,13 +1260,30 @@ public open func consumeUInt8s(count: Int64): Array<UInt8>
 
 - IllegalArgumentException - 如果 count 为负数，则抛出异常。
 
-### static func withCangjieData(Array\<UInt8>)
+## class Fuzzer
 
 ```cangjie
-public static func withCangjieData(data: Array<UInt8>): FuzzDataProvider
+public class Fuzzer {
+    public init(targetFunction: (Array<UInt8>) -> Int32)
+    public init(targetFunction: (Array<UInt8>) -> Int32, args: Array<String>)
+    public init(targetFunction: (FuzzDataProvider) -> Int32)
+    public init(targetFunction: (FuzzDataProvider) -> Int32, args: Array<String>)
+}
 ```
 
-功能：使用 Array\<UInt8> 类型的数据生成 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+功能：[Fuzzer](fuzz_package_classes.md#class-fuzzer) 类提供了 fuzz 工具的创建。用户提供需要进行 fuzz 测试的函数 `targetFunction`，以及设置特定的 fuzz 运行参数 `args` 比如 fuzz 执行次数、初始种子、生成数据最大长度等，可创建相应类型的 [Fuzzer](fuzz_package_classes.md#class-fuzzer)。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### init((Array\<UInt8>) -> Int32)
+
+```cangjie
+public init(targetFunction: (Array<UInt8>) -> Int32)
+```
+
+功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
 
 > **注意：**
 >
@@ -1563,19 +1291,15 @@ public static func withCangjieData(data: Array<UInt8>): FuzzDataProvider
 
 参数：
 
-- data: Array\<UInt8> - 输入的外部数据。
+- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
 
-返回值：
-
-- [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) - 构造的 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
-
-### static func withNativeData(CPointer\<UInt8>, Int64)
+### init((Array\<UInt8>) -> Int32, Array\<String>)
 
 ```cangjie
-public static unsafe func withNativeData(data: CPointer<UInt8>, length: Int64): FuzzDataProvider
+public init(targetFunction: (Array<UInt8>) -> Int32, args: Array<String>)
 ```
 
-功能：使用 C 指针数据生成 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，以及 Fuzz 运行参数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
 
 > **注意：**
 >
@@ -1583,9 +1307,285 @@ public static unsafe func withNativeData(data: CPointer<UInt8>, length: Int64): 
 
 参数：
 
-- data: CPointer\<UInt8> - 输入的外部数据。
-- length: Int64 - 数据长度。
+- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
+- args: Array\<String> - Fuzz 运行参数。
+
+### init((FuzzDataProvider) -> Int32)
+
+```cangjie
+public init(targetFunction: (FuzzDataProvider) -> Int32)
+```
+
+功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
+
+### init((FuzzDataProvider) -> Int32, Array\<String>)
+
+```cangjie
+public init(targetFunction: (FuzzDataProvider) -> Int32, args: Array<String>)
+```
+
+功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，以及 Fuzz 运行参数，创建 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
+- args: Array\<String> - Fuzz 运行参数。
+
+### func disableDebugDataProvider()
+
+```cangjie
+public func disableDebugDataProvider(): Unit
+```
+
+功能：关闭调试信息打印功能，当 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider).consumeXXX 被调用时，返回值将不被打印到 `stdout`。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### func disableFakeCoverage()
+
+```cangjie
+public func disableFakeCoverage(): Unit
+```
+
+功能：关闭调用 `enableFakeCoverage` 对 Fuzz 的影响。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### func enableDebugDataProvider()
+
+```cangjie
+public func enableDebugDataProvider(): Unit
+```
+
+功能：启用调试信息打印功能，当 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider).consumeXXX 被调用时，返回值将被打印到 `stdout`。该功能默认为关闭。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### func enableFakeCoverage()
+
+```cangjie
+public func enableFakeCoverage(): Unit
+```
+
+功能：创建一块虚假的覆盖率反馈区域，保持 Fuzz 持续进行。在 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 模式下，前几轮运行时可能由于数据不足而导致没有覆盖率，libfuzzer 会退出。该功能默认为关闭。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### func getArgs()
+
+```cangjie
+public func getArgs(): Array<String>
+```
+
+功能：获取 Fuzz 运行参数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
 
 返回值：
 
-- [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) - 构造的 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 类型实例。
+- Array\<String> - 当前 Fuzz 运行参数。
+
+### func setArgs(Array\<String>)
+
+```cangjie
+public func setArgs(args: Array<String>): Unit
+```
+
+功能：设置 Fuzz 运行参数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- args: Array\<String> - Fuzz 运行参数。
+
+### func setTargetFunction((Array\<UInt8>) -> Int32)
+
+```cangjie
+public func setTargetFunction(targetFunction: (Array<UInt8>) -> Int32): Unit
+```
+
+功能：设置 Fuzz 目标函数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
+
+### func setTargetFunction((FuzzDataProvider) -> Int32)
+
+```cangjie
+public func setTargetFunction(targetFunction: (FuzzDataProvider) -> Int32): Unit
+```
+
+功能：设置 Fuzz 目标函数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
+
+### func startFuzz()
+
+```cangjie
+public func startFuzz(): Unit
+```
+
+功能：执行 Fuzz。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+## class FuzzerBuilder
+
+```cangjie
+public class FuzzerBuilder {
+    public init(targetFunction: (Array<UInt8>) -> Int32)
+    public init(targetFunction: (FuzzDataProvider) -> Int32)
+}
+```
+
+功能：此类用于 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 类的构建。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+### init((Array\<UInt8>) -> Int32)
+
+```cangjie
+public init(targetFunction: (Array<UInt8>) -> Int32)
+```
+
+功能：根据以 UInt8 数组为参数，以 Int32 为返回值的目标函数，创建 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
+
+### init((FuzzDataProvider) -> Int32)
+
+```cangjie
+public init(targetFunction: (FuzzDataProvider) -> Int32)
+```
+
+功能：根据以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数，创建 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
+
+### func build()
+
+```cangjie
+public func build(): Fuzzer
+```
+
+功能：生成一个 [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+返回值：
+
+- [Fuzzer](fuzz_package_classes.md#class-fuzzer) - [Fuzzer](fuzz_package_classes.md#class-fuzzer) 实例。
+
+### func setArgs(Array\<String>)
+
+```cangjie
+public func setArgs(args: Array<String>): FuzzerBuilder
+```
+
+功能：设置 Fuzz 运行参数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- args: Array\<String> - Fuzz 运行参数。
+
+返回值：
+
+- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
+
+### func setTargetFunction((Array\<UInt8>) -> Int32)
+
+```cangjie
+public func setTargetFunction(targetFunction: (Array<UInt8>) -> Int32): FuzzerBuilder
+```
+
+功能：设置 Fuzz 目标函数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: (Array\<UInt8>) ->Int32 - 以 UInt8 数组为参数，以 Int32 为返回值的目标函数。
+
+返回值：
+
+- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。
+
+### func setTargetFunction((FuzzDataProvider) -> Int32)
+
+```cangjie
+public func setTargetFunction(targetFunction: (FuzzDataProvider) -> Int32): FuzzerBuilder
+```
+
+功能：设置 Fuzz 目标函数。
+
+> **注意：**
+>
+> 不支持平台：Windows。
+
+参数：
+
+- targetFunction: ([FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider)) ->Int32 - 以 [FuzzDataProvider](fuzz_package_classes.md#class-fuzzdataprovider) 为参数，以 Int32 为返回值的目标函数。
+
+返回值：
+
+- [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) - 当前 [FuzzerBuilder](fuzz_package_classes.md#class-fuzzerbuilder) 实例。

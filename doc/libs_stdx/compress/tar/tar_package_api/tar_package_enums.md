@@ -341,4 +341,3 @@ operator func ==(rhs: TarEntryType): Bool
 返回值：
 
 - Bool - 如果两个条目类型枚举实例相等，则返回 true；否则返回 false。
-

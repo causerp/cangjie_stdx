@@ -142,22 +142,6 @@ public enum WebSocketFrameType <: Equatable<WebSocketFrameType> & ToString {
 - Equatable\<[WebSocketFrameType](#enum-websocketframetype)>
 - ToString
 
-### ContinuationWebFrame
-
-```cangjie
-ContinuationWebFrame
-```
-
-功能：定义 websocket 协议中的未结束的分片帧。
-
-### TextWebFrame
-
-```cangjie
-TextWebFrame
-```
-
-功能：定义 websocket 协议中的文本帧。
-
 ### BinaryWebFrame
 
 ```cangjie
@@ -174,6 +158,14 @@ CloseWebFrame
 
 功能：定义 websocket 协议中的关闭帧。
 
+### ContinuationWebFrame
+
+```cangjie
+ContinuationWebFrame
+```
+
+功能：定义 websocket 协议中的未结束的分片帧。
+
 ### PingWebFrame
 
 ```cangjie
@@ -189,6 +181,14 @@ PongWebFrame
 ```
 
 功能：定义 websocket 协议中的心跳帧。
+
+### TextWebFrame
+
+```cangjie
+TextWebFrame
+```
+
+功能：定义 websocket 协议中的文本帧。
 
 ### UnknownWebFrame
 

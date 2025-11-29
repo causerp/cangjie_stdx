@@ -23,19 +23,6 @@ public open mut prop level: LogLevel
 
 类型：[LogLevel](log_package_structs.md#struct-loglevel)
 
-### func debug(String, Array\<Attr>)
-
-```cangjie
-public func debug(message: String, attrs: Array<Attr>): Unit
-```
-
-功能：打印 [DEBUG](log_package_structs.md#static-const-debug) 级别的日志的便捷函数。
-
-参数：
-
-- message: String - 日志消息。
-- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
-
 ### func debug(() -> String, Array\<Attr>)
 
 ```cangjie
@@ -47,6 +34,19 @@ public func debug(message: () -> String, attrs: Array<Attr>): Unit
 参数：
 
 - message: () -> String - 日志消息。
+- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
+
+### func debug(String, Array\<Attr>)
+
+```cangjie
+public func debug(message: String, attrs: Array<Attr>): Unit
+```
+
+功能：打印 [DEBUG](log_package_structs.md#static-const-debug) 级别的日志的便捷函数。
+
+参数：
+
+- message: String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### func enabled(LogLevel)
@@ -67,19 +67,6 @@ public func enabled(level: LogLevel): Bool
 
 - Bool - 如果指定的日志级别处于使能状态，则返回 `true`；否则，返回 `false`。
 
-### func error(String, Array\<Attr>)
-
-```cangjie
-public func error(message: String, attrs: Array<Attr>): Unit
-```
-
-功能：打印 [ERROR](log_package_structs.md#static-const-error) 级别的日志的便捷函数。
-
-参数：
-
-- message: String - 日志消息。
-- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
-
 ### func error(() -> String, Array\<Attr>)
 
 ```cangjie
@@ -93,13 +80,13 @@ public func error(message: () -> String, attrs: Array<Attr>): Unit
 - message: () -> String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
-### func fatal(String, Array\<Attr>)
+### func error(String, Array\<Attr>)
 
 ```cangjie
-public func fatal(message: String, attrs: Array<Attr>): Unit
+public func error(message: String, attrs: Array<Attr>): Unit
 ```
 
-功能：打印 [FATAL](log_package_structs.md#static-const-fatal) 级别的日志的便捷函数。
+功能：打印 [ERROR](log_package_structs.md#static-const-error) 级别的日志的便捷函数。
 
 参数：
 
@@ -119,13 +106,13 @@ public func fatal(message: () -> String, attrs: Array<Attr>): Unit
 - message: () -> String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
-### func info(String, Array\<Attr>)
+### func fatal(String, Array\<Attr>)
 
 ```cangjie
-public func info(message: String, attrs: Array<Attr>): Unit
+public func fatal(message: String, attrs: Array<Attr>): Unit
 ```
 
-功能：打印 [INFO](log_package_structs.md#static-const-info) 级别的日志的便捷函数。
+功能：打印 [FATAL](log_package_structs.md#static-const-fatal) 级别的日志的便捷函数。
 
 参数：
 
@@ -145,17 +132,16 @@ public func info(message: () -> String, attrs: Array<Attr>): Unit
 - message: () -> String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
-### func log(LogLevel, String, Array\<Attr>)
+### func info(String, Array\<Attr>)
 
 ```cangjie
-public open func log(level: LogLevel, message: String, attrs: Array<Attr>): Unit
+public func info(message: String, attrs: Array<Attr>): Unit
 ```
 
-功能：打印日志的通用函数，需指定日志级别。
+功能：打印 [INFO](log_package_structs.md#static-const-info) 级别的日志的便捷函数。
 
 参数：
 
-- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
 - message: String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
@@ -173,6 +159,20 @@ public open func log(level: LogLevel, message: () -> String, attrs: Array<Attr>)
 - message: () -> String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
+### func log(LogLevel, String, Array\<Attr>)
+
+```cangjie
+public open func log(level: LogLevel, message: String, attrs: Array<Attr>): Unit
+```
+
+功能：打印日志的通用函数，需指定日志级别。
+
+参数：
+
+- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
+- message: String - 日志消息。
+- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
+
 ### func log(LogRecord)
 
 ```cangjie
@@ -184,19 +184,6 @@ public open func log(record: LogRecord): Unit
 参数：
 
 - record: [LogRecord](log_package_classes.md#class-logrecord) - 日志级别。
-
-### func trace(String, Array\<Attr>)
-
-```cangjie
-public func trace(message: String, attrs: Array<Attr>): Unit
-```
-
-功能：打印 [TRACE](log_package_structs.md#static-const-trace) 级别的日志的便捷函数。
-
-参数：
-
-- message: String - 日志消息。
-- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### func trace(() -> String, Array\<Attr>)
 
@@ -211,13 +198,13 @@ public func trace(message: () -> String, attrs: Array<Attr>): Unit
 - message: () -> String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
-### func warn(String, Array\<Attr>)
+### func trace(String, Array\<Attr>)
 
 ```cangjie
-public func warn(message: String, attrs: Array<Attr>): Unit
+public func trace(message: String, attrs: Array<Attr>): Unit
 ```
 
-功能：打印 [WARN](log_package_structs.md#static-const-warn) 级别的日志的便捷函数。
+功能：打印 [TRACE](log_package_structs.md#static-const-trace) 级别的日志的便捷函数。
 
 参数：
 
@@ -235,6 +222,19 @@ public func warn(message: () -> String, attrs: Array<Attr>): Unit
 参数：
 
 - message: () -> String - 日志消息。
+- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
+
+### func warn(String, Array\<Attr>)
+
+```cangjie
+public func warn(message: String, attrs: Array<Attr>): Unit
+```
+
+功能：打印 [WARN](log_package_structs.md#static-const-warn) 级别的日志的便捷函数。
+
+参数：
+
+- message: String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### func withAttrs(Array\<Attr>)
@@ -264,21 +264,6 @@ public class LogRecord {
 功能：日志消息的“负载”。
 
 记录结构作为参数传递给 [Logger](log_package_classes.md#class-logger) 类的 [log](log_package_classes.md#func-loglogrecord)方法。日志提供者处理这些结构以显示日志消息。记录是由日志对象自动创建，因此日志用户看不到。
-
-### init(DateTime, LogLevel, String, Array\<Attr>)
-
-```cangjie
-public init(time: DateTime, level: LogLevel, msg: String, attrs: Array<Attr>)
-```
-
-功能：创建一个 [LogRecord](log_package_classes.md#class-logrecord) 实例，指定时间戳，日志打印级别，日志消息和日志数据键值对。
-
-参数：
-
-- time: DateTime - 记录日志时的时间戳
-- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
-- msg: String - 日志消息。
-- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### prop attrs
 
@@ -319,6 +304,21 @@ public prop time: DateTime
 功能：获取日志打印时的时间戳。
 
 类型：DateTime
+
+### init(DateTime, LogLevel, String, Array\<Attr>)
+
+```cangjie
+public init(time: DateTime, level: LogLevel, msg: String, attrs: Array<Attr>)
+```
+
+功能：创建一个 [LogRecord](log_package_classes.md#class-logrecord) 实例，指定时间戳，日志打印级别，日志消息和日志数据键值对。
+
+参数：
+
+- time: DateTime - 记录日志时的时间戳
+- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
+- msg: String - 日志消息。
+- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### func clone()
 
@@ -407,22 +407,6 @@ public func writeBool(v: Bool): Unit
 
 - IllegalStateException - 当前 writer 的状态不应该写入 value 时。
 
-### func writeFloat(Float64)
-
-```cangjie
-public func writeFloat(v: Float64): Unit
-```
-
-功能：向日志输出目标中写入 Float64 值。
-
-参数：
-
-- v: Float64 - 待写入的 Float64 值。
-
-异常：
-
-- IllegalStateException - 当前 writer 的状态不应该写入 value 时。
-
 ### func writeDateTime(DateTime)
 
 ```cangjie
@@ -470,6 +454,22 @@ public func writeException(v: Exception): Unit
 异常：
 
 - IllegalStateException - 当前 writer 的状态不应该写入 value 时，抛出该异常。
+
+### func writeFloat(Float64)
+
+```cangjie
+public func writeFloat(v: Float64): Unit
+```
+
+功能：向日志输出目标中写入 Float64 值。
+
+参数：
+
+- v: Float64 - 待写入的 Float64 值。
+
+异常：
+
+- IllegalStateException - 当前 writer 的状态不应该写入 value 时。
 
 ### func writeInt(Int64)
 
@@ -563,14 +563,6 @@ public class NoopLogger <: Logger {
 
 - [Logger](#class-logger)
 
-### init()
-
-```cangjie
-public init()
-```
-
-功能：创建一个 [NoopLogger](log_package_classes.md#class-nooplogger) 实例。
-
 ### prop level
 
 ```cangjie
@@ -580,6 +572,14 @@ public mut prop level: LogLevel
 功能：永远只能获取到 OFF 日志打印级别，设置日志打印级别不会生效。
 
 类型：[LogLevel](log_package_structs.md#struct-loglevel)
+
+### init()
+
+```cangjie
+public init()
+```
+
+功能：创建一个 [NoopLogger](log_package_classes.md#class-nooplogger) 实例。
 
 ### func close()
 
@@ -601,20 +601,6 @@ public func isClosed(): Bool
 
 - Bool - 是否关闭。
 
-### func log(LogLevel, String, Array\<Attr>)
-
-```cangjie
-public func log(level: LogLevel, message: String, attrs: Array<Attr>): Unit
-```
-
-功能：NOOP 实现。
-
-参数：
-
-- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
-- message: String - 日志消息。
-- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
-
 ### func log(LogLevel, () -> String, Array\<Attr>)
 
 ```cangjie
@@ -627,6 +613,20 @@ public func log(level: LogLevel, message: () -> String, attrs: Array<Attr>): Uni
 
 - level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
 - message: () -> String - 日志消息。
+- attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
+
+### func log(LogLevel, String, Array\<Attr>)
+
+```cangjie
+public func log(level: LogLevel, message: String, attrs: Array<Attr>): Unit
+```
+
+功能：NOOP 实现。
+
+参数：
+
+- level: [LogLevel](log_package_structs.md#struct-loglevel) - 日志级别。
+- message: String - 日志消息。
 - attrs: Array\<[Attr](log_package_types.md#type-attr)> - 日志数据键值对。
 
 ### func log(LogRecord)

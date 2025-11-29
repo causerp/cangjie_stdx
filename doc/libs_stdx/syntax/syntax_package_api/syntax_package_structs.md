@@ -13,16 +13,6 @@ public struct CodePositionRange {
 
 功能：表示节点位置信息。
 
-### let beginLine
-
-```cangjie
-public let beginLine: Int32
-```
-
-功能：获取起始行号。
-
-类型：Int32
-
 ### let beginColumn
 
 ```cangjie
@@ -33,13 +23,13 @@ public let beginColumn: Int32
 
 类型：Int32
 
-### let endLine
+### let beginLine
 
 ```cangjie
-public let endLine: Int32
+public let beginLine: Int32
 ```
 
-功能：获取结束行号。
+功能：获取起始行号。
 
 类型：Int32
 
@@ -50,6 +40,16 @@ public let endColumn: Int32
 ```
 
 功能：获取结束列号。
+
+类型：Int32
+
+### let endLine
+
+```cangjie
+public let endLine: Int32
+```
+
+功能：获取结束行号。
 
 类型：Int32
 

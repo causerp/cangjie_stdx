@@ -464,6 +464,22 @@ public open class ASTRewriter {}
 > - 支持对任意语法树节点进行遍历及重写；
 > - 重写过程中会保持节点类型一致性，若重写后节点类型发生变化将抛出异常。
 
+### func rewrite
+
+```cangjie
+public open func rewrite(node: SyntaxTreeNode): SyntaxTreeNode
+```
+
+功能：重写单个语法树节点，默认实现为直接返回原节点，子类可重写此方法以实现自定义的节点替换逻辑。
+
+参数：
+
+- node: [SyntaxTreeNode](#class-syntaxtreenode) - 待重写的语法树节点。
+
+返回值：
+
+- [SyntaxTreeNode](#class-syntaxtreenode) - 重写后的语法树节点。
+
 ### func walk
 
 ```cangjie
@@ -488,22 +504,6 @@ public func walk(startPoint: SyntaxTreeNode, detach!: Bool = false): SyntaxTreeN
 
 - Exception - 当重写后的节点类型与原始节点类型不一致时，抛出异常。
 
-### func rewrite
-
-```cangjie
-public open func rewrite(node: SyntaxTreeNode): SyntaxTreeNode
-```
-
-功能：重写单个语法树节点，默认实现为直接返回原节点，子类可重写此方法以实现自定义的节点替换逻辑。
-
-参数：
-
-- node: [SyntaxTreeNode](#class-syntaxtreenode) - 待重写的语法树节点。
-
-返回值：
-
-- [SyntaxTreeNode](#class-syntaxtreenode) - 重写后的语法树节点。
-
 ## class ASTVisitor
 
 ```cangjie
@@ -512,17 +512,21 @@ public open class ASTVisitor
 
 功能：语法树的通用访问器基类。开发者可以通过遍历 [SyntaxTreeNode](#class-syntaxtreenode) 及其子类，实现对 Cangjie 源代码结构的统一访问与处理。
 
-### func walk
+### func postAction
 
 ```cangjie
-public func walk(root: SyntaxTreeNode): Unit
+public open func postAction(node: SyntaxTreeNode): PostActionMode
 ```
 
-功能：从指定节点开始深度优先遍历 AST。
+功能：在离开节点后执行的钩子函数，用于决定是否继续或停止遍历, 当 preAction 停止时， postAction 也会立即停止。
 
 参数：
 
-- root: SyntaxTreeNode – 遍历的起始节点。
+- `node` – 当前已访问完成的节点。
+
+返回值：
+
+- [PostActionMode](syntax_package_enums.md#enum-postactionmode) – 访问节点完成后的行为策略。
 
 ### func preAction
 
@@ -540,21 +544,17 @@ public open func preAction(node: SyntaxTreeNode): PreActionMode
 
 - [PreActionMode](syntax_package_enums.md#enum-preactionmode) – 访问节点前的行为策略。
 
-### func postAction
+### func walk
 
 ```cangjie
-public open func postAction(node: SyntaxTreeNode): PostActionMode
+public func walk(root: SyntaxTreeNode): Unit
 ```
 
-功能：在离开节点后执行的钩子函数，用于决定是否继续或停止遍历, 当 preAction 停止时， postAction 也会立即停止。
+功能：从指定节点开始深度优先遍历 AST。
 
 参数：
 
-- `node` – 当前已访问完成的节点。
-
-返回值：
-
-- [PostActionMode](syntax_package_enums.md#enum-postactionmode) – 访问节点完成后的行为策略。
+- root: SyntaxTreeNode – 遍历的起始节点。
 
 ## class AtomicType
 
@@ -1277,30 +1277,6 @@ public init(name: String, prefixes: Array<String>, typeArguments: Array<TypeAnno
 
 - Exception - 当输入的 `name` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
 
-### func getLAnglePos()
-
-```cangjie
-public func getLAnglePos(): Option<CodePositionRange>
-```
-
-功能：获取 `<` 的位置（若不存在返回 `None`）。
-
-返回值：
-
-- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `<` 的位置（若不存在返回 `None`）。
-
-### func getRAnglePos()
-
-```cangjie
-public func getRAnglePos(): Option<CodePositionRange>
-```
-
-功能：获取 `>` 的位置（若不存在返回 `None`）。
-
-返回值：
-
-- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `>` 的位置（若不存在返回 `None`）。
-
 ### func getCommasPos()
 
 ```cangjie
@@ -1324,6 +1300,30 @@ public func getDotsPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `.` 的位置序列。
+
+### func getLAnglePos()
+
+```cangjie
+public func getLAnglePos(): Option<CodePositionRange>
+```
+
+功能：获取 `<` 的位置（若不存在返回 `None`）。
+
+返回值：
+
+- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `<` 的位置（若不存在返回 `None`）。
+
+### func getRAnglePos()
+
+```cangjie
+public func getRAnglePos(): Option<CodePositionRange>
+```
+
+功能：获取 `>` 的位置（若不存在返回 `None`）。
+
+返回值：
+
+- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `>` 的位置（若不存在返回 `None`）。
 
 ## class ConjunctionCondition
 
@@ -2517,6 +2517,19 @@ public init(body: Option<Block>, genericConstraints: Option<GenericConstraints>,
 
 - Exception - 当函数种类和修饰符不对应，或输入的 `name` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
 
+### func getFuncKeyWordPos()
+
+```cangjie
+func getFuncKeyWordPos(): Option<CodePositionRange>
+```
+
+功能：获取 [FuncDecl](#class-funcdecl) 节点中 `func` 关键字的位置。
+
+返回值：
+
+- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `func` 关键字的位置。
+
+
 ### func getFuncKindKeyWordPos()
 
 ```cangjie
@@ -2532,19 +2545,6 @@ func getFuncKindKeyWordPos(): Option<CodePositionRange>
 > **注意：**
 >
 > `kind` 为 `Finalizer` 时，返回 `~` 的位置，`kind` 为 `Operator` 时，返回 `operator` 的位置，`kind` 为 `Foreign` 时，返回 `foriegn` 的位置。
-
-### func getFuncKeyWordPos()
-
-```cangjie
-func getFuncKeyWordPos(): Option<CodePositionRange>
-```
-
-功能：获取 [FuncDecl](#class-funcdecl) 节点中 `func` 关键字的位置。
-
-返回值：
-
-- Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `func` 关键字的位置。
-
 
 ### func getGenericParamsCommasPos()
 
@@ -5001,18 +5001,6 @@ public init(patterns: Array<Pattern>, patternGuardCond: Option<Expr>, caseCond: 
 
 - Exception - 当 `body` 中的节点不是表达式类型、函数声明或变量声明时，抛出异常，异常中包含报错提示信息。
 
-### func getDoubleArrowPos()
-
-```cangjie
-public func getDoubleArrowPos(): CodePositionRange
-```
-
-功能：获取当前 [MatchCase](#class-matchcase) 中 `=>` 的位置。
-
-返回值：
-
-- [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `=>` 的位置。
-
 ### func getBitOrsPos()
 
 ```cangjie
@@ -5036,6 +5024,18 @@ public func getCasePos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `case` 关键字的位置。
+
+### func getDoubleArrowPos()
+
+```cangjie
+public func getDoubleArrowPos(): CodePositionRange
+```
+
+功能：获取当前 [MatchCase](#class-matchcase) 中 `=>` 的位置。
+
+返回值：
+
+- [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `=>` 的位置。
 
 ### func getWherePos()
 
@@ -5943,6 +5943,16 @@ public prop getter: Option<PropGetterOrSetter>
 
 类型：Option\<[PropGetterOrSetter](#class-propgetterorsetter)>
 
+### prop isMut
+
+```cangjie
+public prop isMut: Bool
+```
+
+功能：判断当前属性声明是否可变。
+
+类型：Bool
+
 ### prop name
 
 ```cangjie
@@ -5972,16 +5982,6 @@ public prop tyAnnotation: Option<TypeAnnotation>
 功能：获取当前属性声明的类型标注。
 
 类型：[TypeAnnotation](#class-typeannotation)
-
-### prop isMut
-
-```cangjie
-public prop isMut: Bool
-```
-
-功能：判断当前属性声明是否可变。
-
-类型：Bool
 
 ### init(Option\<PropGetterOrSetter>, String, Option\<PropGetterOrSetter>, TypeAnnotation, Array\<Annotation>, Array\<Modifier>, Array\<Comment>)
 
@@ -6455,18 +6455,6 @@ public init(start: Option<Expr>, kind: RangeKind, end: Option<Expr>, step: Optio
 - step: Option\<[Expr](#class-expr)> - 可选的步长表达式。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
-### func getRangeOpPos()
-
-```cangjie
-public func getRangeOpPos(): CodePositionRange
-```
-
-功能：获取 `..` 或 `..=` 的位置。
-
-返回值：
-
-- [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `..` 或 `..=` 的位置。
-
 ### func getColonPos()
 
 ```cangjie
@@ -6478,6 +6466,18 @@ public func getColonPos(): Option<CodePositionRange>
 返回值：
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `:` 的位置（若不存在返回 `None`）。
+
+### func getRangeOpPos()
+
+```cangjie
+public func getRangeOpPos(): CodePositionRange
+```
+
+功能：获取 `..` 或 `..=` 的位置。
+
+返回值：
+
+- [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `..` 或 `..=` 的位置。
 
 ## class ReturnExpr
 
@@ -7347,6 +7347,18 @@ public let parentNode: Option<SyntaxTreeNode>
 
 类型：Option\<[SyntaxTreeNode](#class-syntaxtreenode)>
 
+### func hashCode()
+
+```cangjie
+public func hashCode(): Int64
+```
+
+功能：获取 [SyntaxTreeNode](#class-syntaxtreenode) 对象的哈希值。
+
+返回值：
+
+- Int64 - 当前 [SyntaxTreeNode](#class-syntaxtreenode) 对象的哈希值。
+
 ### func toString()
 
 ```cangjie
@@ -7394,18 +7406,6 @@ public operator func ==(that: SyntaxTreeNode): Bool
 返回值：
 
 - Bool - 两个 [SyntaxTreeNode](#class-syntaxtreenode) 相等则为 `true` ，不等则为 `false`。
-
-### func hashCode()
-
-```cangjie
-public func hashCode(): Int64
-```
-
-功能：获取 [SyntaxTreeNode](#class-syntaxtreenode) 对象的哈希值。
-
-返回值：
-
-- Int64 - 当前 [SyntaxTreeNode](#class-syntaxtreenode) 对象的哈希值。
 
 ## class ThrowExpr
 
@@ -8286,16 +8286,6 @@ public class UnaryExpr <: Expr {
 
 - [Expr](#class-expr)
 
-### prop opKind
-
-```cangjie
-public prop opKind: UnaryOpKind
-```
-
-功能：获取 [UnaryExpr](#class-unaryexpr) 节点中的一元操作符。
-
-类型：[UnaryOpKind](syntax_package_enums.md#enum-unaryopkind)
-
 ### prop operand
 
 ```cangjie
@@ -8305,6 +8295,16 @@ public prop operand: Expr
 功能：获取 [UnaryExpr](#class-unaryexpr) 节点中的操作数。
 
 类型：[Expr](#class-expr)
+
+### prop opKind
+
+```cangjie
+public prop opKind: UnaryOpKind
+```
+
+功能：获取 [UnaryExpr](#class-unaryexpr) 节点中的一元操作符。
+
+类型：[UnaryOpKind](syntax_package_enums.md#enum-unaryopkind)
 
 ### init(UnaryOpKind, Expr, Array\<Comment>)
 
@@ -8421,6 +8421,16 @@ public prop kind: VarKind
 
 类型：[VarKind](syntax_package_enums.md#enum-varkind)
 
+### prop name
+
+```cangjie
+public prop name: String
+```
+
+功能：当前变量声明的模式为 `VarPattern` 时，获取其名称，其他模式返回空字符串。
+
+类型：String
+
 ### prop pattern
 
 ```cangjie
@@ -8440,16 +8450,6 @@ public prop tyAnnotation: Option<TypeAnnotation>
 功能：获取当前变量声明的类型标注（若不存在返回 `None`）。
 
 类型：Option\<[TypeAnnotation](#class-typeannotation)>
-
-### prop name
-
-```cangjie
-public prop name: String
-```
-
-功能：当前变量声明的模式为 `VarPattern` 时，获取其名称，其他模式返回空字符串。
-
-类型：String
 
 ### init(Option\<Expr>, VarKind, String, Pattern, Option\<TypeAnnotation>, Array\<Annotation>, Array\<Modifier>, Array\<Comment>)
 

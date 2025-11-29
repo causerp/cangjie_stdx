@@ -338,6 +338,16 @@ public static const STATUS_MOVED_PERMANENTLY: UInt16 = 301
 >
 > 请求的资源已被永久的移动到新 URI，返回信息会包括新的 URI，浏览器会自动定向到新 URI。
 
+### static const STATUS_MULTI_STATUS
+
+```cangjie
+public static const STATUS_MULTI_STATUS: UInt16 = 207
+```
+
+功能：DAV 绑定的成员已经在（多状态）响应之前的部分被列举，且未被再次包含。
+
+类型：UInt16
+
 ### static const STATUS_MULTIPLE_CHOICES
 
 ```cangjie
@@ -352,16 +362,6 @@ public static const STATUS_MULTIPLE_CHOICES: UInt16 = 300
 >
 > 用户或浏览器能够自行选择一个首选的地址进行重定向。
 
-### static const STATUS_MULTI_STATUS
-
-```cangjie
-public static const STATUS_MULTI_STATUS: UInt16 = 207
-```
-
-功能：DAV 绑定的成员已经在（多状态）响应之前的部分被列举，且未被再次包含。
-
-类型：UInt16
-
 ### static const STATUS_NETWORK_AUTHENTICATION_REQUIRED
 
 ```cangjie
@@ -369,6 +369,16 @@ public static const STATUS_NETWORK_AUTHENTICATION_REQUIRED: UInt16 = 511
 ```
 
 功能：要求网络认证。
+
+类型：UInt16
+
+### static const STATUS_NO_CONTENT
+
+```cangjie
+public static const STATUS_NO_CONTENT: UInt16 = 204
+```
+
+功能：服务器成功处理，但未返回内容。
 
 类型：UInt16
 
@@ -439,16 +449,6 @@ public static const STATUS_NOT_MODIFIED: UInt16 = 304
 > **说明：**
 >
 > 客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源。
-
-### static const STATUS_NO_CONTENT
-
-```cangjie
-public static const STATUS_NO_CONTENT: UInt16 = 204
-```
-
-功能：服务器成功处理，但未返回内容。
-
-类型：UInt16
 
 ### static const STATUS_OK
 
@@ -530,21 +530,6 @@ public static const STATUS_PROXY_AUTH_REQUIRED: UInt16 = 407
 
 类型：UInt16
 
-### static const STATUS_REQUESTED_RANGE_NOT_SATISFIABLE
-
-```cangjie
-public static const STATUS_REQUESTED_RANGE_NOT_SATISFIABLE: UInt16 = 416
-```
-
-功能：客户端请求的范围无效。
-
-类型：UInt16
-
-> **说明：**
->
-> 请求中包含了 `Range` 请求头，并且 `Range` 中指定的任何数据范围都与当前资源的可用范围不重合；
-> 同时请求中又没有定义 `If-Range` 请求头。
-
 ### static const STATUS_REQUEST_CONTENT_TOO_LARGE
 
 ```cangjie
@@ -584,6 +569,21 @@ public static const STATUS_REQUEST_URI_TOO_LONG: UInt16 = 414
 功能：求的 URI 长度超过了服务器能够解释的长度。
 
 类型：UInt16
+
+### static const STATUS_REQUESTED_RANGE_NOT_SATISFIABLE
+
+```cangjie
+public static const STATUS_REQUESTED_RANGE_NOT_SATISFIABLE: UInt16 = 416
+```
+
+功能：客户端请求的范围无效。
+
+类型：UInt16
+
+> **说明：**
+>
+> 请求中包含了 `Range` 请求头，并且 `Range` 中指定的任何数据范围都与当前资源的可用范围不重合；
+> 同时请求中又没有定义 `If-Range` 请求头。
 
 ### static const STATUS_RESET_CONTENT
 
