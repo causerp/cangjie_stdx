@@ -138,16 +138,6 @@ public struct KeyUsage <: ToString {
 
 - ToString
 
-### static let CRLSign
-
-```cangjie
-public static let CRLSign: UInt16 = 0x0002
-```
-
-功能：表示私钥可用于对 CRL 签名，而公钥可用于验证 CRL 签名。
-
-类型：UInt16
-
 ### static let CertSign
 
 ```cangjie
@@ -155,6 +145,16 @@ public static let CertSign: UInt16 = 0x0004
 ```
 
 功能：表示私钥用于证书签名，而公钥用于验证证书签名，专用于 CA 证书。
+
+类型：UInt16
+
+### static let CRLSign
+
+```cangjie
+public static let CRLSign: UInt16 = 0x0002
+```
+
+功能：表示私钥可用于对 CRL 签名，而公钥可用于验证 CRL 签名。
 
 类型：UInt16
 
@@ -491,16 +491,6 @@ public struct X509CertificateInfo {
 
 功能：[X509CertificateInfo](x509_package_structs.md#struct-x509certificateinfo) 结构包含了证书信息，包括证书序列号、有效期、实体可辨识名称、域名、email 地址、[IP](x509_package_type.md#type-ip) 地址、密钥用法和扩展密钥用法。
 
-### var IPAddresses
-
-```cangjie
-public var IPAddresses: Array<IP>
-```
-
-功能：记录证书的 [IP](x509_package_type.md#type-ip) 地址。
-
-类型：Array\<[IP](./x509_package_type.md#type-ip)>
-
 ### var dnsNames
 
 ```cangjie
@@ -530,6 +520,16 @@ public var extKeyUsage: ?ExtKeyUsage
 功能：记录证书的扩展密钥用法。
 
 类型：?[ExtKeyUsage](./x509_package_structs.md#struct-extkeyusage)
+
+### var IPAddresses
+
+```cangjie
+public var IPAddresses: Array<IP>
+```
+
+功能：记录证书的 [IP](x509_package_type.md#type-ip) 地址。
+
+类型：Array\<[IP](./x509_package_type.md#type-ip)>
 
 ### var keyUsage
 
@@ -635,16 +635,6 @@ public struct X509CertificateRequestInfo {
 
 功能：[X509CertificateRequestInfo](x509_package_structs.md#struct-x509certificaterequestinfo) 结构包含了证书请求信息，包括证书实体可辨识名称、域名、email 地址和 [IP](x509_package_type.md#type-ip) 地址。
 
-### var IPAddresses
-
-```cangjie
-public var IPAddresses: Array<IP>
-```
-
-功能：记录证书签名请求的 [IP](x509_package_type.md#type-ip) 地址。
-
-类型：Array\<[IP](./x509_package_type.md#type-ip)>
-
 ### var dnsNames
 
 ```cangjie
@@ -664,6 +654,16 @@ public var emailAddresses: Array<String>
 功能：记录证书签名请求的 email 地址。
 
 类型：Array\<String>
+
+### var IPAddresses
+
+```cangjie
+public var IPAddresses: Array<IP>
+```
+
+功能：记录证书签名请求的 [IP](x509_package_type.md#type-ip) 地址。
+
+类型：Array\<[IP](./x509_package_type.md#type-ip)>
 
 ### var subject
 

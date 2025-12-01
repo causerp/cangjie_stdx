@@ -21,16 +21,6 @@ public struct OperationMode <: ToString & Equatable<OperationMode> {
 - ToString
 - Equatable\<[OperationMode](#struct-operationmode)>
 
-### static let ECB
-
-```cangjie
-public static let ECB: OperationMode
-```
-
-功能：Electronic CodeBook(单子密码本)工作模式， ECB 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("ECB")。
-
-类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
-
 ### static let CBC
 
 ```cangjie
@@ -38,16 +28,6 @@ public static let CBC: OperationMode
 ```
 
 功能：Cipher Block Chaining(密码分组链接)工作模式，CBC 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("CBC")。
-
-类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
-
-### static let OFB
-
-```cangjie
-public static let OFB: OperationMode
-```
-
-功能：Output FeedBack(输出反馈)工作模式，OFB 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("OFB")。
 
 类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
 
@@ -71,6 +51,16 @@ public static let CTR: OperationMode
 
 类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
 
+### static let ECB
+
+```cangjie
+public static let ECB: OperationMode
+```
+
+功能：Electronic CodeBook(单子密码本)工作模式， ECB 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("ECB")。
+
+类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
+
 ### static let GCM
 
 ```cangjie
@@ -78,6 +68,16 @@ public static let GCM: OperationMode
 ```
 
 功能：Galois Counter(伽罗瓦计数器)工作模式，GCM 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("GCM")。
+
+类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
+
+### static let OFB
+
+```cangjie
+public static let OFB: OperationMode
+```
+
+功能：Output FeedBack(输出反馈)工作模式，OFB 初始值是 [OperationMode](crypto_package_structs.md#struct-operationmode)("OFB")。
 
 类型：[OperationMode](crypto_package_structs.md#struct-operationmode)
 
@@ -103,23 +103,7 @@ public override func toString(): String
 
 - String - 工作模式字符串。
 
-### func ==(OperationMode)
-
-```cangjie
-public override operator func ==(other: OperationMode): Bool
-```
-
-功能：工作模式比较是否相同。
-
-参数：
-
-- other: [OperationMode](crypto_package_structs.md#struct-operationmode) - 工作模式。
-
-返回值：
-
-- Bool - true 相同，false 不相同。
-
-### func !=(OperationMode)
+### operator func !=(OperationMode)
 
 ```cangjie
 public override operator func !=(other: OperationMode): Bool
@@ -134,6 +118,22 @@ public override operator func !=(other: OperationMode): Bool
 返回值：
 
 - Bool - true 不相同，false 相同。
+
+### operator func ==(OperationMode)
+
+```cangjie
+public override operator func ==(other: OperationMode): Bool
+```
+
+功能：工作模式比较是否相同。
+
+参数：
+
+- other: [OperationMode](crypto_package_structs.md#struct-operationmode) - 工作模式。
+
+返回值：
+
+- Bool - true 相同，false 不相同。
 
 ## struct PaddingMode
 
@@ -181,23 +181,7 @@ public let paddingType: Int64
 
 类型：Int64
 
-### func ==(PaddingMode)
-
-```cangjie
-public override operator func ==(other: PaddingMode): Bool
-```
-
-功能：填充模式比较是否相同。
-
-参数：
-
-- other: [PaddingMode](crypto_package_structs.md#struct-paddingmode) - 填充模式。
-
-返回值：
-
-- Bool - true 相同，false 不相同。
-
-### func !=(PaddingMode)
+### operator func !=(PaddingMode)
 
 ```cangjie
 public override operator func !=(other: PaddingMode): Bool
@@ -212,3 +196,19 @@ public override operator func !=(other: PaddingMode): Bool
 返回值：
 
 - Bool - true 不相同，false 相同。
+
+### operator func ==(PaddingMode)
+
+```cangjie
+public override operator func ==(other: PaddingMode): Bool
+```
+
+功能：填充模式比较是否相同。
+
+参数：
+
+- other: [PaddingMode](crypto_package_structs.md#struct-paddingmode) - 填充模式。
+
+返回值：
+
+- Bool - true 相同，false 不相同。

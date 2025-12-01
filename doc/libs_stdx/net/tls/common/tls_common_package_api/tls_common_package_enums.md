@@ -69,6 +69,14 @@ public enum TlsVersion <: ToString & Hashable & Equatable<TlsVersion>{
 - Hashable
 - Equatable\<[TlsVersion](#enum-tlsversion)>
 
+### TLCP
+
+```cangjie
+TLCP
+```
+
+功能：表示 TLCP 版本。
+
 ### V1_2
 
 ```cangjie
@@ -84,14 +92,6 @@ V1_3
 ```
 
 功能：表示 TLS 1.3 版本。
-
-### TLCP
-
-```cangjie
-TLCP
-```
-
-功能：表示 TLCP 版本。
 
 ### func hashCode()
 

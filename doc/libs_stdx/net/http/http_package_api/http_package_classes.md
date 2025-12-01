@@ -12,6 +12,28 @@ public class Client
 >
 > [Client](http_package_classes.md#class-client) 文档中未明确说明支持版本的配置，在 HTTP/1.1 与 HTTP/2 都会生效。
 
+### func delete(String)
+
+```cangjie
+public func delete(url: String): HttpResponse
+```
+
+功能：请求方法为 DELETE 的便捷请求函数。
+
+参数：
+
+- url: String - 请求的 url。
+
+返回值：
+
+- [HttpResponse](http_package_classes.md#class-httpresponse) - 服务端返回的响应。
+
+异常：
+
+- [UrlSyntaxException](../../../encoding/url/url_package_api/url_package_exceptions.md#class-urlsyntaxexception) - 当参数 url 不符合 [URL](../../../encoding/url/url_package_api/url_package_classes.md#class-url) 解析规范时，抛出异常。
+- IllegalArgumentException - 当被编码的字符不符合 UTF-8 的字节序列规则时，抛出异常。
+- 其余同 func send。
+
 ### prop autoRedirect
 
 ```cangjie
@@ -187,28 +209,6 @@ public func connect(url: String, header!: HttpHeaders = HttpHeaders(), version!:
 返回值：
 
 - ([HttpResponse](http_package_classes.md#class-httpresponse), ?StreamingSocket) - 返回元组类型，其中 [HttpResponse](http_package_classes.md#class-httpresponse) 实例表示服务器返回的响应体，Option\<StreamingSocket> 实例表示请求成功时返回 headers 之后连接。
-
-异常：
-
-- [UrlSyntaxException](../../../encoding/url/url_package_api/url_package_exceptions.md#class-urlsyntaxexception) - 当参数 url 不符合 [URL](../../../encoding/url/url_package_api/url_package_classes.md#class-url) 解析规范时，抛出异常。
-- IllegalArgumentException - 当被编码的字符不符合 UTF-8 的字节序列规则时，抛出异常。
-- 其余同 func send。
-
-### func delete(String)
-
-```cangjie
-public func delete(url: String): HttpResponse
-```
-
-功能：请求方法为 DELETE 的便捷请求函数。
-
-参数：
-
-- url: String - 请求的 url。
-
-返回值：
-
-- [HttpResponse](http_package_classes.md#class-httpresponse) - 服务端返回的响应。
 
 异常：
 
@@ -519,6 +519,22 @@ public class ClientBuilder {
 >
 > 该类提供了一系列配置参数的函数，配置完成后调用 [build](./http_package_classes.md#func-build) 函数构造出 [Client](./http_package_classes.md#class-client) 实例。配置函数中说明了参数的取值范围，但配置函数本身不做参数合法性校验，[build](./http_package_classes.md#func-build) 时统一进行校验。
 
+### func initialWindowSize(UInt32)
+
+```cangjie
+public func initialWindowSize(size: UInt32): ClientBuilder
+```
+
+功能：配置客户端 HTTP/2 流控窗口初始值。
+
+参数：
+
+- size: UInt32 - 默认值 65535 ， 取值范围为 0 至 2^31 - 1。
+
+返回值：
+
+- [ClientBuilder](http_package_classes.md#class-clientbuilder) - 当前 [ClientBuilder](http_package_classes.md#class-clientbuilder) 实例的引用。
+
 ### init()
 
 ```cangjie
@@ -652,22 +668,6 @@ public func httpsProxy(addr: String): ClientBuilder
 参数：
 
 - addr: String - 格式为：`"http://host:port"`，例如：`"http://192.168.1.1:443"`。
-
-返回值：
-
-- [ClientBuilder](http_package_classes.md#class-clientbuilder) - 当前 [ClientBuilder](http_package_classes.md#class-clientbuilder) 实例的引用。
-
-### func initialWindowSize(UInt32)
-
-```cangjie
-public func initialWindowSize(size: UInt32): ClientBuilder
-```
-
-功能：配置客户端 HTTP/2 流控窗口初始值。
-
-参数：
-
-- size: UInt32 - 默认值 65535 ， 取值范围为 0 至 2^31 - 1。
 
 返回值：
 
@@ -1486,6 +1486,18 @@ public class HttpRequestBuilder {
 
 功能：[HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) 类用于构造 [HttpRequest](http_package_classes.md#class-httprequest) 实例。
 
+### func delete()
+
+```cangjie
+public func delete(): HttpRequestBuilder
+```
+
+功能：构造 method 为 "DELETE" 的请求的便捷函数。
+
+返回值：
+
+- [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) - 当前 [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) 实例的引用。
+
 ### init()
 
 ```cangjie
@@ -1605,18 +1617,6 @@ public func connect(): HttpRequestBuilder
 ```
 
 功能：构造 method 为 "CONNECT" 的请求的便捷函数。
-
-返回值：
-
-- [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) - 当前 [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) 实例的引用。
-
-### func delete()
-
-```cangjie
-public func delete(): HttpRequestBuilder
-```
-
-功能：构造 method 为 "DELETE" 的请求的便捷函数。
 
 返回值：
 
@@ -3040,6 +3040,22 @@ public class ServerBuilder {
 >
 > 该类提供了一系列配置参数的函数，配置完成后调用 [build](./http_package_classes.md#func-build-3) 函数构造出 [Server](./http_package_classes.md#class-server) 实例。配置函数中说明了参数的取值范围，但配置函数本身不做参数合法性校验，[build](./http_package_classes.md#func-build-3) 时统一进行校验。
 
+### func initialWindowSize(UInt32)
+
+```cangjie
+public func initialWindowSize(size: UInt32): ServerBuilder
+```
+
+功能：HTTP/2 专用，设置当前服务器上每个流的接收报文的初始流量窗口大小，默认值为 65535。取值范围为 0 至 2^31 - 1。
+
+参数：
+
+- size: UInt32 - 本端一个 stream 上接收报文的初始流量窗口大小。
+
+返回值：
+
+- [ServerBuilder](http_package_classes.md#class-serverbuilder) - 当前 [ServerBuilder](http_package_classes.md#class-serverbuilder) 的引用。
+
 ### init()
 
 ```cangjie
@@ -3160,22 +3176,6 @@ public func httpKeepAliveTimeout(timeout: Duration): ServerBuilder
 参数：
 
 - timeout: Duration - 设定保持长连接的超时时间，如果传入负的 Duration 将被替换为 Duration.Zero。
-
-返回值：
-
-- [ServerBuilder](http_package_classes.md#class-serverbuilder) - 当前 [ServerBuilder](http_package_classes.md#class-serverbuilder) 的引用。
-
-### func initialWindowSize(UInt32)
-
-```cangjie
-public func initialWindowSize(size: UInt32): ServerBuilder
-```
-
-功能：HTTP/2 专用，设置当前服务器上每个流的接收报文的初始流量窗口大小，默认值为 65535。取值范围为 0 至 2^31 - 1。
-
-参数：
-
-- size: UInt32 - 本端一个 stream 上接收报文的初始流量窗口大小。
 
 返回值：
 

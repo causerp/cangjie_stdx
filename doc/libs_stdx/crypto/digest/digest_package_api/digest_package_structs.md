@@ -95,22 +95,6 @@ public func toString(): String
 
 - String - Hash 算法名称。
 
-### operator func ==(HashType)
-
-```cangjie
-public override operator func ==(other: HashType): Bool
-```
-
-功能：判断两 [HashType](digest_package_structs.md#struct-hashtype) 是否引用同一实例。
-
-参数：
-
-- other: [HashType](digest_package_structs.md#struct-hashtype) - 对比的 HashType。
-
-返回值：
-
-- Bool - 相同返回 `true`；否则，返回 `false`。
-
 ### operator func !=(HashType)
 
 ```cangjie
@@ -126,3 +110,18 @@ public override operator func !=(other: HashType): Bool
 返回值：
 
 - Bool - 不相同返回 `true`；否则，返回 `false`。
+### operator func ==(HashType)
+
+```cangjie
+public override operator func ==(other: HashType): Bool
+```
+
+功能：判断两 [HashType](digest_package_structs.md#struct-hashtype) 是否引用同一实例。
+
+参数：
+
+- other: [HashType](digest_package_structs.md#struct-hashtype) - 对比的 HashType。
+
+返回值：
+
+- Bool - 相同返回 `true`；否则，返回 `false`。

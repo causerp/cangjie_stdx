@@ -149,14 +149,6 @@ public enum AtomicCondition {
 
 功能：表示原子类型的条件或 `let` 声明的解构匹配。
 
-### LetPatternCondition(LetPattern)
-
-```cangjie
-LetPatternCondition(LetPattern)
-```
-
-功能：表示 `let` 声明。
-
 ### Expression(Expr)
 
 ```cangjie
@@ -164,6 +156,14 @@ Expression(Expr)
 ```
 
 功能：表示式类型的条件。
+
+### LetPatternCondition(LetPattern)
+
+```cangjie
+LetPatternCondition(LetPattern)
+```
+
+功能：表示 `let` 声明。
 
 ### ParenConditionConstructor(ParenCondition)
 
@@ -233,14 +233,6 @@ Float64Type
 
 功能：表示64位浮点数基本类型。
 
-### Int8Type
-
-```cangjie
-Int8Type
-```
-
-功能：表示8位有符号整数基本类型。
-
 ### Int16Type
 
 ```cangjie
@@ -264,6 +256,14 @@ Int64Type
 ```
 
 功能：表示64位有符号整数基本类型。
+
+### Int8Type
+
+```cangjie
+Int8Type
+```
+
+功能：表示8位有符号整数基本类型。
 
 ### IntNativeType
 
@@ -297,14 +297,6 @@ ThisType
 
 功能：表示 `this` 类型。
 
-### UInt8Type
-
-```cangjie
-UInt8Type
-```
-
-功能：表示8位无符号整数基本类型。
-
 ### UInt16Type
 
 ```cangjie
@@ -328,6 +320,14 @@ UInt64Type
 ```
 
 功能：表示64位无符号整数基本类型。
+
+### UInt8Type
+
+```cangjie
+UInt8Type
+```
+
+功能：表示8位无符号整数基本类型。
 
 ### UIntNativeType
 
@@ -870,14 +870,6 @@ JStringLiteral
 
 功能：表示 `JavaString` 类型的字符串字面量，如 `J"xx"`。
 
-### MultiLineString
-
-```cangjie
-MultiLineString
-```
-
-功能：表示多行字符串字面量，如 `"""aaa"""`。
-
 ### MultiLineRawString
 
 ```cangjie
@@ -885,6 +877,14 @@ MultiLineRawString
 ```
 
 功能：表示多行原始字符串字面量，如 `#"aaa"#`。
+
+### MultiLineString
+
+```cangjie
+MultiLineString
+```
+
+功能：表示多行字符串字面量，如 `"""aaa"""`。
 
 ### StringLiteral
 
@@ -953,6 +953,14 @@ Abstract
 ```
 
 功能：表示 `abstract` 类型的修饰符。
+
+### Const
+
+```cangjie
+Const
+```
+
+功能：表示 `const` 类型的修饰符。
 
 ### Internal
 
@@ -1050,14 +1058,6 @@ Unsafe
 
 功能：表示 `unsafe` 类型的修饰符。
 
-### Const
-
-```cangjie
-Const
-```
-
-功能：表示 `const` 类型的修饰符。
-
 ## enum PostActionMode
 
 ```cangjie
@@ -1152,14 +1152,6 @@ public enum QuoteExprContent{
 
 功能：表示 `quote` 表达式中由 `()` 括起的内容类型。
 
-### TokenPart(QuoteToken)
-
-```cangjie
-TokenPart(QuoteToken)
-```
-
-功能：表示 [QuoteToken](syntax_package_classes.md#class-quotetoken) 类型的 `quote` 表达式部分。
-
 ### QuoteInterpolation(QuoteInterpolationExpr)
 
 ```cangjie
@@ -1167,6 +1159,14 @@ QuoteInterpolation(QuoteInterpolationExpr)
 ```
 
 功能：表示 [QuoteInterpolationExpr](syntax_package_classes.md#class-quoteinterpolationexpr) 类型的 `quote` 表达式部分。
+
+### TokenPart(QuoteToken)
+
+```cangjie
+TokenPart(QuoteToken)
+```
+
+功能：表示 [QuoteToken](syntax_package_classes.md#class-quotetoken) 类型的 `quote` 表达式部分。
 
 ## enum RangeKind
 

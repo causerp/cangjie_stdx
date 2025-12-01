@@ -138,16 +138,6 @@ public prop extKeyUsage: ExtKeyUsage
 
 类型：[ExtKeyUsage](x509_package_structs.md#struct-extkeyusage)
 
-### prop issuer
-
-```cangjie
-public prop issuer: X509Name
-```
-
-功能：解析数字证书的颁发者信息。
-
-类型：[X509Name](x509_package_classes.md#class-x509name)
-
 ### prop IPAddresses
 
 ```cangjie
@@ -157,6 +147,16 @@ public prop IPAddresses: Array<IP>
 功能：解析数字证书备选名称中的 [IP](x509_package_type.md#type-ip) 地址。
 
 类型：Array\<[IP](x509_package_type.md#type-ip)>
+
+### prop issuer
+
+```cangjie
+public prop issuer: X509Name
+```
+
+功能：解析数字证书的颁发者信息。
+
+类型：[X509Name](x509_package_classes.md#class-x509name)
 
 ### prop keyUsage
 
@@ -314,6 +314,18 @@ public static func decodeFromPem(pem: String): Array<X509Certificate>
 
 - [X509Exception](./x509_package_exceptions.md#class-x509exception) - 字符流不符合 PEM 格式时，或文件头不符合数字证书头标准时抛出异常。
 
+### static func systemRootCerts()
+
+```cangjie
+public static func systemRootCerts(): Array<X509Certificate>
+```
+
+功能：返回操作系统的根证书。
+
+返回值：
+
+- Array\<[X509Certificate](x509_package_classes.md#class-x509certificate)> - 操作系统的根证书链。
+
 ### func encodeToDer()
 
 ```cangjie
@@ -349,18 +361,6 @@ public override func hashCode(): Int64
 返回值：
 
 - Int64 - 对证书对象进行哈希计算后得到的结果。
-
-### static func systemRootCerts()
-
-```cangjie
-public static func systemRootCerts(): Array<X509Certificate>
-```
-
-功能：返回操作系统的根证书。
-
-返回值：
-
-- Array\<[X509Certificate](x509_package_classes.md#class-x509certificate)> - 操作系统的根证书链。
 
 ### func toString()
 
@@ -451,16 +451,6 @@ public class X509CertificateRequest <: Hashable & ToString {
 - Hashable
 - ToString
 
-### prop IPAddresses
-
-```cangjie
-public prop IPAddresses: Array<IP>
-```
-
-功能：解析数字证书签名请求备选名称中的 [IP](x509_package_type.md#type-ip) 地址。
-
-类型：Array\<[IP](x509_package_type.md#type-ip)>
-
 ### prop dnsNames
 
 ```cangjie
@@ -480,6 +470,16 @@ public prop emailAddresses: Array<String>
 功能：解析数字证书签名请求备选名称中的 email 地址。
 
 类型：Array\<String>
+
+### prop IPAddresses
+
+```cangjie
+public prop IPAddresses: Array<IP>
+```
+
+功能：解析数字证书签名请求备选名称中的 [IP](x509_package_type.md#type-ip) 地址。
+
+类型：Array\<[IP](x509_package_type.md#type-ip)>
 
 ### prop publicKey
 
@@ -705,16 +705,6 @@ public prop localityName: ?String
 
 类型：?String
 
-### prop organizationName
-
-```cangjie
-public prop organizationName: ?String
-```
-
-功能：返回证书实体的组织名称。
-
-类型：?String
-
 ### prop organizationalUnitName
 
 ```cangjie
@@ -722,6 +712,16 @@ public prop organizationalUnitName: ?String
 ```
 
 功能：返回证书实体的组织单位名称。
+
+类型：?String
+
+### prop organizationName
+
+```cangjie
+public prop organizationName: ?String
+```
+
+功能：返回证书实体的组织名称。
 
 类型：?String
 

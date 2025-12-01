@@ -235,22 +235,6 @@ public func nextInt16(): Int16
 
 - [SecureRandomException](crypto_package_exceptions.md#class-securerandomexception) - 当生成器不能正确生成随机数或生成随机数失败时，抛出异常。
 
-### func nextInt32()
-
-```cangjie
-public func nextInt32(): Int32
-```
-
-功能：获取一个 Int32 类型的随机数。
-
-返回值：
-
-- Int32 - 一个 Int32 类型的随机数。
-
-异常：
-
-- [SecureRandomException](crypto_package_exceptions.md#class-securerandomexception) - 当生成器不能正确生成随机数或生成随机数失败时，抛出异常。
-
 ### func nextInt16(Int16)
 
 ```cangjie
@@ -270,6 +254,22 @@ public func nextInt16(max: Int16): Int16
 异常：
 
 - IllegalArgumentException - 当 max 为非正数时，抛出异常。
+- [SecureRandomException](crypto_package_exceptions.md#class-securerandomexception) - 当生成器不能正确生成随机数或生成随机数失败时，抛出异常。
+
+### func nextInt32()
+
+```cangjie
+public func nextInt32(): Int32
+```
+
+功能：获取一个 Int32 类型的随机数。
+
+返回值：
+
+- Int32 - 一个 Int32 类型的随机数。
+
+异常：
+
 - [SecureRandomException](crypto_package_exceptions.md#class-securerandomexception) - 当生成器不能正确生成随机数或生成随机数失败时，抛出异常。
 
 ### func nextInt32(Int32)
@@ -560,34 +560,6 @@ tagSize 设置摘要长度，仅在 GCM 模式下使用，默认值为 SM4_GCM_T
 
 - BlockCipher
 
-### init(OperationMode, Array\<Byte>, Array\<Byte>, PaddingMode, Array\<Byte>, Int64)
-
-```cangjie
-public init(
-    optMode: OperationMode,
-    key: Array<Byte>,
-    iv!: Array<Byte> = Array<Byte>(),
-    paddingMode!: PaddingMode = PaddingMode.PKCS7Padding,
-    aad!: Array<Byte> = Array<Byte>(),
-    tagSize!: Int64 = 16
-)
-```
-
-功能：创建 [SM4](crypto_package_classes.md#class-sm4) 实例，可指定在不同工作模式下参数。
-
-参数：
-
-- optMode: [OperationMode](crypto_package_structs.md#struct-operationmode) - 设置加解密工作模式。
-- key: Array\<Byte> - 密钥，长度为16字节。
-- iv!: Array\<Byte> - 初始化向量。
-- paddingMode!: [PaddingMode](crypto_package_structs.md#struct-paddingmode) - 设置填充模式。
-- aad!: Array\<Byte> - 设置附加数据。
-- tagSize!: Int64 - 设置摘要长度。
-
-异常：
-
-- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 参数设置不正确，实例化失败。
-
 ### prop aad
 
 ```cangjie
@@ -618,13 +590,23 @@ public prop blockSize: Int64
 
 类型：Int64
 
-### prop keySize
+### prop iv
 
 ```cangjie
-public prop keySize: Int64
+public prop iv: Array<Byte>
 ```
 
-功能：密钥长度。
+功能：初始化向量。
+
+类型：Array\<Byte>
+
+### prop ivSize
+
+```cangjie
+public prop ivSize: Int64
+```
+
+功能：初始化向量长度。
 
 类型：Int64
 
@@ -637,6 +619,16 @@ public prop key: Array<Byte>
 功能：密钥。
 
 类型：Array\<Byte>
+
+### prop keySize
+
+```cangjie
+public prop keySize: Int64
+```
+
+功能：密钥长度。
+
+类型：Int64
 
 ### prop optMode
 
@@ -658,26 +650,6 @@ public prop paddingMode: PaddingMode
 
 类型：[PaddingMode](crypto_package_structs.md#struct-paddingmode)
 
-### prop iv
-
-```cangjie
-public prop iv: Array<Byte>
-```
-
-功能：初始化向量。
-
-类型：Array\<Byte>
-
-### prop ivSize
-
-```cangjie
-public prop ivSize: Int64
-```
-
-功能：初始化向量长度。
-
-类型：Int64
-
 ### prop tagSize
 
 ```cangjie
@@ -688,64 +660,33 @@ public prop tagSize: Int64
 
 类型：Int64
 
-### func encrypt(Array\<Byte>)
+### init(OperationMode, Array\<Byte>, Array\<Byte>, PaddingMode, Array\<Byte>, Int64)
 
 ```cangjie
-public func encrypt(input: Array<Byte>): Array<Byte>
+public init(
+    optMode: OperationMode,
+    key: Array<Byte>,
+    iv!: Array<Byte> = Array<Byte>(),
+    paddingMode!: PaddingMode = PaddingMode.PKCS7Padding,
+    aad!: Array<Byte> = Array<Byte>(),
+    tagSize!: Int64 = 16
+)
 ```
 
-功能：加密一段数据数据。
+功能：创建 [SM4](crypto_package_classes.md#class-sm4) 实例，可指定在不同工作模式下参数。
 
 参数：
 
-- input: Array\<Byte> - 输入字节序列。
-
-返回值：
-
-- Array\<Byte> - 加密后的结果。
-
-异常：
-
-- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。
-
-### func encrypt(Array\<Byte>, Array\<Byte>)
-
-```cangjie
-public func encrypt(input: Array<Byte>, to!: Array<Byte>): Int64
-```
-
-功能：加密一段数据数据，指定输出数组长度会影响加解密结果。一般而言选填充模式，指定的密文数组长度不能小于明文数组长度加上一个 blockSize。
-
-参数：
-
-- input: Array\<Byte> - 待进行加密的数据。
-- to!: Array\<Byte> - 输出数组。
-
-返回值：
-
-- Int64 - 输出长度。
+- optMode: [OperationMode](crypto_package_structs.md#struct-operationmode) - 设置加解密工作模式。
+- key: Array\<Byte> - 密钥，长度为16字节。
+- iv!: Array\<Byte> - 初始化向量。
+- paddingMode!: [PaddingMode](crypto_package_structs.md#struct-paddingmode) - 设置填充模式。
+- aad!: Array\<Byte> - 设置附加数据。
+- tagSize!: Int64 - 设置摘要长度。
 
 异常：
 
-- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。
-- IllegalArgumentException - 当 to 的 size = 0 时，抛出异常。
-
-### func encrypt(InputStream, OutputStream)
-
-```cangjie
-public func encrypt(input: InputStream, output: OutputStream): Unit
-```
-
-功能：对输入流进行加密，一般如果数据过大无法一次对其加密，可以对数据流进行加密。
-
-参数：
-
-- input:InputStream  - 待加密的输入数据流。
-- output: OutputStream - 解密后的输出数据流。
-
-异常：
-
-- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。
+- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 参数设置不正确，实例化失败。
 
 ### func decrypt(Array\<Byte>)
 
@@ -805,3 +746,62 @@ public func decrypt(input: InputStream, output: OutputStream): Unit
 异常：
 
 - [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 解密失败，抛出异常。
+
+### func encrypt(Array\<Byte>)
+
+```cangjie
+public func encrypt(input: Array<Byte>): Array<Byte>
+```
+
+功能：加密一段数据数据。
+
+参数：
+
+- input: Array\<Byte> - 输入字节序列。
+
+返回值：
+
+- Array\<Byte> - 加密后的结果。
+
+异常：
+
+- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。
+
+### func encrypt(Array\<Byte>, Array\<Byte>)
+
+```cangjie
+public func encrypt(input: Array<Byte>, to!: Array<Byte>): Int64
+```
+
+功能：加密一段数据数据，指定输出数组长度会影响加解密结果。一般而言选填充模式，指定的密文数组长度不能小于明文数组长度加上一个 blockSize。
+
+参数：
+
+- input: Array\<Byte> - 待进行加密的数据。
+- to!: Array\<Byte> - 输出数组。
+
+返回值：
+
+- Int64 - 输出长度。
+
+异常：
+
+- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。
+- IllegalArgumentException - 当 to 的 size = 0 时，抛出异常。
+
+### func encrypt(InputStream, OutputStream)
+
+```cangjie
+public func encrypt(input: InputStream, output: OutputStream): Unit
+```
+
+功能：对输入流进行加密，一般如果数据过大无法一次对其加密，可以对数据流进行加密。
+
+参数：
+
+- input:InputStream  - 待加密的输入数据流。
+- output: OutputStream - 解密后的输出数据流。
+
+异常：
+
+- [CryptoException](../../common/crypto_common_package_api/crypto_common_package_exceptions.md#class-cryptoexception) - 加密失败，抛出异常。

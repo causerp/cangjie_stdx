@@ -254,40 +254,6 @@ public static func fromJson(r: JsonReader): Float64
 
 - OverflowException - 读取的数据超过范围时，抛出异常。
 
-### extend String <: JsonDeserializable\<String>
-
-```cangjie
-extend String <: JsonDeserializable<String>
-```
-
-功能：为 String 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<String>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): String
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 String。
-
-根据下一个 `JsonToken` 的不同，`String` 的反序列化结果将会不同：
-
-- 当下一个 `JsonToken` 是 `JsonString` 时， 反序列化过程会按照标准[ECMA-404 The JSON Data Interchange Standard](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)对读到的 `String` 进行转义。
-- 当下一个 `JsonToken` 是 `JsonNumber` `JsonBool` `JsonNull` 其中一个时，将会读取下一个 `value` 字段的原始字符串并返回。
-- 当下一个 `JsonToken` 是其它类型时，调用此接口会抛异常。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- String - String 类型的实例。
-
 ### extend Int16 <: JsonDeserializable\<Int16>
 
 ```cangjie
@@ -447,6 +413,40 @@ public static func fromJson(r: JsonReader): IntNative
 异常：
 
 - OverflowException - 读取的数据超过范围时，抛出异常。
+
+### extend String <: JsonDeserializable\<String>
+
+```cangjie
+extend String <: JsonDeserializable<String>
+```
+
+功能：为 String 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<String>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): String
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 String。
+
+根据下一个 `JsonToken` 的不同，`String` 的反序列化结果将会不同：
+
+- 当下一个 `JsonToken` 是 `JsonString` 时， 反序列化过程会按照标准[ECMA-404 The JSON Data Interchange Standard](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)对读到的 `String` 进行转义。
+- 当下一个 `JsonToken` 是 `JsonNumber` `JsonBool` `JsonNull` 其中一个时，将会读取下一个 `value` 字段的原始字符串并返回。
+- 当下一个 `JsonToken` 是其它类型时，调用此接口会抛异常。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- String - String 类型的实例。
 
 ### extend UInt16 <: JsonDeserializable\<UInt16>
 
@@ -636,6 +636,34 @@ public static func fromJson(r: JsonReader): Array<T>
 
 - Array\<T> - Array 类型的实例。
 
+### extend\<T> ArrayDeque\<T> <: JsonDeserializable\<ArrayDeque\<T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> ArrayDeque<T> <: JsonDeserializable<ArrayDeque<T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 ArrayDeque 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayDeque\<T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): ArrayDeque<T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayDeque。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- ArrayDeque\<T> - ArrayDeque 类型的实例。
+
 ### extend\<T> ArrayList\<T> <: JsonDeserializable\<ArrayList\<T>> where T <: JsonDeserializable\<T>
 
 ```cangjie
@@ -663,6 +691,118 @@ public static func fromJson(r: JsonReader): ArrayList<T>
 返回值：
 
 - ArrayList \<T> - ArrayList 类型的实例。
+
+### extend\<T> ArrayQueue\<T> <: JsonDeserializable\<ArrayQueue\<T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> ArrayQueue<T> <: JsonDeserializable<ArrayQueue<T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 ArrayQueue 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayQueue\<T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): ArrayQueue<T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayQueue。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- ArrayQueue\<T> - ArrayQueue 类型的实例。
+
+### extend\<T> ArrayStack\<T> <: JsonDeserializable\<ArrayStack\<T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> ArrayStack<T> <: JsonDeserializable<ArrayStack<T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 ArrayStack 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayStack\<T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): ArrayStack<T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayStack。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- ArrayStack\<T> - ArrayStack 类型的实例。
+
+### extend\<T> ConcurrentHashMap\<String, T> <: JsonDeserializable\<ConcurrentHashMap\<String, T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> ConcurrentHashMap<String, T> <: JsonDeserializable<ConcurrentHashMap<String, T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 ConcurrentHashMap 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<ConcurrentHashMap\<String, T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): ConcurrentHashMap<String, T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ConcurrentHashMap。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- ConcurrentHashMap\<String, T> - ConcurrentHashMap\<String, T> 类型的实例。
+
+### extend\<T> HashMap\<String, T> <: JsonDeserializable\<HashMap\<String, T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> HashMap<String, T> <: JsonDeserializable<HashMap<String, T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 HashMap 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<HashMap\<String, T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): HashMap<String, T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 HashMap。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- HashMap\<String, T> - HashMap\<String, T> 类型的实例。
 
 ### extend\<T> HashSet\<T> <: JsonDeserializable\<HashSet\<T>> where T <: JsonDeserializable\<T>
 
@@ -720,118 +860,6 @@ public static func fromJson(r: JsonReader): LinkedList<T>
 
 - LinkedList\<T> - LinkedList 类型的实例。
 
-### extend\<T> ArrayQueue\<T> <: JsonDeserializable\<ArrayQueue\<T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> ArrayQueue<T> <: JsonDeserializable<ArrayQueue<T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 ArrayQueue 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayQueue\<T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): ArrayQueue<T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayQueue。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- ArrayQueue\<T> - ArrayQueue 类型的实例。
-
-### extend\<T> ArrayDeque\<T> <: JsonDeserializable\<ArrayDeque\<T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> ArrayDeque<T> <: JsonDeserializable<ArrayDeque<T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 ArrayDeque 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayDeque\<T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): ArrayDeque<T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayDeque。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- ArrayDeque\<T> - ArrayDeque 类型的实例。
-
-### extend\<T> ArrayStack\<T> <: JsonDeserializable\<ArrayStack\<T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> ArrayStack<T> <: JsonDeserializable<ArrayStack<T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 ArrayStack 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<ArrayStack\<T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): ArrayStack<T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ArrayStack。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- ArrayStack\<T> - ArrayStack 类型的实例。
-
-### extend\<T> TreeSet\<T> <: JsonDeserializable\<TreeSet\<T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> TreeSet<T> <: JsonDeserializable<TreeSet<T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 TreeSet 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<TreeSet\<T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): TreeSet<T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 TreeSet。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- TreeSet\<T> - TreeSet 类型的实例。
-
 ### extend\<T> Option \<T> <: JsonDeserializable\<Option\<T>> where T <: JsonDeserializable\<T>
 
 ```cangjie
@@ -860,62 +888,6 @@ public static func fromJson(r: JsonReader): Option<T>
 
 - Option\<T> - Option 类型的实例。
 
-### extend\<T> HashMap\<String, T> <: JsonDeserializable\<HashMap\<String, T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> HashMap<String, T> <: JsonDeserializable<HashMap<String, T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 HashMap 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<HashMap\<String, T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): HashMap<String, T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 HashMap。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- HashMap\<String, T> - HashMap\<String, T> 类型的实例。
-
-### extend\<T> ConcurrentHashMap\<String, T> <: JsonDeserializable\<ConcurrentHashMap\<String, T>> where T <: JsonDeserializable\<T>
-
-```cangjie
-extend<T> ConcurrentHashMap<String, T> <: JsonDeserializable<ConcurrentHashMap<String, T>> where T <: JsonDeserializable<T>
-```
-
-功能：为 ConcurrentHashMap 类型实现 JsonDeserializable 接口。
-
-父类型：
-
-- [JsonDeserializable](#interface-jsondeserializablet)\<ConcurrentHashMap\<String, T>>
-
-#### static func fromJson(JsonReader)
-
-```cangjie
-public static func fromJson(r: JsonReader): ConcurrentHashMap<String, T>
-```
-
-功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 ConcurrentHashMap。
-
-参数：
-
-- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
-
-返回值：
-
-- ConcurrentHashMap\<String, T> - ConcurrentHashMap\<String, T> 类型的实例。
-
 ### extend\<T> TreeMap\<String, T> <: JsonDeserializable\<TreeMap\<String, T>> where T <: JsonDeserializable\<T>
 
 ```cangjie
@@ -943,6 +915,34 @@ public static func fromJson(r: JsonReader): TreeMap<String, T>
 返回值：
 
 - TreeMap\<String, T> - TreeMap\<String, T> 类型的实例。
+
+### extend\<T> TreeSet\<T> <: JsonDeserializable\<TreeSet\<T>> where T <: JsonDeserializable\<T>
+
+```cangjie
+extend<T> TreeSet<T> <: JsonDeserializable<TreeSet<T>> where T <: JsonDeserializable<T>
+```
+
+功能：为 TreeSet 类型实现 JsonDeserializable 接口。
+
+父类型：
+
+- [JsonDeserializable](#interface-jsondeserializablet)\<TreeSet\<T>>
+
+#### static func fromJson(JsonReader)
+
+```cangjie
+public static func fromJson(r: JsonReader): TreeSet<T>
+```
+
+功能：从 [JsonReader](../json_stream_package_api/encoding_json_stream_package_classes.md#class-jsonreader) 中读取一个 TreeSet。
+
+参数：
+
+- r: [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) - 读取反序列化结果的 [JsonReader](encoding_json_stream_package_classes.md#class-jsonreader) 实例。
+
+返回值：
+
+- TreeSet\<T> - TreeSet 类型的实例。
 
 ## interface JsonSerializable
 
@@ -1138,30 +1138,6 @@ public func toJson(w: JsonWriter): Unit
 
 - w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
 
-### extend String <: JsonSerializable
-
-```cangjie
-extend String <: JsonSerializable
-```
-
-功能：为 String 类型提供序列化到 JSON 数据流的接口。
-
-父类型：
-
-- [JsonSerializable](#interface-jsonserializable)
-
-#### func toJson(JsonWriter)
-
-```cangjie
-public func toJson(w: JsonWriter): Unit
-```
-
-功能：将 String 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。写入的String
-
-参数：
-
-- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
-
 ### extend Int16 <: JsonSerializable
 
 ```cangjie
@@ -1277,6 +1253,30 @@ public func toJson(w: JsonWriter): Unit
 ```
 
 功能：将 IntNative 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+
+参数：
+
+- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
+
+### extend String <: JsonSerializable
+
+```cangjie
+extend String <: JsonSerializable
+```
+
+功能：为 String 类型提供序列化到 JSON 数据流的接口。
+
+父类型：
+
+- [JsonSerializable](#interface-jsonserializable)
+
+#### func toJson(JsonWriter)
+
+```cangjie
+public func toJson(w: JsonWriter): Unit
+```
+
+功能：将 String 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。写入的String
 
 参数：
 
@@ -1426,6 +1426,30 @@ public func toJson(w: JsonWriter): Unit
 
 - w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
 
+### extend\<T> ArrayDeque\<T> <: JsonSerializable where T <: JsonSerializable
+
+```cangjie
+extend<T> ArrayDeque<T> <: JsonSerializable where T <: JsonSerializable
+```
+
+功能：为 ArrayDeque\<T> 类型提供序列化到 JSON 数据流的接口。
+
+父类型：
+
+- [JsonSerializable](#interface-jsonserializable)
+
+#### func toJson(JsonWriter)
+
+```cangjie
+public func toJson(w: JsonWriter): Unit
+```
+
+功能：将 ArrayDeque\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+
+参数：
+
+- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
+
 ### extend\<T> ArrayList\<T> <: JsonSerializable where T <: JsonSerializable
 
 ```cangjie
@@ -1445,6 +1469,54 @@ public func toJson(w: JsonWriter): Unit
 ```
 
 功能：将 ArrayList\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+
+参数：
+
+- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
+
+### extend\<T> ArrayQueue\<T> <: JsonSerializable where T <: JsonSerializable
+
+```cangjie
+extend<T> ArrayQueue<T> <: JsonSerializable where T <: JsonSerializable
+```
+
+功能：为 ArrayQueue\<T> 类型提供序列化到 JSON 数据流的接口。
+
+父类型：
+
+- [JsonSerializable](#interface-jsonserializable)
+
+#### func toJson(JsonWriter)
+
+```cangjie
+public func toJson(w: JsonWriter): Unit
+```
+
+功能：将 ArrayQueue\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+
+参数：
+
+- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
+
+### extend\<T> ArrayStack\<T> <: JsonSerializable where T <: JsonSerializable
+
+```cangjie
+extend<T> ArrayStack<T> <: JsonSerializable where T <: JsonSerializable
+```
+
+功能：为 ArrayStack\<T> 类型提供序列化到 JSON 数据流的接口。
+
+父类型：
+
+- [JsonSerializable](#interface-jsonserializable)
+
+#### func toJson(JsonWriter)
+
+```cangjie
+public func toJson(w: JsonWriter): Unit
+```
+
+功能：将 ArrayStack\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
 
 参数：
 
@@ -1498,13 +1570,13 @@ public func toJson(w: JsonWriter): Unit
 
 - w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
 
-### extend\<T> ArrayQueue\<T> <: JsonSerializable where T <: JsonSerializable
+### extend\<T> Option\<T> <: JsonSerializable where T <: JsonSerializable
 
 ```cangjie
-extend<T> ArrayQueue<T> <: JsonSerializable where T <: JsonSerializable
+extend<T> Option<T> <: JsonSerializable where T <: JsonSerializable
 ```
 
-功能：为 ArrayQueue\<T> 类型提供序列化到 JSON 数据流的接口。
+功能：为 Option\<T> 类型提供序列化到 JSON 数据流的接口。
 
 父类型：
 
@@ -1516,55 +1588,7 @@ extend<T> ArrayQueue<T> <: JsonSerializable where T <: JsonSerializable
 public func toJson(w: JsonWriter): Unit
 ```
 
-功能：将 ArrayQueue\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
-
-参数：
-
-- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
-
-### extend\<T> ArrayDeque\<T> <: JsonSerializable where T <: JsonSerializable
-
-```cangjie
-extend<T> ArrayDeque<T> <: JsonSerializable where T <: JsonSerializable
-```
-
-功能：为 ArrayDeque\<T> 类型提供序列化到 JSON 数据流的接口。
-
-父类型：
-
-- [JsonSerializable](#interface-jsonserializable)
-
-#### func toJson(JsonWriter)
-
-```cangjie
-public func toJson(w: JsonWriter): Unit
-```
-
-功能：将 ArrayDeque\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
-
-参数：
-
-- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
-
-### extend\<T> ArrayStack\<T> <: JsonSerializable where T <: JsonSerializable
-
-```cangjie
-extend<T> ArrayStack<T> <: JsonSerializable where T <: JsonSerializable
-```
-
-功能：为 ArrayStack\<T> 类型提供序列化到 JSON 数据流的接口。
-
-父类型：
-
-- [JsonSerializable](#interface-jsonserializable)
-
-#### func toJson(JsonWriter)
-
-```cangjie
-public func toJson(w: JsonWriter): Unit
-```
-
-功能：将 ArrayStack\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+功能：将 Option\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
 
 参数：
 
@@ -1594,13 +1618,13 @@ public func toJson(w: JsonWriter): Unit
 
 - w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
 
-### extend\<T> Option\<T> <: JsonSerializable where T <: JsonSerializable
+### extend\<V> ConcurrentHashMap\<String, V> <: JsonSerializable where V <: JsonSerializable
 
 ```cangjie
-extend<T> Option<T> <: JsonSerializable where T <: JsonSerializable
+extend<V> ConcurrentHashMap<String, V> <: JsonSerializable where V <: JsonSerializable
 ```
 
-功能：为 Option\<T> 类型提供序列化到 JSON 数据流的接口。
+功能：为 ConcurrentHashMap\<String, T> 类型提供序列化到 JSON 数据流的接口。
 
 父类型：
 
@@ -1612,7 +1636,7 @@ extend<T> Option<T> <: JsonSerializable where T <: JsonSerializable
 public func toJson(w: JsonWriter): Unit
 ```
 
-功能：将 Option\<T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
+功能：将 ConcurrentHashMap\<String, T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
 
 参数：
 
@@ -1637,30 +1661,6 @@ public func toJson(w: JsonWriter): Unit
 ```
 
 功能：将 HashMap\<String, T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
-
-参数：
-
-- w: [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) - 写入序列化结果的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例。
-
-### extend\<V> ConcurrentHashMap\<String, V> <: JsonSerializable where V <: JsonSerializable
-
-```cangjie
-extend<V> ConcurrentHashMap<String, V> <: JsonSerializable where V <: JsonSerializable
-```
-
-功能：为 ConcurrentHashMap\<String, T> 类型提供序列化到 JSON 数据流的接口。
-
-父类型：
-
-- [JsonSerializable](#interface-jsonserializable)
-
-#### func toJson(JsonWriter)
-
-```cangjie
-public func toJson(w: JsonWriter): Unit
-```
-
-功能：将 ConcurrentHashMap\<String, T> 类型写入参数 `w` 指定的 [JsonWriter](encoding_json_stream_package_classes.md#class-jsonwriter) 实例中。
 
 参数：
 

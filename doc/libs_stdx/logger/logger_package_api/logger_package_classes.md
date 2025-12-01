@@ -14,6 +14,16 @@ public class JsonLogger <: Logger {
 
 - [Logger](../../log/log_package_api/log_package_classes.md#class-logger)
 
+### prop level
+
+```cangjie
+public mut prop level: LogLevel
+```
+
+功能：获取和修改日志打印级别。
+
+类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
+
 ### init(OutputStream)
 
 ```cangjie
@@ -25,16 +35,6 @@ public init(output: OutputStream)
 参数：
 
 - output: OutputStream - 绑定的输出流，日志格式化后将写入该输出流。
-
-### prop level
-
-```cangjie
-public mut prop level: LogLevel
-```
-
-功能：获取和修改日志打印级别。
-
-类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
 
 ### func close()
 
@@ -98,6 +98,16 @@ public class SimpleLogger <: Logger {
 
 - [Logger](../../log/log_package_api/log_package_classes.md#class-logger)
 
+### prop level
+
+```cangjie
+public mut prop level: LogLevel
+```
+
+功能：获取和修改日志打印级别。
+
+类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
+
 ### init(OutputStream)
 
 ```cangjie
@@ -109,16 +119,6 @@ public init(output: OutputStream)
 参数：
 
 - output: OutputStream - 绑定的输出流，日志格式化后将写入该输出流。
-
-### prop level
-
-```cangjie
-public mut prop level: LogLevel
-```
-
-功能：获取和修改日志打印级别。
-
-类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
 
 ### func close()
 
@@ -182,6 +182,16 @@ public class TextLogger <: Logger {
 
 - [Logger](../../log/log_package_api/log_package_classes.md#class-logger)
 
+### prop level
+
+```cangjie
+public mut prop level: LogLevel
+```
+
+功能：获取和修改日志打印级别。
+
+类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
+
 ### init(OutputStream)
 
 ```cangjie
@@ -193,16 +203,6 @@ public init(output: OutputStream)
 参数：
 
 - output: OutputStream - 绑定的输出流，日志格式化后将写入该输出流。
-
-### prop level
-
-```cangjie
-public mut prop level: LogLevel
-```
-
-功能：获取和修改日志打印级别。
-
-类型：[LogLevel](../../log/log_package_api/log_package_structs.md#struct-loglevel)
 
 ### func close()
 

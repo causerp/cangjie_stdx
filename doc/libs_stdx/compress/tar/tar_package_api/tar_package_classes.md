@@ -1010,4 +1010,3 @@ public init(filePath: String)
 - [TarException](tar_package_exceptions.md#class-tarexception) - 如果 filePath 参数指定的目标不存在或不是文件、目录、软链接，则抛出异常。
 
 - FSException - 如果读取目标信息或创建目标文件流失败，则抛出异常。
-

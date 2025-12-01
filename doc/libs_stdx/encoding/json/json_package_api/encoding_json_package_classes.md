@@ -28,18 +28,6 @@ public init()
 
 功能：创建空 [JsonArray](encoding_json_package_classes.md#class-jsonarray)。
 
-### init(ArrayList\<JsonValue>)
-
-```cangjie
-public init(list: ArrayList<JsonValue>)
-```
-
-功能：将指定的 ArrayList 类型实例封装成 [JsonArray](encoding_json_package_classes.md#class-jsonarray) 实例。
-
-参数：
-
-- list: ArrayList\<[JsonValue](encoding_json_package_classes.md#class-jsonvalue)> - 用于创建 [JsonArray](encoding_json_package_classes.md#class-jsonarray) 的 ArrayList。
-
 ### init(Array\<JsonValue>)
 
 ```cangjie
@@ -51,6 +39,18 @@ public init(list: Array<JsonValue>)
 参数：
 
 - list: Array\<[JsonValue](encoding_json_package_classes.md#class-jsonvalue)> - 用于创建 [JsonArray](encoding_json_package_classes.md#class-jsonarray) 的 Array。
+
+### init(ArrayList\<JsonValue>)
+
+```cangjie
+public init(list: ArrayList<JsonValue>)
+```
+
+功能：将指定的 ArrayList 类型实例封装成 [JsonArray](encoding_json_package_classes.md#class-jsonarray) 实例。
+
+参数：
+
+- list: ArrayList\<[JsonValue](encoding_json_package_classes.md#class-jsonvalue)> - 用于创建 [JsonArray](encoding_json_package_classes.md#class-jsonarray) 的 ArrayList。
 
 ### func add(JsonValue)
 

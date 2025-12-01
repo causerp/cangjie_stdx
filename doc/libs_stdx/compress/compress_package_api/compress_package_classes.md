@@ -238,4 +238,3 @@ public static func extract<T>(fromStream!: T, destDir!: String, overwrite!: Bool
 - [TarException](tar_package_exceptions.md#class-tarexception) - 如果 tar 提取时发生错误，抛出异常。
 
 - [ZlibException](zlib_package_exceptions.md#class-zlibexception) - 如果 zlib 解压时发生错误，抛出异常。
-
