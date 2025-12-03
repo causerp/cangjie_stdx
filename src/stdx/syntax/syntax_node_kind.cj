@@ -484,12 +484,12 @@ enum SyntaxNodeKind <: ToString {
             case RunePrefixToken => 'r'
             case SingleQuoteToken => "'"
             case DoubleQuoteToken => '"'
-            case JStringLiteralToken => ""
-            case MultilineStringToken => ""
-            case MultilineRawStringToken => ""
-            case BooleanLiteralToken => ""
-            case DollarIdentifierToken => ""
-            case AnnotationToken => ""
+            case JStringLiteralToken => "JStringLiteralToken"
+            case MultilineStringToken => "MultilineStringToken"
+            case MultilineRawStringToken => "MultilineRawStringToken"
+            case BooleanLiteralToken => "BooleanLiteralToken"
+            case DollarIdentifierToken => "DollarIdentifierToken"
+            case AnnotationToken => "AnnotationToken"
             case AtExclToken => "@!"
             case CommonToken => "common"
             case PlatformToken => "platform"
@@ -497,8 +497,8 @@ enum SyntaxNodeKind <: ToString {
             case PerformToken => "perform"
             case ResumeToken => "resume"
             case ThrowingToken => "throwing"
-            case StringLiteralToken => ""
-            case Invalid => ""
+            case StringLiteralToken => "StringLiteralToken"
+            case Invalid => "Invalid"
             case _ => ""
         }
     }
