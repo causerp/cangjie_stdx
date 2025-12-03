@@ -7,8 +7,8 @@
  */
 
 #include "cangjie/Basic/DiagnosticEngine.h"
-#include "cangjie/CHIR/CHIRBuilder.h"
-#include "cangjie/CHIR/Type/CustomTypeDef.h"
+#include "cangjie/CHIR/IR/CHIRBuilder.h"
+#include "cangjie/CHIR/IR/Type/CustomTypeDef.h"
 #include "cangjie/Mangle/CHIRTypeManglingUtils.h"
 #include "cangjie/MetaTransformation/MetaTransform.h"
 
