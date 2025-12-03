@@ -7,12 +7,12 @@
  */
 
 #include "cangjie/Basic/Print.h"
-#include "cangjie/CHIR/CHIRBuilder.h"
-#include "cangjie/CHIR/CHIRCasting.h"
-#include "cangjie/CHIR/Transformation/BlockGroupCopyHelper.h"
-#include "cangjie/CHIR/Type/CustomTypeDef.h"
-#include "cangjie/CHIR/Utils.h"
-#include "cangjie/CHIR/Visitor/Visitor.h"
+#include "cangjie/CHIR/IR/CHIRBuilder.h"
+#include "cangjie/CHIR/Utils/CHIRCasting.h"
+#include "cangjie/CHIR/Optimization/BlockGroupCopyHelper.h"
+#include "cangjie/CHIR/IR/Type/CustomTypeDef.h"
+#include "cangjie/CHIR/Utils/Utils.h"
+#include "cangjie/CHIR/Utils/Visitor/Visitor.h"
 #include "cangjie/Mangle/CHIRTypeManglingUtils.h"
 #include "cangjie/MetaTransformation/MetaTransform.h"
 
