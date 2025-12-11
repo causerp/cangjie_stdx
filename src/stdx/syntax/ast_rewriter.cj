@@ -754,7 +754,7 @@ class ChildCollector <: ASTVisitor {
                 childNodes.add(synchronizedExpr.structuredMutex)
                 childNodes.add(synchronizedExpr.block)
             case _ => return
-            // 对于没有子节点的类型，不添加任何内容
+            // For SyntaxTreeNode without child nodes, do not add anything
         }
     }
 
