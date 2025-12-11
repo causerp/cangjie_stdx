@@ -14,23 +14,17 @@ else()
 endif()
 
 # for CloudDragon, download in Prebuild
-if(EXISTS ${FLATBUFFERS_SRC}/CMakeLists.txt)
-    if(NOT EXISTS ${FLATBUFFERS_SRC}/cangjie)
-        set(FLATBUFFERS_DOWNLOAD_ARGS PATCH_COMMAND COMMAND git apply ../flatbufferPatch.diff)
-    else()
-        set(FLATBUFFERS_DOWNLOAD_ARGS)
-    endif()
-else()
+if(NOT EXISTS ${FLATBUFFERS_SRC}/CMakeLists.txt)
     # for Jenkins
     set(REPOSITORY_PATH https://gitcode.com/openharmony/third_party_flatbuffers.git)
     message(STATUS "Set flatbuffers REPOSITORY_PATH: ${REPOSITORY_PATH}")
     set(FLATBUFFERS_DOWNLOAD_ARGS
         GIT_REPOSITORY ${REPOSITORY_PATH}
         DOWNLOAD_DIR ${FLATBUFFERS_SRC}
-        GIT_TAG weekly_20251201
+        GIT_TAG a28912875aa5e275f4b98d9145ac58131658f81a
         GIT_PROGRESS ON
         GIT_CONFIG ${GIT_ARGS}
-        GIT_SHALLOW ON)
+        GIT_SHALLOW OFF)
 endif()
 
 ExternalProject_Add(
