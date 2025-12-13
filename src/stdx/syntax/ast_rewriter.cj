@@ -658,6 +658,9 @@ class ChildCollector <: ASTVisitor {
                 for (decl in sourceFile.topLevelDecls) {
                     childNodes.add(decl)
                 }
+                if (let Some(ftr) <- sourceFile.ftrDirective) {
+                    childNodes.add(ftr)
+                }
             case spawnExpr: SpawnExpr =>
                 if (let Some(threadContext) <- spawnExpr.threadContext) {
                     childNodes.add(threadContext)
@@ -753,6 +756,15 @@ class ChildCollector <: ASTVisitor {
             case synchronizedExpr: SynchronizedExpr =>
                 childNodes.add(synchronizedExpr.structuredMutex)
                 childNodes.add(synchronizedExpr.block)
+            case featuresDirective: FeaturesDirective =>
+                for (a in featuresDirective.annotations) {
+                    childNodes.add(a)
+                }
+                childNodes.add(featuresDirective.featuresSet)
+            case featuresSet: FeaturesSet =>
+                for (f in featuresSet.content) {
+                    childNodes.add(f)
+                }
             case _ => return
             // For SyntaxTreeNode without child nodes, do not add anything
         }
