@@ -115,14 +115,25 @@ class Parser {
 
     private func parseFromTokens(tokens: Tokens, refreshPos: Bool): (?SyntaxTreeNode, Array<Diagnostic>) {
         let (root, diags) = impl.parseTokens(tokens, refreshPos)
+        if (!refreshPos) {
+            var startIndex = 0
+            while (startIndex < tokens.size && tokens.get(startIndex).kind == TokenKind.NL) {
+                startIndex++
+            }
+            let startPos = CodePosition(tokens.get(startIndex).pos.line, tokens.get(startIndex).pos.column,
+                FileInfos("", ""))
+            return (buildSyntaxTree(root, startPos: startPos), diags)
+        }
         (buildSyntaxTree(root), diags)
     }
 
     // build syntax tree by syntax impl tree
-    private func buildSyntaxTree(node: ?SyntaxNodeImpl): ?SyntaxTreeNode {
+    private func buildSyntaxTree(node: ?SyntaxNodeImpl, startPos!: ?CodePosition = None): ?SyntaxTreeNode {
         if (let Some(root) <- node) {
             if (filePath.size > 0) { // called from parseFile
                 SyntaxNodeImplTranslator.translateFile(root, filePath)
+            } else if (let Some(stPos) <- startPos) { // called from parseTokens with refreshPos is false
+                SyntaxNodeImplTranslator.translate(root, stPos, Option<SyntaxTreeNode>.None)
             } else { // called from parseText or parseTokens
                 SyntaxNodeImplTranslator.translate(root, CodePosition(1, 1, FileInfos("", "")),
                     Option<SyntaxTreeNode>.None)
