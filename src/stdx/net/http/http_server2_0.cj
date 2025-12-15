@@ -406,7 +406,7 @@ class HttpServer2 <: ProtocolService {
         }
         let reqCount = AtomicUInt64(0)
         while (!quit.load()) {
-            let stream = requestQueue.receive(timeout: Duration.millisecond * 10) ?? continue
+            let stream = requestQueue.receive() ?? continue
             spawn {
                 reqCount.fetchAdd(1)
                 try {
