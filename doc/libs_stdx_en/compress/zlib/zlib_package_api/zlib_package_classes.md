@@ -10,7 +10,7 @@ public class CompressInputStream <: InputStream {
 
 Function: Compression input stream.
 
-A [CompressInputStream](zlib_package_classes.md#class-compressinputstream) instance can be bound to any InputStream type input stream through the constructor. By cyclically calling the read(outBuf: Array<Byte>) function, it compresses data from the input stream and outputs the compressed data to the provided byte array.
+A [CompressInputStream](zlib_package_classes.md#class-compressinputstream) instance can be bound to any InputStream type input stream through the constructor. By cyclically calling the read(outBuf: Array\<Byte>) function, it compresses data from the input stream and outputs the compressed data to the provided byte array.
 
 Parent Type:
 
@@ -109,7 +109,7 @@ public class CompressOutputStream <: OutputStream {
 
 Function: Compression output stream.
 
-A [CompressOutputStream](zlib_package_classes.md#class-compressoutputstream) instance can be bound to any OutputStream type output stream through the constructor. Calling the write(inBuf: Array<Byte>) function reads and compresses data from the specified byte array, then outputs the compressed data to the bound output stream.
+A [CompressOutputStream](zlib_package_classes.md#class-compressoutputstream) instance can be bound to any OutputStream type output stream through the constructor. Calling the write(inBuf: Array\<Byte>) function reads and compresses data from the specified byte array, then outputs the compressed data to the bound output stream.
 
 Parent Type:
 
@@ -214,7 +214,7 @@ public class DecompressInputStream <: InputStream {
 
 Function: Decompression input stream.
 
-A [DecompressInputStream](zlib_package_classes.md#class-decompressinputstream) instance can be bound to any InputStream input stream through the constructor. By cyclically calling the read(outBuf: Array<Byte>) function, it reads and decompresses data from the input stream, then outputs the decompressed data to the specified byte array.
+A [DecompressInputStream](zlib_package_classes.md#class-decompressinputstream) instance can be bound to any InputStream input stream through the constructor. By cyclically calling the read(outBuf: Array\<Byte>) function, it reads and decompresses data from the input stream, then outputs the decompressed data to the specified byte array.
 
 Parent Type:
 
@@ -325,7 +325,7 @@ public class DecompressOutputStream <: OutputStream {
 
 Function: Decompression output stream.
 
-A [DecompressOutputStream](zlib_package_classes.md#class-decompressoutputstream) instance can be bound to a specified OutputStream type output stream through the constructor. By calling the write(inBuf: Array<Byte>) function, it reads and decompresses data from the specified byte array and outputs the decompressed data to the bound output stream.
+A [DecompressOutputStream](zlib_package_classes.md#class-decompressoutputstream) instance can be bound to a specified OutputStream type output stream through the constructor. By calling the write(inBuf: Array\<Byte>) function, it reads and decompresses data from the specified byte array and outputs the decompressed data to the bound output stream.
 
 Parent Type:
 

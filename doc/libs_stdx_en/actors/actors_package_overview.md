@@ -104,7 +104,7 @@ When creating an `Account` instance, the system will also automatically create a
 
 ### Receivers
 
-Unlike regular functions, the invocation of a receiver is asynchronous and it returns an [ActorFuture<T>](./actors_package_api/actors_package_classes.md#class-actorfuture) object. This object allows you to wait for the completion of the receiver and obtain the result, where `T` is the return type of the receiver. For example, calling `getBalance` will return an [ActorFuture<Float64>](./actors_package_api/actors_package_classes.md#class-actorfuture) object:
+Unlike regular functions, the invocation of a receiver is asynchronous and it returns an [ActorFuture\<T>](./actors_package_api/actors_package_classes.md#class-actorfuture) object. This object allows you to wait for the completion of the receiver and obtain the result, where `T` is the return type of the receiver. For example, calling `getBalance` will return an [ActorFuture\<Float64>](./actors_package_api/actors_package_classes.md#class-actorfuture) object:
 
 ```cangjie
 let fut: ActorFuture<Float64> = stevenAccount.getBalance()
@@ -112,7 +112,7 @@ let fut: ActorFuture<Float64> = stevenAccount.getBalance()
 
 When a receiver is called, the call is added to a queue and executed sequentially on the actor's dedicated thread.
 
-Subsequently, we can block the current thread by calling the `get` function of the [ActorFuture<T>](./actors_package_api/actors_package_classes.md#class-actorfuture) object, which will wait until the `steven.getBalance()` receiver completes and returns a value of type `T`.
+Subsequently, we can block the current thread by calling the `get` function of the [ActorFuture\<T>](./actors_package_api/actors_package_classes.md#class-actorfuture) object, which will wait until the `steven.getBalance()` receiver completes and returns a value of type `T`.
 
 ```cangjie
 let stevenBalance: Float64 = fut.get()
