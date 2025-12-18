@@ -2436,7 +2436,7 @@ Functionality: HTTP protocol service instance that provides HTTP services for a 
 
 ```cangjie
 protected prop distributor: HttpRequestDistributor
-` ` `
+```
 
 Function: Obtain the request distributor. The request distributor will distribute the request to the corresponding handler based on the url.
 
