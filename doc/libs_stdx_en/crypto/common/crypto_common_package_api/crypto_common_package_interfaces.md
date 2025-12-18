@@ -522,7 +522,7 @@ Return Value:
 
 - UInt64 - Generated random number with specified bit length.
 
-### func nextBytes(Array<Byte>)
+### func nextBytes(Array\<Byte>)
 
 ```cangjie
 public func nextBytes(bytes: Array<Byte>): Unit
