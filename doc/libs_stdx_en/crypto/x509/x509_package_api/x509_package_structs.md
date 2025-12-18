@@ -682,7 +682,7 @@ Parameters:
 
 Return value:
 
-- Iterator<String> - An iterator for the header content corresponding to the name.
+- Iterator\<String> - An iterator for the header content corresponding to the name.
 
 ### func toString()
 
