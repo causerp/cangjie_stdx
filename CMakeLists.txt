@@ -155,10 +155,10 @@ if(BUILD_GCC_TOOLCHAIN)
 endif()
 
 if(NOT EXISTS ${CANGJIE_ZLIB_SOURCE_DIR})
-    set(REPOSITORY_PATH https://gitee.com/openharmony/third_party_zlib.git)
+    set(REPOSITORY_PATH https://gitcode.com/openharmony/third_party_zlib.git)
     message(STATUS "Set Zlib REPOSITORY_PATH: ${REPOSITORY_PATH}")
     execute_process(
-        COMMAND git clone --branch OpenHarmony-v6.0-Beta1 ${REPOSITORY_PATH} ${CANGJIE_ZLIB_SOURCE_DIR}
+        COMMAND git clone --branch OpenHarmony-v6.0-Release ${REPOSITORY_PATH} ${CANGJIE_ZLIB_SOURCE_DIR}
     )
 endif()
 include(Zlib)
@@ -167,10 +167,10 @@ set(BOUNDSCHECK ${CMAKE_SOURCE_DIR}/third_party/boundscheck-v1.1.16)
 
 # Provide secure functions.
 if(NOT EXISTS ${BOUNDSCHECK})
-    set(REPOSITORY_PATH https://gitee.com/openharmony/third_party_bounds_checking_function.git)
+    set(REPOSITORY_PATH https://gitcode.com/openharmony/third_party_bounds_checking_function.git)
     message(STATUS "Set boundscheck REPOSITORY_PATH: ${REPOSITORY_PATH}")
     execute_process(
-        COMMAND git clone --branch OpenHarmony-v6.0-Beta1 ${REPOSITORY_PATH} ${BOUNDSCHECK}
+        COMMAND git clone --branch OpenHarmony-v6.0-Release ${REPOSITORY_PATH} ${BOUNDSCHECK}
     )
 endif()
 file(COPY ${CMAKE_MODULE_PATH}/BoundsCheck.cmake DESTINATION ${BOUNDSCHECK}/)
