@@ -1016,6 +1016,14 @@ add_cangjie_library(
     DEPENDS ${ACTORS_MACROS_DEPENDENCIES})
 
 if(NOT CANGJIE_CJPM_BUILD_TYPE)
+    if(DARWIN)
+        set(syntaxFFI_flags -lc++)
+    elseif(OHOS)
+        set(syntaxFFI_flags -l:libc++.a)
+    else()
+        set(syntaxFFI_flags -lstdc++)
+    endif()
+
     make_cangjie_lib(
         syntax IS_SHARED
         DEPENDS
@@ -1026,9 +1034,10 @@ if(NOT CANGJIE_CJPM_BUILD_TYPE)
         FORCE_LINK_ARCHIVES stdx.syntaxFFI
         FLAGS ${syntaxFFI_flags}
             $<$<NOT:$<BOOL:${WIN32}>>:-ldl>
+            -lstdx.syntaxFFI
         )
-
-    add_library(stdx.syntax STATIC ${output_cj_object_dir}/stdx/syntax.o)
+    get_target_property(SYNTAXFFI_OBJS stdx.syntaxFFI SOURCES)
+    add_library(stdx.syntax STATIC ${SYNTAXFFI_OBJS} ${output_cj_object_dir}/stdx/syntax.o)
     target_link_libraries(stdx.syntax stdx.syntaxFFI)
     set_target_properties(stdx.syntax PROPERTIES LINKER_LANGUAGE C)
     install(TARGETS stdx.syntax DESTINATION ${output_triple_name}_cjnative/static/stdx)
