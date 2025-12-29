@@ -4114,7 +4114,7 @@ class LocalParser {
 
     func consumeToEnd() {
         while (!isEnd()) {
-            moveOffset(consume())
+            moveOffset(tryConsume())
         }
     }
 }
