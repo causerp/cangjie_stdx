@@ -1370,11 +1370,9 @@ public open class LambdaParam <: Parameter {
     /**
      * @brief Initialize a new LambdaParam node.
      */
-    public init(name: String, typeAnnotation: Option<TypeAnnotation>, annotations!: Array<Annotation> = [],
-        comments!: Array<Comment> = []) {
+    public init(name: String, typeAnnotation: Option<TypeAnnotation>, comments!: Array<Comment> = []) {
         super(
-            SyntaxNodeImplCreator.createLambdaParamImpl(name, typeAnnotation, annotations: annotations,
-                comments: comments))
+            SyntaxNodeImplCreator.createLambdaParamImpl(name, typeAnnotation, comments: comments))
         let startPos = DEFAULT_START_POS
         let curNode = (this.nodeImpl as NonTerminal).getOrThrow()
         let redNode = cast<LambdaParam>(SyntaxNodeImplTranslator.translate(curNode, startPos, None)).getOrThrow()

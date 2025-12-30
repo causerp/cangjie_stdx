@@ -4174,7 +4174,7 @@ public func getRCurlPos(): CodePositionRange
 
 ```cangjie
 public class LambdaParam <: Parameter {
-    public init(name: String, typeAnnotation: Option<TypeAnnotation>, annotations!: Array<Annotation> = [], comments!: Array<Comment> = [])
+    public init(name: String, typeAnnotation: Option<TypeAnnotation>, comments!: Array<Comment> = [])
 }
 ```
 
@@ -4206,10 +4206,10 @@ public prop typeAnnotation: Option<TypeAnnotation>
 
 类型：Option\<[TypeAnnotation](#class-typeannotation)>
 
-### init(String, Option\<TypeAnnotation>, Array\<Annotation>, Array\<Comment>)
+### init(String, Option\<TypeAnnotation>, Array\<Comment>)
 
 ```cangjie
-public init(name: String, typeAnnotation: Option<TypeAnnotation>, annotations!: Array<Annotation> = [], comments!: Array<Comment> = [])
+public init(name: String, typeAnnotation: Option<TypeAnnotation>, comments!: Array<Comment> = [])
 ```
 
 功能：构造一个 [LambdaParam](#class-lambdaparam) 对象，表示 lambda 参数节点。
@@ -4218,7 +4218,6 @@ public init(name: String, typeAnnotation: Option<TypeAnnotation>, annotations!: 
 
 - name: String - 参数名。
 - typeAnnotation: Option\<[TypeAnnotation](#class-typeannotation)> - 可选的类型注解。
-- annotations!: Array\<[Annotation](#class-annotation)> - 附加的注解列表，默认为空数组。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
 异常：
