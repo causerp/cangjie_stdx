@@ -1680,17 +1680,11 @@ class SyntaxNodeImplCreator {
         builder.buildNonTerminal(SyntaxNodeKind.DoWhileExpr, ret.toArray())
     }
 
-    static func createLambdaParamImpl(name: String, typeAnnotation: Option<TypeAnnotation>,
-        annotations!: Array<Annotation> = [], comments!: Array<Comment> = []) {
+    static func createLambdaParamImpl(name: String, typeAnnotation: Option<TypeAnnotation>, comments!: Array<Comment> = []) {
         unsafe { checkIdentifier(name, "name", "LambdaParam") }
         let builder = SyntaxNodeBuilder()
         let ret = ArrayList<SyntaxNodeImpl>()
         addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
 
         ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
 
@@ -2631,6 +2625,9 @@ class SyntaxNodeImplCreator {
 
     static func createTupleTypeImpl(elements: Array<TypeAnnotation>, labels: Array<String>,
         comments!: Array<Comment> = []) {
+        if (elements.isEmpty()) {
+            throw Exception("InitException: The input 'elements' cannot be empty for 'TupleType' init.")
+        }
         if (elements.size != labels.size && labels.size != 0) {
             throw Exception("InitException: The input 'elements' and 'labels' mismatch when 'TupleType' init.")
         }
