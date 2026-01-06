@@ -1833,7 +1833,7 @@ class SyntaxNodeImplCreator {
     static func checkCommentContent(content: String) {
         if (content.startsWith("/*") && content.endsWith("*/") && content != "/*/") {
             return true
-        } else if (content.startsWith("//") && !content.contains(NEWLINE)) {
+        } else if (content.startsWith("//") && !content.contains("\n")) {
             return true
         }
         return false
