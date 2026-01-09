@@ -37,7 +37,7 @@ public func parsePackage(dirPath: String): ParsingResult<Package> {
 }
 
 func skipRedundancy(text: String) {
-    return text.replace(NEWLINE, "").replace(" ", "").replace(";", "")
+    return text.replace("\r\n", "").replace("\n", "").replace("\t", "").replace("\f", "").replace(" ", "").replace(";", "")
 }
 
 /**
