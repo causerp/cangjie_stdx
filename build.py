@@ -122,6 +122,8 @@ def build(args):
         args.target = None
     elif args.target == "ohos-aarch64":
         args.target = "aarch64-linux-ohos"
+    elif args.target == "ohos-arm":
+        args.target = "arm-linux-ohos"
     elif args.target == "ohos-x86_64":
         args.target = "x86_64-linux-ohos"
     elif args.target == "windows-x86_64":
@@ -350,6 +352,7 @@ class BuildType(Enum):
 
 SupportedTarget = [
     "native",
+    "ohos-arm",
     "ohos-aarch64",
     "ohos-x86_64",
     "windows-x86_64",
