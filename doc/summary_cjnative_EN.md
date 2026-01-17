@@ -122,6 +122,7 @@
         - [Client Example](libs_stdx_en/net/tls/tls_samples/client.md)
         - [Certificate Hot Update](libs_stdx_en/net/tls/tls_samples/hot_update_cert.md)
         - [Server Example](libs_stdx_en/net/tls/tls_samples/server.md)
+        - [Custom Certificate Validation Example](libs_stdx_en/net/tls/tls_samples/custom_verify.md)
 - [stdx.serialization.serialization](libs_stdx_en/serialization/serialization_package_overview.md)
     - [Functions](libs_stdx_en/serialization/serialization_package_api/serialization_package_functions.md)
     - [Interfaces](libs_stdx_en/serialization/serialization_package_api/serialization_package_interfaces.md)
