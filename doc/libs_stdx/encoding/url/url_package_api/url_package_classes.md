@@ -365,6 +365,94 @@ public init(scheme!: String, hostName!: String, path!: String)
 
 - [UrlSyntaxException](url_package_exceptions.md#class-urlsyntaxexception) - 当构造实例不满足要求时，抛出异常。
 
+### static func decode(String): String
+
+```cangjie
+static func decode(url: String): String
+```
+
+功能：对经过 `URL` 编码（也就是 `%` 编码）的字符串进行解码操作，将编码后的字符串还原成原始的字符串。
+
+> **注意：**
+>
+> 该函数解码所有被编码的字符，但部分字符是 URL 语法的一部分，所以以下字符将保留在输出字符串中：
+> 
+> `#` `$` `&` `+` `,` `/` `:` `;` `=` `?` `@`
+
+参数：
+
+- url: String - 待解码的字符串。
+  
+返回值： 
+
+- String - 解码后的字符串。
+
+### static func decodeComponent(String): String
+
+```cangjie
+static func decodeComponent(component: String): String
+```
+
+功能：对经过 `URL` 编码（也就是 `%` 编码）的字符串进行解码操作，将编码后的字符串还原成原始的字符串。
+
+参数：
+
+- component: String - 待解码的字符串。
+
+返回值： 
+
+- String - 解码后的字符串。
+
+### static func encode(String): String
+
+```cangjie
+static func encode(url: String): String
+```
+
+功能：对普通字符串进行 `URL` 编码（也称为 `%` 编码）。`URL` 编码的目的是将字符串中的特殊字符、非 `ASCII` 字符等转换为符合 `URL` 规范的格式，以确保这些字符串能在 `URL` 中安全地传输和使用。
+
+> **注意：**
+>
+> 该函数编码所有字符，但部分字符被 `URL` 语法所保留，所以以下字符将不会被编码：
+>
+> `0-9` `A-Z` `a-z`
+>
+> `!` `'` `-` `.` `*` `(` `)` `_` `~`
+> 
+> `#` `$` `&` `+` `,` `/` `:` `;` `=` `?` `@`
+
+参数：
+
+- url: String - 待编码的字符串。
+
+返回值：
+
+- String - 编码后的字符串。
+
+### static func encodeComponent(String): String
+
+```cangjie
+static func encodeComponent(component: String): String
+```
+
+功能：对普通字符串进行 `URL` 编码（也称为 `%` 编码）。`URL` 编码的目的是将字符串中的特殊字符、非 `ASCII` 字符等转换为符合 `URL` 规范的格式，以确保这些字符串能在 `URL` 中安全地传输和使用。
+
+> **注意：**
+>
+> 该函数编码所有字符，包括 `URL` 语法的字符，但部分字符被 `URL` 语法所保留，所以以下字符将不会被编码：
+>
+> `0-9` `A-Z` `a-z`
+>
+> `!` `'` `-` `.` `*` `(` `)` `_` `~`
+
+参数：
+
+- component: String - 待编码的字符串。
+  
+返回值： 
+
+- String - 编码后的字符串。
+
 ### static func mergePaths(String, String)
 
 ```cangjie
