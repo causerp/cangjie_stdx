@@ -300,10 +300,12 @@ private class NodeLoader {
             }
             let errMsg = findError(diagInfo)
             if (errMsg != "") {
+                nodePtr = res.node
                 throw Exception("unsupported node type or parse error in parseTokens function:\n${errMsg}")
             }
             let tokenCnt: Int64 = tokensCounterPtr.read()
             if (tokenCnt == 1) {
+                nodePtr = res.node
                 throw Exception("parseTokens function not support parse more than one node.")
             }
             let pnode = res.node
