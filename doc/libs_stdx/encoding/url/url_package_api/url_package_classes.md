@@ -365,7 +365,7 @@ public init(scheme!: String, hostName!: String, path!: String)
 
 - [UrlSyntaxException](url_package_exceptions.md#class-urlsyntaxexception) - 当构造实例不满足要求时，抛出异常。
 
-### static func decode(String): String
+### static func decode(String)
 
 ```cangjie
 static func decode(url: String): String
@@ -387,7 +387,7 @@ static func decode(url: String): String
 
 - String - 解码后的字符串。
 
-### static func decodeComponent(String): String
+### static func decodeComponent(String)
 
 ```cangjie
 static func decodeComponent(component: String): String
@@ -403,7 +403,7 @@ static func decodeComponent(component: String): String
 
 - String - 解码后的字符串。
 
-### static func encode(String): String
+### static func encode(String)
 
 ```cangjie
 static func encode(url: String): String
@@ -429,7 +429,7 @@ static func encode(url: String): String
 
 - String - 编码后的字符串。
 
-### static func encodeComponent(String): String
+### static func encodeComponent(String)
 
 ```cangjie
 static func encodeComponent(component: String): String
