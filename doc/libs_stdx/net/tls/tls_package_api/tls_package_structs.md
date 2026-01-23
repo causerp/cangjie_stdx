@@ -121,7 +121,7 @@ public mut prop alpnProtocolsList: Array<String>
 public mut prop cipherSuitesV1_2: ?Array<String>
 ```
 
-功能：基于TLS 1.2 协议下的加密套。
+功能：基于 TLS 1.2 协议下的加密套。
 
 类型：?Array\<String>
 
@@ -135,7 +135,7 @@ public mut prop cipherSuitesV1_2: ?Array<String>
 public mut prop cipherSuitesV1_3: ?Array<String>
 ```
 
-功能：基于TLS 1.3 协议下的加密套。
+功能：基于 TLS 1.3 协议下的加密套。
 
 类型：?Array\<String>
 
@@ -176,8 +176,8 @@ public mut prop maxVersion: TlsVersion
 功能：支持的 TLS 最大的版本。
 
 > **注意**
-> 
-> 当仅设置`maxVersion`，而未设置`minVersion`，或设置的`maxVersion`低于`minVersion`，将会在握手阶段抛出[TlsException](tls_package_exceptions.md#class-tlsexception)。
+>
+> 当仅设置`maxVersion`，而未设置`minVersion`，或设置的`maxVersion`低于`minVersion`，将会在握手阶段抛出 [TlsException](tls_package_exceptions.md#class-tlsexception)。
 
 类型：[TlsVersion](tls_package_enums.md#enum-tlsversion)
 
@@ -190,7 +190,7 @@ public mut prop minVersion: TlsVersion
 功能：支持的 TLS 最小版本。
 
 > **注意**
-> 当仅设置`minVersion`，而未设置`maxVersion`，或设置的`minVersion`高于`maxVersion`，将会在握手阶段抛出[TlsException](tls_package_exceptions.md#class-tlsexception)。
+> 当仅设置`minVersion`，而未设置`maxVersion`，或设置的`minVersion`高于`maxVersion`，将会在握手阶段抛出 [TlsException](tls_package_exceptions.md#class-tlsexception)。
 
 类型：[TlsVersion](tls_package_enums.md#enum-tlsversion)
 
@@ -200,7 +200,7 @@ public mut prop minVersion: TlsVersion
 public mut prop securityLevel: Int32
 ```
 
-功能：指定客户端的安全级别，默认值为2，可选参数值在 0-5内，参数值含义参见openssl-SSL_CTX_set_security_level说明。
+功能：指定客户端的安全级别，默认值为 2，可选参数值在 0-5 内，参数值含义参见 openssl-SSL_CTX_set_security_level 说明。
 
 类型：Int32
 
@@ -272,7 +272,7 @@ public var verifyMode: CertificateVerifyMode = CertificateVerifyMode.Default
 public mut prop cipherSuitesV1_2: Array<String>
 ```
 
-功能：基于TLS 1.2 协议下的加密套。
+功能：基于 TLS 1.2 协议下的加密套。
 
 类型：Array\<String>
 
@@ -286,7 +286,7 @@ public mut prop cipherSuitesV1_2: Array<String>
 public mut prop cipherSuitesV1_3: Array<String>
 ```
 
-功能：基于TLS 1.3 协议下的加密套。
+功能：基于 TLS 1.3 协议下的加密套。
 
 类型：Array\<String>
 
@@ -313,8 +313,8 @@ public mut prop maxVersion: TlsVersion
 功能：支持的 TLS 最大版本。
 
 > **注意**
-> 
-> 当仅设置`maxVersion`，而未设置`minVersion`，或设置的`maxVersion`低于`minVersion`，将会在握手阶段抛出[TlsException](tls_package_exceptions.md#class-tlsexception)。
+>
+> 当仅设置`maxVersion`，而未设置`minVersion`，或设置的`maxVersion`低于`minVersion`，将会在握手阶段抛出 [TlsException](tls_package_exceptions.md#class-tlsexception)。
 
 类型：[TlsVersion](tls_package_enums.md#enum-tlsversion)
 
@@ -327,7 +327,7 @@ public mut prop minVersion: TlsVersion
 功能：支持的 TLS 最小版本。
 
 > **注意**
-> 当仅设置`minVersion`，而未设置`maxVersion`，或设置的`minVersion`高于`maxVersion`，将会在握手阶段抛出[TlsException](tls_package_exceptions.md#class-tlsexception)。
+> 当仅设置`minVersion`，而未设置`maxVersion`，或设置的`minVersion`高于`maxVersion`，将会在握手阶段抛出 [TlsException](tls_package_exceptions.md#class-tlsexception)。
 
 类型：[TlsVersion](tls_package_enums.md#enum-tlsversion)
 
@@ -337,8 +337,8 @@ public mut prop minVersion: TlsVersion
 public mut prop securityLevel: Int32
 ```
 
-功能：指定服务端的安全级别，默认值为2，可选参数值在 [0,5] 内，参数值含义参见 [openssl-SSL_CTX_set_security_level](https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_security_level.html) 说明。
-功能：指定服务端的安全级别，默认值为2，可选参数值在 0-5 内，参数值含义参见 openssl-SSL_CTX_set_security_level 说明。
+功能：指定服务端的安全级别，默认值为 2，可选参数值在 [0,5] 内，参数值含义参见 [openssl-SSL_CTX_set_security_level](https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_security_level.html) 说明。
+功能：指定服务端的安全级别，默认值为 2，可选参数值在 0-5 内，参数值含义参见 openssl-SSL_CTX_set_security_level 说明。
 
 类型：Int32
 
@@ -417,11 +417,11 @@ public override func hashCode(): Int64
 public override func toString(): String
 ```
 
-功能：生成会话id的字符串。
+功能：生成会话 id 的字符串。
 
 返回值：
 
-- String - [TlsSession](tls_package_structs.md#struct-tlssession) (会话 id 字符串)。
+- String - [TlsSession](tls_package_structs.md#struct-tlssession)（会话 id 字符串）。
 
 ### operator func !=(TlsSession)
 
@@ -454,4 +454,3 @@ public override operator func ==(other: TlsSession): Bool
 返回值：
 
 - Bool - 若会话 id 相同，则返回 `true`，否则返回 `false`。
-

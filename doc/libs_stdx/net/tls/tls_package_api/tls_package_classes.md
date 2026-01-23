@@ -101,7 +101,7 @@ public class TlsSocket <: StreamingSocket & ToString &Equatable<TlsSocket> & Has
 public prop alpnProtocolName: ?String
 ```
 
-功能:读取协商到的应用层协议名称。
+功能：读取协商到的应用层协议名称。
 
 类型：?String
 
@@ -138,14 +138,13 @@ public prop clientCertificate: ?Array<X509Certificate>
 
 > **注意：**
 >
-> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见[peerCertificate](./tls_package_classes.md#prop-peerCertificate)。
+> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见 [peerCertificate](./tls_package_classes.md#prop-peerCertificate)。
 
 类型：?Array<[X509Certificate](../../../crypto/x509/x509_package_api/x509_package_classes.md#class-x509certificate)>
 
 异常：
 
 - [TlsException](tls_package_exceptions.md#class-tlsexception) - 当套接字未完成 TLS 握手或本端 TLS 套接字已关闭时，抛出异常。
-
 
 ### prop domain
 
@@ -182,16 +181,16 @@ public override prop localAddress: SocketAddress
 public prop peerCertificate: ?Array<X509Certificate>
 ```
 
-功能：获取对端证书。在客户端获取时同[serverCertificate](./tls_package_classes.md#prop-serverCertificate),在服务端获取时同[clientCertificate](./tls_package_classes.md#prop-clientCertificate)。
+功能：获取对端证书。在客户端获取时同 [serverCertificate](./tls_package_classes.md#prop-serverCertificate)，在服务端获取时同 [clientCertificate](./tls_package_classes.md#prop-clientCertificate)。
 
 > **注意：**
 >
 > - 如果握手时没有要求对端发送证书，此处将无法获取对端证书，返回 None。
 >
-> - 通过session 机制恢复连接时，双方都不发送证书，该接口行为如下：
+> - 通过 session 机制恢复连接时，双方都不发送证书，该接口行为如下：
 >
->   - 在服务端，如果被恢复的原始连接建立时获取了对端证书，服务端将缓存对端证书，并在此处获取到缓存的证书；
->   - 在客户端，不缓存原始连接的对端证书，此处将无法获取对端证书，返回 None。
+>     - 在服务端，如果被恢复的原始连接建立时获取了对端证书，服务端将缓存对端证书，并在此处获取到缓存的证书；
+>     - 在客户端，不缓存原始连接的对端证书，此处将无法获取对端证书，返回 None。
 
 类型：?Array<[X509Certificate](../../../crypto/x509/x509_package_api/x509_package_classes.md#class-x509certificate)>
 
@@ -240,7 +239,7 @@ public prop serverCertificate: Array<X509Certificate>
 
 >**注意：**
 >
-> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见[peerCertificate](./tls_package_classes.md#prop-peercertificate)。
+> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见 [peerCertificate](./tls_package_classes.md#prop-peercertificate)。
 
 类型：Array<[X509Certificate](../../../crypto/x509/x509_package_api/x509_package_classes.md#class-x509certificate)>
 
