@@ -14640,6 +14640,36 @@ public init(throwVal: Expr, comments!: Array<Comment> = [])
 - throwVal: [Expr](#class-expr) - 被抛出的异常表达式。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let callee = SymbolRef("Exception", [])
+
+    // 创建 CallExpr 实例
+    let callExpr = CallExpr(
+        callee,
+        []
+    )
+
+    // 创建 ThrowExpr 实例
+    let throwExpr = ThrowExpr(
+        callExpr
+    )
+    
+    println("throwExpr: ${throwExpr}")
+}
+```
+
+运行结果：
+
+```text
+throwExpr: throw Exception()
+```
+
 ### func getThrowKeyWordPos()
 
 ```cangjie
@@ -14651,6 +14681,38 @@ public func getThrowKeyWordPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `throw` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let callee = SymbolRef("Exception", [])
+
+    // 创建 CallExpr 实例
+    let callExpr = CallExpr(
+        callee,
+        []
+    )
+
+    // 创建 ThrowExpr 实例
+    let throwExpr = ThrowExpr(
+        callExpr
+    )
+    
+    let pos = throwExpr.getThrowKeyWordPos()
+    // 输出 throw 关键字位置
+    println("throwExpr.getThrowKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+throwExpr.getThrowKeyWordPos(): 1:1-1:6
+```
 
 ## class TrailingClosureExpr
 
@@ -14715,6 +14777,46 @@ public init(callee: Expr, arguments: Array<Argument>, trailingLambdaExpr: Lambda
 
 - Exception - 当 `callee` 不是成员访问或引用表达式时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 callee
+    let callee = SymbolRef("foo", [])
+
+    // 创建 arguments
+    let arguments = [Argument(
+        "a1", 
+        false, 
+        LitConstExpr(LitConstKind.IntergerLiteral, "123")
+    )]
+
+    // 创建 trailingLambdaExpr
+    let trailingLambdaExpr = Lambda(
+        [BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))], 
+        ParameterList(LambdaParam("x", None), hasParen:false)
+    )
+
+    // 创建 TrailingClosureExpr 实例
+    let trailingClosureExpr = TrailingClosureExpr(
+        callee, 
+        arguments, 
+        trailingLambdaExpr
+    )
+
+    println("trailingClosureExpr: ${trailingClosureExpr}")
+}
+```
+
+运行结果：
+
+```text
+trailingClosureExpr: foo(a1: 123) { x => x + 1 }
+```
+
 ### func getCommasPos()
 
 ```cangjie
@@ -14726,6 +14828,47 @@ public func getCommasPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回所有 `,` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 callee
+    let callee = SymbolRef("foo", [])
+
+    // 创建 arguments
+    let arguments = [
+        Argument("a1", false, LitConstExpr(LitConstKind.IntergerLiteral, "1")),
+        Argument("a2", false, LitConstExpr(LitConstKind.IntergerLiteral, "2")),
+        Argument("a3", false, LitConstExpr(LitConstKind.IntergerLiteral, "3"))
+    ]
+
+    // 创建 trailingLambdaExpr
+    let trailingLambdaExpr = Lambda(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
+        ParameterList(LambdaParam("x", None), hasParen:false)
+    )
+
+    // 创建 TrailingClosureExpr 实例
+    let trailingClosureExpr = TrailingClosureExpr(callee, arguments, trailingLambdaExpr)
+    let posArr = trailingClosureExpr.getCommasPos()
+
+    // 遍历输出逗号位置
+    for (i in 0..posArr.size) {
+        println("trailingClosureExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+trailingClosureExpr.getCommasPos()[0]: 1:10-1:11
+trailingClosureExpr.getCommasPos()[1]: 1:17-1:18
+```
 
 ### func getLParenPos()
 
@@ -14739,6 +14882,41 @@ public func getLParenPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 callee
+    let callee = SymbolRef("foo", [])
+
+    // 创建 arguments
+    let arguments = [Argument("a1", false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))]
+
+    // 创建 trailingLambdaExpr
+    let trailingLambdaExpr = Lambda(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
+        ParameterList(LambdaParam("x", None), hasParen:false)
+    )
+
+    // 创建 TrailingClosureExpr 实例
+    let trailingClosureExpr = TrailingClosureExpr(callee, arguments, trailingLambdaExpr)
+
+    if (let Some(pos) <- trailingClosureExpr.getLParenPos()) {
+        // 输出左括号位置
+        println("trailingClosureExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+trailingClosureExpr.getLParenPos(): 1:4-1:5
+```
+
 ### func getRParenPos()
 
 ```cangjie
@@ -14750,6 +14928,41 @@ public func getRParenPos(): Option<CodePositionRange>
 返回值：
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 callee
+    let callee = SymbolRef("foo", [])
+
+    // 创建 arguments
+    let arguments = [Argument("a1", false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))]
+
+    // 创建 trailingLambdaExpr
+    let trailingLambdaExpr = Lambda(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
+        ParameterList(LambdaParam("x", None), hasParen:false)
+    )
+
+    // 创建 TrailingClosureExpr 实例
+    let trailingClosureExpr = TrailingClosureExpr(callee, arguments, trailingLambdaExpr)
+
+    if (let Some(pos) <- trailingClosureExpr.getRParenPos()) {
+        // 输出右括号位置
+        println("trailingClosureExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+trailingClosureExpr.getRParenPos(): 1:12-1:13
+```
 
 ## class TryCatch
 
@@ -14839,6 +15052,53 @@ public init(catchBlocks: Array<Block>, catchPatterns: Array<CatchPattern>, final
 
 - Exception - 当输入的 `catchPatterns`、`resourceSpec` 和 `finallyBlock` 同时为空时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    println("tryCatch: ${tryCatch}")
+}
+```
+
+运行结果：
+
+```text
+tryCatch: try {
+    x + 1
+} catch (e1: AException | BException) {
+    y + 1
+} finally {
+    z + 1
+}
+```
+
 ### func getCatchKeyWordsPos()
 
 ```cangjie
@@ -14850,6 +15110,51 @@ public func getCatchKeyWordsPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回所有 `catch` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 catch 关键字位置
+    let posArr = tryCatch.getCatchKeyWordsPos()
+    for (i in 0..posArr.size) {
+        println("tryCatch.getCatchKeyWordsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getCatchKeyWordsPos()[0]: 3:3-3:8
+```
 
 ### func getCatchLParensPos()
 
@@ -14863,6 +15168,51 @@ public func getCatchLParensPos(): Array<CodePositionRange>
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回所有 `catch` 语句中 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 catch 语句中 ( 的位置
+    let catchLParensPos = tryCatch.getCatchLParensPos()
+    for (i in 0..catchLParensPos.size) {
+        println("tryCatch.getCatchLParensPos()[${i}]: ${catchLParensPos[i].beginLine}:${catchLParensPos[i].beginColumn}-${catchLParensPos[i].endLine}:${catchLParensPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getCatchLParensPos()[0]: 3:9-3:10
+```
+
 ### func getCatchRParensPos()
 
 ```cangjie
@@ -14874,6 +15224,51 @@ public func getCatchRParensPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回所有 `catch` 语句中 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 catch 语句中 ) 的位置
+    let catchRParensPos = tryCatch.getCatchRParensPos()
+    for (i in 0..catchRParensPos.size) {
+        println("tryCatch.getCatchRParensPos()[${i}]: ${catchRParensPos[i].beginLine}:${catchRParensPos[i].beginColumn}-${catchRParensPos[i].endLine}:${catchRParensPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getCatchRParensPos()[0]: 3:37-3:38
+```
 
 ### func getFinallyKeyWordPos()
 
@@ -14887,6 +15282,52 @@ public func getFinallyKeyWordPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `finally` 关键字的位置（若不存在返回 `None`）。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 finally 关键字位置
+    let finallyKeyWordPos = tryCatch.getFinallyKeyWordPos()
+    match (finallyKeyWordPos) {
+        case Some(pos) => println("tryCatch.getFinallyKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case None => println("tryCatch.getFinallyKeyWordPos(): None")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getFinallyKeyWordPos(): 5:3-5:10
+```
+
 ### func getResourceSpecCommasPos()
 
 ```cangjie
@@ -14898,6 +15339,54 @@ public func getResourceSpecCommasPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `resource` 语句中所有 `,`的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec (包含多个资源，用于测试逗号位置)
+    let resourceSpec = [
+        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type)),
+        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "2"), VarKind.Var, "y", VarPattern("y"), AtomicType(AtomicTypeKind.Int64Type))
+    ]
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 resource 语句中逗号的位置
+    let resourceSpecCommasPos = tryCatch.getResourceSpecCommasPos()
+    for (i in 0..resourceSpecCommasPos.size) {
+        println("tryCatch.getResourceSpecCommasPos()[${i}]: ${resourceSpecCommasPos[i].beginLine}:${resourceSpecCommasPos[i].beginColumn}-${resourceSpecCommasPos[i].endLine}:${resourceSpecCommasPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getResourceSpecCommasPos()[0]: 1:22-1:23
+```
 
 ### func getResourceSpecLParenPos()
 
@@ -14911,6 +15400,52 @@ public func getResourceSpecLParenPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `resource` 语句中 `(` 的位置（若不存在返回 `None`）。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))]
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 resource 语句中 ( 的位置
+    let resourceSpecLParenPos = tryCatch.getResourceSpecLParenPos()
+    match (resourceSpecLParenPos) {
+        case Some(pos) => println("tryCatch.getResourceSpecLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case None => println("tryCatch.getResourceSpecLParenPos(): None")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getResourceSpecLParenPos(): 1:5-1:6
+```
+
 ### func getResourceSpecRParenPos()
 
 ```cangjie
@@ -14923,6 +15458,52 @@ public func getResourceSpecRParenPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `resource` 语句中 `)` 的位置（若不存在返回 `None`）。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))]
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 resource 语句中 ) 的位置
+    let resourceSpecRParenPos = tryCatch.getResourceSpecRParenPos()
+    match (resourceSpecRParenPos) {
+        case Some(pos) => println("tryCatch.getResourceSpecRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case None => println("tryCatch.getResourceSpecRParenPos(): None")
+    }
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getResourceSpecRParenPos(): 1:22-1:23
+```
+
 ### func getTryKeyWordPos()
 
 ```cangjie
@@ -14934,6 +15515,49 @@ public func getTryKeyWordPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `try` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 catchBlocks
+    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+
+    // 创建 catchPatterns
+    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+
+    // 创建 finallyBlock
+    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+
+    // 创建 resourceSpec
+    let resourceSpec: Array<VarDecl> = []
+
+    // 创建 tryBlock
+    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 TryCatch 实例
+    let tryCatch = TryCatch(
+        catchBlocks, 
+        catchPatterns, 
+        finallyBlock, 
+        resourceSpec, 
+        tryBlock
+    )
+
+    // 获取 try 关键字位置
+    let tryKeyWordPos = tryCatch.getTryKeyWordPos()
+    println("tryCatch.getTryKeyWordPos(): ${tryKeyWordPos.beginLine}:${tryKeyWordPos.beginColumn}-${tryKeyWordPos.endLine}:${tryKeyWordPos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tryCatch.getTryKeyWordPos(): 1:1-1:4
+```
 
 ## class TupleLiteral
 
@@ -14974,6 +15598,42 @@ public init(elements: Array<SyntaxTreeNode>, comments!: Array<Comment> = [])
 - elements: Array\<[SyntaxTreeNode](#class-syntaxtreenode)> - 元组元素节点列表。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let litConstExpr0 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+    let litConstExpr1 = LitConstExpr(
+        LitConstKind.BoolLiteral,
+        "false"
+    )
+    let litConstExpr2 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "1.1"
+    )
+
+    // 创建 TupleLiteral 实例
+    let tupleLiteral = TupleLiteral(
+        [litConstExpr0, litConstExpr1, litConstExpr2]
+    )
+    
+    println("tupleLiteral: ${tupleLiteral}")
+}
+```
+
+运行结果：
+
+```text
+tupleLiteral: (3.14, false, 1.1)
+```
+
 ### func getCommasPos()
 
 ```cangjie
@@ -14985,6 +15645,47 @@ public func getCommasPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回所有 `,` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let litConstExpr0 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+    let litConstExpr1 = LitConstExpr(
+        LitConstKind.BoolLiteral,
+        "false"
+    )
+    let litConstExpr2 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "1.1"
+    )
+
+    // 创建 TupleLiteral 实例
+    let tupleLiteral = TupleLiteral(
+        [litConstExpr0, litConstExpr1, litConstExpr2]
+    )
+    
+    let commasPos = tupleLiteral.getCommasPos()
+    // 遍历输出逗号位置
+    for (i in 0..commasPos.size) {
+        println("tupleLiteral.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tupleLiteral.getCommasPos()[0]: 1:6-1:7
+tupleLiteral.getCommasPos()[1]: 1:13-1:14
+```
 
 ### func getLParenPos()
 
@@ -14998,6 +15699,44 @@ public func getLParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let litConstExpr0 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+    let litConstExpr1 = LitConstExpr(
+        LitConstKind.BoolLiteral,
+        "false"
+    )
+    let litConstExpr2 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "1.1"
+    )
+
+    // 创建 TupleLiteral 实例
+    let tupleLiteral = TupleLiteral(
+        [litConstExpr0, litConstExpr1, litConstExpr2]
+    )
+    
+    let pos = tupleLiteral.getLParenPos()
+    // 输出 ( 位置
+    println("tupleLiteral.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tupleLiteral.getLParenPos(): 1:1-1:2
+```
+
 ### func getRParenPos()
 
 ```cangjie
@@ -15009,6 +15748,44 @@ public func getRParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let litConstExpr0 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+    let litConstExpr1 = LitConstExpr(
+        LitConstKind.BoolLiteral,
+        "false"
+    )
+    let litConstExpr2 = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "1.1"
+    )
+
+    // 创建 TupleLiteral 实例
+    let tupleLiteral = TupleLiteral(
+        [litConstExpr0, litConstExpr1, litConstExpr2]
+    )
+    
+    let pos = tupleLiteral.getRParenPos()
+    // 输出 ) 位置
+    println("tupleLiteral.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tupleLiteral.getRParenPos(): 1:18-1:19
+```
 
 ## class TuplePattern
 
@@ -15034,7 +15811,6 @@ public prop subPatterns: Array<Pattern>
 
 功能：表示该模式节点中元组内的一组模式节点。
 
-
 类型：Array\<[Pattern](#class-pattern)>
 
 ### init(Array\<Pattern>, Array\<Comment>)
@@ -15054,6 +15830,31 @@ public init(subPatterns: Array<Pattern>, comments!: Array<Comment> = [])
 
 - Exception - 当输入的 `subPatterns` 包含的元素个数少于 `2` 时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 subPatterns
+    let subPatterns: Array<Pattern> = [VarPattern("x"), VarPattern("y")]
+
+    // 创建 TuplePattern 实例
+    let tuplePattern = TuplePattern(
+        subPatterns
+    )
+
+    println("tuplePattern: ${tuplePattern}")
+}
+```
+
+运行结果：
+
+```text
+tuplePattern: (x, y)
+```
+
 ### func getCommasPos()
 
 ```cangjie
@@ -15066,6 +15867,37 @@ public func getCommasPos(): Array<CodePositionRange>
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `,` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 subPatterns
+    let subPatterns: Array<Pattern> = [
+        VarPattern("x"),
+        VarPattern("y"),
+        VarPattern("z")
+    ]
+
+    // 创建 TuplePattern 实例
+    let tuplePattern = TuplePattern(subPatterns)
+    let posArr = tuplePattern.getCommasPos()
+
+    // 遍历输出逗号位置
+    for (i in 0..posArr.size) {
+        println("tuplePattern.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tuplePattern.getCommasPos()[0]: 1:3-1:4
+tuplePattern.getCommasPos()[1]: 1:6-1:7
+```
 
 ### func getLParenPos()
 
@@ -15079,6 +15911,30 @@ public func getLParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 subPatterns
+    let subPatterns: Array<Pattern> = [VarPattern("x"), VarPattern("y")]
+
+    // 创建 TuplePattern 实例
+    let tuplePattern = TuplePattern(subPatterns)
+    let pos = tuplePattern.getLParenPos()
+
+    // 输出左括号位置
+    println("tuplePattern.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tuplePattern.getLParenPos(): 1:1-1:2
+```
 
 ### func getRParenPos()
 
@@ -15091,6 +15947,31 @@ public func getRParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 subPatterns
+    let subPatterns: Array<Pattern> = [VarPattern("x"), VarPattern("y")]
+
+    // 创建 TuplePattern 实例
+    let tuplePattern = TuplePattern(subPatterns)
+    let pos = tuplePattern.getRParenPos()
+
+    // 输出右括号位置
+    println("tuplePattern.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tuplePattern.getRParenPos(): 1:6-1:7
+```
 
 ## class TupleType
 
@@ -15107,7 +15988,6 @@ public class TupleType <: TypeAnnotation {
 父类型：
 
 - [TypeAnnotation](#class-typeannotation)
-
 
 ### prop elements
 
@@ -15147,6 +16027,34 @@ public init(labels: Array<String>, elements: Array<TypeAnnotation>, comments!: A
 
 - Exception - 当元素类型列表和元素名列表长度不一样时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    println("tupleType: ${tupleType}")
+}
+```
+
+运行结果：
+
+```text
+tupleType: (a: UInt32, b: Bool, c: Int64)
+```
+
 ### func getColonsPos()
 
 ```cangjie
@@ -15158,6 +16066,40 @@ public func getColonsPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `:` 的位置序列。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    let colonsPos = tupleType.getColonsPos()
+    // 遍历输出冒号位置
+    for (i in 0..colonsPos.size) {
+        println("tupleType.getColonsPos()[${i}]: ${colonsPos[i].beginLine}:${colonsPos[i].beginColumn}-${colonsPos[i].endLine}:${colonsPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tupleType.getColonsPos()[0]: 1:3-1:4
+tupleType.getColonsPos()[1]: 1:14-1:15
+tupleType.getColonsPos()[2]: 1:23-1:24
+```
 
 ### func getCommasPos()
 
@@ -15171,6 +16113,39 @@ public func getCommasPos(): Array<CodePositionRange>
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `,` 的位置序列。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    let commasPos = tupleType.getCommasPos()
+    // 遍历输出逗号位置
+    for (i in 0..commasPos.size) {
+        println("tupleType.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tupleType.getCommasPos()[0]: 1:11-1:12
+tupleType.getCommasPos()[1]: 1:20-1:21
+```
+
 ### func getLabelsPos()
 
 ```cangjie
@@ -15182,6 +16157,40 @@ public func getLabelsPos(): Array<CodePositionRange>
 返回值：
 
 - Array\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回标签的位置序列。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    let labelsPos = tupleType.getLabelsPos()
+    // 遍历输出标签位置
+    for (i in 0..labelsPos.size) {
+        println("tupleType.getLabelsPos()[${i}]: ${labelsPos[i].beginLine}:${labelsPos[i].beginColumn}-${labelsPos[i].endLine}:${labelsPos[i].endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+tupleType.getLabelsPos()[0]: 1:2-1:3
+tupleType.getLabelsPos()[1]: 1:13-1:14
+tupleType.getLabelsPos()[2]: 1:22-1:23
+```
 
 ### func getLParenPos()
 
@@ -15195,6 +16204,36 @@ public func getLParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    let pos = tupleType.getLParenPos()
+    // 输出 ( 位置
+    println("tupleType.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tupleType.getLParenPos(): 1:1-1:2
+```
+
 ### func getRParenPos()
 
 ```cangjie
@@ -15206,6 +16245,36 @@ public func getRParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 AtomicType 实例
+    let atomicType0 = AtomicType(AtomicTypeKind.UInt32Type)
+    let atomicType1 = AtomicType(AtomicTypeKind.BoolType)
+    let atomicType2 = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TupleType 实例
+    let tupleType = TupleType(
+        ["a", "b", "c"],
+        [atomicType0, atomicType1, atomicType2]
+    )
+    
+    let pos = tupleType.getRParenPos()
+    // 输出 ) 位置
+    println("tupleType.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+tupleType.getRParenPos(): 1:30-1:31
+```
 
 ## class TypeAlias
 
@@ -15275,6 +16344,37 @@ public init(aliasName: String, originalTyAnnotation: TypeAnnotation, typeParamet
 
 - Exception - 当输入的 `aliasName` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 CompositeType 实例
+    let compositeType = CompositeType(
+        "A", 
+        ["p0"], 
+        [CompositeType("T", [], [])]
+    )
+    
+    // 创建 TypeAlias 实例
+    let typeAlias = TypeAlias(
+        "MyType",
+        compositeType,
+        GenericParam("T")
+    )
+
+    println("typeAlias: ${typeAlias}")
+}
+```
+
+运行结果：
+
+```text
+typeAlias: type MyType<T> = p0.A<T>
+```
+
 ### func getAssignPos()
 
 ```cangjie
@@ -15286,6 +16386,39 @@ public func getAssignPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `=` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 CompositeType 实例
+    let compositeType = CompositeType(
+        "A", 
+        ["p0"], 
+        [CompositeType("T", [], [])]
+    )
+    
+    // 创建 TypeAlias 实例
+    let typeAlias = TypeAlias(
+        "MyType",
+        compositeType,
+        [GenericParam("T")]
+    )
+    
+    let pos = typeAlias.getAssignPos()
+    // 输出 = 位置
+    println("typeAlias.getAssignPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typeAlias.getAssignPos(): 1:16-1:17
+```
 
 ### func getIdentifierPos()
 
@@ -15299,6 +16432,39 @@ public func getIdentifierPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回类型别名的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 CompositeType 实例
+    let compositeType = CompositeType(
+        "A", 
+        ["p0"], 
+        [CompositeType("T", [], [])]
+    )
+    
+    // 创建 TypeAlias 实例
+    let typeAlias = TypeAlias(
+        "MyType",
+        compositeType,
+        [GenericParam("T")]
+    )
+    
+    let pos = typeAlias.getIdentifierPos()
+    // 输出标识符位置
+    println("typeAlias.getIdentifierPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typeAlias.getIdentifierPos(): 1:6-1:12
+```
+
 ### func getTypeAliasKeyWordPos()
 
 ```cangjie
@@ -15310,6 +16476,39 @@ public func getTypeAliasKeyWordPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `type` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 CompositeType 实例
+    let compositeType = CompositeType(
+        "A", 
+        ["p0"], 
+        [CompositeType("T", [], [])]
+    )
+    
+    // 创建 TypeAlias 实例
+    let typeAlias = TypeAlias(
+        "MyType",
+        compositeType,
+        [GenericParam("T")]
+    )
+    
+    let pos = typeAlias.getTypeAliasKeyWordPos()
+    // 输出 type 关键字位置
+    println("typeAlias.getTypeAliasKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typeAlias.getTypeAliasKeyWordPos(): 1:1-1:5
+```
 
 ## class TypeAnnotation
 
@@ -15373,6 +16572,38 @@ public init(srcVal: Expr, targetTypeAnnotation: AtomicType, comments!: Array<Com
 - targetTypeAnnotation: [AtomicType](#class-atomictype) - 目标原子类型。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let srcVal = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+
+    // 创建 AtomicType 实例
+    let targetType = AtomicType(AtomicTypeKind.Float64Type)
+
+    // 创建 TypeConvExpr 实例
+    let typeConvExpr = TypeConvExpr(
+        srcVal,
+        targetType
+    )
+
+    println("typeConvExpr: ${typeConvExpr}")
+}
+```
+
+运行结果：
+
+```text
+typeConvExpr: Float64(3.14)
+```
+
 ### func getLParenPos()
 
 ```cangjie
@@ -15385,6 +16616,40 @@ public func getLParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let srcVal = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+
+    // 创建 AtomicType 实例
+    let targetType = AtomicType(AtomicTypeKind.Float64Type)
+
+    // 创建 TypeConvExpr 实例
+    let typeConvExpr = TypeConvExpr(
+        srcVal,
+        targetType
+    )
+    
+    let pos = typeConvExpr.getLParenPos()
+    // 输出 ( 位置
+    println("typeConvExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typeConvExpr.getLParenPos(): 1:8-1:9
+```
+
 ### func getRParenPos()
 
 ```cangjie
@@ -15396,6 +16661,40 @@ public func getRParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 LitConstExpr 实例
+    let srcVal = LitConstExpr(
+        LitConstKind.FloatLiteral,
+        "3.14"
+    )
+
+    // 创建 AtomicType 实例
+    let targetType = AtomicType(AtomicTypeKind.Float64Type)
+
+    // 创建 TypeConvExpr 实例
+    let typeConvExpr = TypeConvExpr(
+        srcVal,
+        targetType
+    )
+    
+    let pos = typeConvExpr.getRParenPos()
+    // 输出 ) 位置
+    println("typeConvExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typeConvExpr.getRParenPos(): 1:13-1:14
+```
 
 ## class TypePattern
 
@@ -15451,6 +16750,35 @@ public init(subPattern: Pattern, patternType: TypeAnnotation, comments!: Array<C
 
 - Exception - 当输入的 `subPattern` 不为 [WildcardPattern](#class-wildcardpattern) 或 [VarPattern](#class-varpattern)时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 subPattern
+    let subPattern = VarPattern("x")
+
+    // 创建 patternType
+    let patternType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TypePattern 实例
+    let typePattern = TypePattern(
+        subPattern, 
+        patternType
+    )
+
+    println("typePattern: ${typePattern}")
+}
+```
+
+运行结果：
+
+```text
+typePattern: x: Int64
+```
+
 ### func getColonPos()
 
 ```cangjie
@@ -15462,6 +16790,34 @@ public func getColonPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `:` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 subPattern
+    let subPattern = VarPattern("x")
+
+    // 创建 patternType
+    let patternType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 TypePattern 实例
+    let typePattern = TypePattern(subPattern, patternType)
+    let pos = typePattern.getColonPos()
+
+    // 输出冒号位置
+    println("typePattern.getColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+typePattern.getColonPos(): 1:2-1:3
+```
 
 ## class UnaryExpr
 
@@ -15513,6 +16869,35 @@ public init(opKind: UnaryOpKind, operand: Expr, comments!: Array<Comment> = [])
 - operand: [Expr](#class-expr) - 被操作的表达式。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建操作数（使用一个字面量表达式作为操作数）
+    let operand = LitConstExpr(LitConstKind.IntergerLiteral, "123")
+    
+    // 创建操作符类型（使用负号操作符）
+    let opKind = UnaryOpKind.Sub
+    
+    // 创建 UnaryExpr 实例
+    let unaryExpr = UnaryExpr(
+        opKind,
+        operand
+    )
+    
+    println("unaryExpr: ${unaryExpr}")
+}
+```
+
+运行结果：
+
+```text
+unaryExpr: -123
+```
+
 ### func getOperatorPos()
 
 ```cangjie
@@ -15524,6 +16909,39 @@ public func getOperatorPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回一元操作符的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建操作数（使用一个字面量表达式作为操作数）
+    let operand = LitConstExpr(LitConstKind.IntergerLiteral, "123")
+    
+    // 创建操作符类型（使用负号操作符）
+    let opKind = UnaryOpKind.Sub
+    
+    // 创建 UnaryExpr 实例
+    let unaryExpr = UnaryExpr(
+        opKind,
+        operand
+    )
+    
+    // 获取操作符位置
+    let pos = unaryExpr.getOperatorPos()
+    
+    // 输出操作符位置
+    println("unaryExpr.getOperatorPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+unaryExpr.getOperatorPos(): 1:1-1:2
+```
 
 ## class UnsafeExpr
 
@@ -15564,6 +16982,38 @@ public init(block: Block, comments!: Array<Comment> = [])
 - block: [Block](#class-block) - 不安全代码块。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let callee = SymbolRef("foo", [])
+
+    // 创建 CallExpr 实例
+    let callExpr = CallExpr(
+        callee,
+        []
+    )
+
+    let block = Block([callExpr])
+
+    // 创建 UnsafeExpr 实例
+    let unsafeExpr = UnsafeExpr(block)
+
+    println("unsafeExpr: ${unsafeExpr}")
+}
+```
+
+运行结果：
+
+```text
+unsafeExpr: unsafe {
+    foo()
+}
+```
+
 ### func getUnsafePos()
 
 ```cangjie
@@ -15575,6 +17025,38 @@ public func getUnsafePos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `unsafe` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let callee = SymbolRef("foo", [])
+
+    // 创建 CallExpr 实例
+    let callExpr = CallExpr(
+        callee,
+        []
+    )
+
+    let block = Block([callExpr])
+
+    // 创建 UnsafeExpr 实例
+    let unsafeExpr = UnsafeExpr(block)
+    
+    let pos = unsafeExpr.getUnsafePos()
+    // 输出 unsafe 关键字位置
+    println("unsafeExpr.getUnsafePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+unsafeExpr.getUnsafePos(): 1:1-1:7
+```
 
 ## class VarDecl
 
@@ -15669,6 +17151,47 @@ public init(initializer: Option<Expr>, kind: VarKind, name: String, pattern: Pat
 
 - Exception - 当 `pattern` 不是通配符模式、变量绑定模式、元组模式或枚举模式，或 `modifiers` 包含 `const`，或 `kind` 不代表 `var`、`let` 或 `const`，或输入的 `name` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 initializer
+    let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
+
+    // 创建 kind
+    let kind = VarKind.Let
+
+    // 创建 name
+    let name = "x"
+
+    // 创建 pattern
+    let pattern = VarPattern("x")
+
+    // 创建 tyAnnotation
+    let tyAnnotation = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VarDecl 实例
+    let varDecl = VarDecl(
+        initializer, 
+        kind, 
+        name, 
+        pattern, 
+        tyAnnotation
+    )
+
+    println("varDecl: ${varDecl}")
+}
+```
+
+运行结果：
+
+```text
+varDecl: let x: Int64 = 1
+```
+
 ### func getAssignPos()
 
 ```cangjie
@@ -15680,6 +17203,32 @@ public func getAssignPos(): Option<CodePositionRange>
 返回值：
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回 `=` 的位置（若不存在返回 `None`）。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 initializer
+    let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
+
+    // 创建 VarDecl 实例
+    let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
+
+    if (let Some(pos) <- varDecl.getAssignPos()) {
+        // 输出赋值符位置
+        println("varDecl.getAssignPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+varDecl.getAssignPos(): 1:14-1:15
+```
 
 ### func getIdentifierPos()
 
@@ -15693,6 +17242,32 @@ public func getIdentifierPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回变量标识符的位置（若不存在返回 `None`）。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 initializer
+    let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
+
+    // 创建 VarDecl 实例
+    let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
+
+    if (let Some(pos) <- varDecl.getIdentifierPos()) {
+        // 输出变量标识符位置
+        println("varDecl.getIdentifierPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+varDecl.getIdentifierPos(): 1:5-1:6
+```
+
 ### func getTyAnnotationColonPos()
 
 ```cangjie
@@ -15705,6 +17280,32 @@ public func getTyAnnotationColonPos(): Option<CodePositionRange>
 
 - Option\<[CodePositionRange](syntax_package_structs.md#struct-codepositionrange)> - 返回类型名之前的 `:` 的位置（若不存在返回 `None`）。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 initializer
+    let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
+
+    // 创建 VarDecl 实例
+    let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
+
+    if (let Some(pos) <- varDecl.getTyAnnotationColonPos()) {
+        // 输出类型注解冒号位置
+        println("varDecl.getTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    }
+}
+```
+
+运行结果：
+
+```text
+varDecl.getTyAnnotationColonPos(): 1:6-1:7
+```
+
 ### func getVarKindKeyWordPos()
 
 ```cangjie
@@ -15716,6 +17317,31 @@ public func getVarKindKeyWordPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回变量声明类型关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 initializer
+    let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
+
+    // 创建 VarDecl 实例
+    let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
+    let pos = varDecl.getVarKindKeyWordPos()
+
+    // 输出关键字位置
+    println("varDecl.getVarKindKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+varDecl.getVarKindKeyWordPos(): 1:1-1:4
+```
 
 ## class VarOrEnumPattern
 
@@ -15760,6 +17386,31 @@ public init(identifier: String, comments!: Array<Comment> = [])
 
 - Exception - 当输入的 `identifier` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 identifier
+    let identifier = "A"
+
+    // 创建 VarOrEnumPattern 实例
+    let varOrEnumPattern = VarOrEnumPattern(
+        identifier
+    )
+
+    println("varOrEnumPattern: ${varOrEnumPattern}")
+}
+```
+
+运行结果：
+
+```text
+varOrEnumPattern: A
+```
+
 ## class VarPattern
 
 ```cangjie
@@ -15802,6 +17453,26 @@ public init(name: String, comments!: Array<Comment> = [])
 异常：
 
 - Exception - 当输入的 `name` 不符合仓颉标识符规范时，抛出异常，异常中包含报错提示信息。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 VarPattern 实例
+    let varPattern = VarPattern("i")
+
+    println("varPattern: ${varPattern}")
+}
+```
+
+运行结果：
+
+```text
+varPattern: i
+```
 
 ## class VArrayExpr
 
@@ -15857,6 +17528,49 @@ public init(argument: Argument, vArrayType: VArrayType, comments!: Array<Comment
 
 - Exception - 当 `size` 小于 `0` 时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let symbolRef = SymbolRef("i", [])
+    let params = ParameterList(LambdaParam("i", None), hasParen:false)
+
+    // 创建 Lambda 实例
+    let lambda = Lambda(
+        [symbolRef], 
+        params
+    )
+
+    // 创建 Argument 实例
+    let argument = Argument(
+        None, 
+        false, 
+        lambda
+    )
+
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+
+    let vArrayExpr = VArrayExpr(
+        argument,
+        vArrayType
+    )
+
+    println("vArrayExpr: ${vArrayExpr}")
+}
+```
+
+运行结果：
+
+```text
+vArrayExpr: VArray<Int64, $10>({ i => i })
+```
+
 ### func getLParenPos()
 
 ```cangjie
@@ -15869,6 +17583,51 @@ public func getLParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `(` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let symbolRef = SymbolRef("i", [])
+    let params = ParameterList([LambdaParam("i", None)], hasParen:false)
+
+    // 创建 Lambda 实例
+    let lambda = Lambda(
+        [symbolRef], 
+        params
+    )
+
+    // 创建 Argument 实例
+    let argument = Argument(
+        None, 
+        false, 
+        lambda
+    )
+
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+
+    let vArrayExpr = VArrayExpr(
+        argument,
+        vArrayType
+    )
+    
+    let pos = vArrayExpr.getLParenPos()
+    // 输出 ( 位置
+    println("vArrayExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayExpr.getLParenPos(): 1:19-1:20
+```
+
 ### func getRParenPos()
 
 ```cangjie
@@ -15880,6 +17639,51 @@ public func getRParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `)` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let symbolRef = SymbolRef("i", [])
+    let params = ParameterList([LambdaParam("i", None)], hasParen:false)
+
+    // 创建 Lambda 实例
+    let lambda = Lambda(
+        [symbolRef], 
+        params
+    )
+
+    // 创建 Argument 实例
+    let argument = Argument(
+        None, 
+        false, 
+        lambda
+    )
+
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+
+    let vArrayExpr = VArrayExpr(
+        argument,
+        vArrayType
+    )
+    
+    let pos = vArrayExpr.getRParenPos()
+    // 输出 ) 位置
+    println("vArrayExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayExpr.getRParenPos(): 1:30-1:31
+```
 
 ## class VArrayType
 
@@ -15935,6 +17739,28 @@ public init(elementType: TypeAnnotation, size: Int64, comments!: Array<Comment> 
 
 - Exception - 当 `size` 小于等于 `0` 时，抛出异常，异常中包含报错提示信息。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+
+    println("vArrayType: ${vArrayType}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType: VArray<Int64, $10>
+```
+
 ### func getCommaPos()
 
 ```cangjie
@@ -15946,6 +17772,30 @@ public func getCommaPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `,` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+    
+    let pos = vArrayType.getCommaPos()
+    // 输出逗号位置
+    println("vArrayType.getCommaPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType.getCommaPos(): 1:13-1:14
+```
 
 ### func getDollarPos()
 
@@ -15959,6 +17809,30 @@ public func getDollarPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `$` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+    
+    let pos = vArrayType.getDollarPos()
+    // 输出 $ 位置
+    println("vArrayType.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType.getDollarPos(): 1:15-1:16
+```
+
 ### func getLAnglePos()
 
 ```cangjie
@@ -15970,6 +17844,30 @@ public func getLAnglePos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `<` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+    
+    let pos = vArrayType.getLAnglePos()
+    // 输出 < 位置
+    println("vArrayType.getLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType.getLAnglePos(): 1:7-1:8
+```
 
 ### func getRAnglePos()
 
@@ -15983,6 +17881,30 @@ public func getRAnglePos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `>` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+    
+    let pos = vArrayType.getRAnglePos()
+    // 输出 > 位置
+    println("vArrayType.getRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType.getRAnglePos(): 1:18-1:19
+```
+
 ### func getVArrayPos()
 
 ```cangjie
@@ -15994,6 +17916,30 @@ public func getVArrayPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `VArray` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    let elementType = AtomicType(AtomicTypeKind.Int64Type)
+
+    // 创建 VArrayType 实例
+    let vArrayType = VArrayType(elementType, 10)
+    
+    let pos = vArrayType.getVArrayPos()
+    // 输出 VArray 关键字位置
+    println("vArrayType.getVArrayPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+vArrayType.getVArrayPos(): 1:1-1:7
+```
 
 ## class WhileExpr
 
@@ -16045,6 +17991,34 @@ public init(body: Block, condition: DisjunctionCondition, comments!: Array<Comme
 - condition: [DisjunctionCondition](#class-disjunctioncondition) - 循环继续条件。
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 body
+    let body = Block([BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+
+    // 创建 condition
+    let condition = DisjunctionCondition([ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))])
+
+    // 创建 WhileExpr 实例
+    let whileExpr = WhileExpr(body, condition)
+
+    println("whileExpr: ${whileExpr}")
+}
+```
+
+运行结果：
+
+```text
+whileExpr: while (x) {
+    x + 1
+}
+```
+
 ### func getCondLParenPos()
  
 ```cangjie
@@ -16056,6 +18030,30 @@ public func getCondLParenPos(): CodePositionRange
 返回值：
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回条件的 `(` 的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 WhileExpr 实例
+    let body = Block([BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let condition = DisjunctionCondition([ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))])
+    let whileExpr = WhileExpr(body, condition)
+    let pos = whileExpr.getCondLParenPos()
+
+    // 输出条件左括号位置
+    println("whileExpr.getCondLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+whileExpr.getCondLParenPos(): 1:7-1:8
+```
 
 ### func getCondRParenPos()
 
@@ -16069,6 +18067,30 @@ public func getCondRParenPos(): CodePositionRange
 
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回条件的 `)` 的位置。
 
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 WhileExpr 实例
+    let body = Block([BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let condition = DisjunctionCondition([ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))])
+    let whileExpr = WhileExpr(body, condition)
+    let pos = whileExpr.getCondRParenPos()
+
+    // 输出条件右括号位置
+    println("whileExpr.getCondRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+whileExpr.getCondRParenPos(): 1:9-1:10
+```
+
 ### func getWhileKeyWordPos()
  
 ```cangjie
@@ -16080,6 +18102,30 @@ public func getWhileKeyWordPos(): CodePositionRange
 返回值：
  
 - [CodePositionRange](syntax_package_structs.md#struct-codepositionrange) - 返回 `while` 关键字的位置。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main(): Unit {
+    // 创建 WhileExpr 实例
+    let body = Block([BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let condition = DisjunctionCondition([ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))])
+    let whileExpr = WhileExpr(body, condition)
+    let pos = whileExpr.getWhileKeyWordPos()
+
+    // 输出 while 关键字位置
+    println("whileExpr.getWhileKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+}
+```
+
+运行结果：
+
+```text
+whileExpr.getWhileKeyWordPos(): 1:1-1:6
+```
 
 ## class WildcardPattern
 
@@ -16106,3 +18152,23 @@ public init(comments!: Array<Comment> = [])
 参数：
 
 - comments!: Array\<[Comment](#class-comment)> - 附加的注释列表，默认为空数组。
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.syntax.*
+
+main() {
+    // 创建 WildcardPattern 实例
+    let wildcardPattern = WildcardPattern()
+
+    println("wildcardPattern: ${wildcardPattern}")
+}
+```
+
+运行结果：
+
+```text
+wildcardPattern: _
+```
