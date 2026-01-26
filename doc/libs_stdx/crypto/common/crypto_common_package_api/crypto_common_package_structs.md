@@ -146,7 +146,7 @@ public static func decode(text: String): Pem
 
 异常：
 
-- [X509Exception](./x509_package_exceptions.md#class-x509exception) - 数据为空时，或解码失败抛出异常。
+- [X509Exception](../../x509/x509_package_api/x509_package_exceptions.md#class-x509exception) - 数据为空时，或解码失败抛出异常。
 
 ### func encode()
 
@@ -227,7 +227,7 @@ public struct PemEntry <: ToString {
 最后一行是 “-----END”，标签和 “-----” 组成的 utf8 编码的字符串，详见 [RFC 1421](https://www.rfc-editor.org/rfc/rfc1421.html)。
 在旧版的 PEM 编码标准中在第一行和正文之间还包含条目头。
 
-为了支持不同的用户场景，我们提供了 [PemEntry](#struct-pementry) 和 [Pem](#struct-pem) 类型，[PemEntry](#struct-pementry) 用于存储单个PEM 基础结构。
+为了支持不同的用户场景，我们提供了 [PemEntry](#struct-pementry) 和 [Pem](#struct-pem) 类型，[PemEntry](#struct-pementry) 用于存储单个 PEM 基础结构。
 
 父类型：
 
