@@ -275,7 +275,7 @@ public static let DecipherOnly: UInt16 = 0x0100
 public static let DigitalSignature: UInt16 = 0x0080
 ```
 
-功能：表示私钥可以用于除了签发证书、签发 CRL 和非否认性服务的各种数字签名操作,而公钥用来验证这些签名。
+功能：表示私钥可以用于除了签发证书、签发 CRL 和非否认性服务的各种数字签名操作，而公钥用来验证这些签名。
 
 类型：UInt16
 
@@ -315,7 +315,7 @@ public static let KeyEncipherment: UInt16 = 0x0020
 public static let NonRepudiation: UInt16 = 0x0040
 ```
 
-功能：表示私钥可以用于进行非否认性服务中的签名,而公钥用来验证签名。
+功能：表示私钥可以用于进行非否认性服务中的签名，而公钥用来验证签名。
 
 类型：UInt16
 
@@ -479,7 +479,7 @@ public struct PemEntry <: ToString {
 最后一行是 “-----END”，标签和 “-----” 组成的 utf8 编码的字符串，详见 [RFC 1421](https://www.rfc-editor.org/rfc/rfc1421.html)。
 在旧版的 PEM 编码标准中在第一行和正文之间还包含条目头。
 
-为了支持不同的用户场景，我们提供了 [PemEntry](x509_package_structs.md#struct-pementry) 和 [Pem](x509_package_structs.md#struct-pem) 类型，[PemEntry](x509_package_structs.md#struct-pementry) 用于存储单个PEM 基础结构。
+为了支持不同的用户场景，我们提供了 [PemEntry](x509_package_structs.md#struct-pementry) 和 [Pem](x509_package_structs.md#struct-pem) 类型，[PemEntry](x509_package_structs.md#struct-pementry) 用于存储单个 PEM 基础结构。
 
 父类型：
 
@@ -704,7 +704,7 @@ public struct SerialNumber <: Equatable<SerialNumber> & Hashable & ToString {
 }
 ```
 
-功能：结构体 [SerialNumber](x509_package_structs.md#struct-serialnumber) 为数字证书的序列号，是数字证书中的一个唯一标识符，用于标识数字证书的唯一性。根据规范，证书序列号的长度不应超过 20 字节。详见[rfc5280](https://www.rfc-editor.org/rfc/rfc5280)。
+功能：结构体 [SerialNumber](x509_package_structs.md#struct-serialnumber) 为数字证书的序列号，是数字证书中的一个唯一标识符，用于标识数字证书的唯一性。根据规范，证书序列号的长度不应超过 20 字节。详见 [rfc5280](https://www.rfc-editor.org/rfc/rfc5280)。
 
 父类型：
 
