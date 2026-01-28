@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <openssl/x509.h>
+#include <stdarg.h>
 #include <pthread.h>
 #include "api.h"
 
@@ -88,12 +89,16 @@ enum
 };
 
 extern int8_t LOG_LEVEL;
-#define KEYLESS_PROVIDER_LOG(fmt, ...)                                                                                                                                             \
-    do {                                                                                                                                                                           \
-        if (LOG_LEVEL == KEYLESS_LOG_ON) {                                                                                                                                         \
-            fprintf(stderr, fmt, ##__VA_ARGS__);                                                                                                                                   \
-        }                                                                                                                                                                          \
-    } while (0)
+static inline void KeylessProviderLog(const char* fmt, ...)
+{
+    if (LOG_LEVEL != KEYLESS_LOG_ON) {
+        return;
+    }
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+}
 
 typedef struct KeylessAsymcipherCtx
 {
@@ -133,7 +138,7 @@ __attribute__((visibility("hidden"))) const char* KeylessKeyGetId(const void* ke
 __attribute__((visibility("hidden"))) int KeylessKeyUpRef(void* keyData);
 __attribute__((visibility("hidden"))) void KeylessKeyFreeExtern(void* keyData);
 __attribute__((visibility("hidden"))) size_t KeylessKeyGetRsaNLen(const void* keyData);
-__attribute__((visibility("hidden"))) int CertIssuerSerialSha256Hex(const X509* crt, char out_hex[65]); /* 64(sha256 length)chars + NULL */
+__attribute__((visibility("hidden"))) int CertIssuerSerialSha256Hex(const X509* crt, char out_hex[65], size_t out_hex_len); /* 64(sha256 length)chars + NULL */
 __attribute__((visibility("hidden"))) int8_t GetKeylessLogLevel();
 __attribute__((visibility("hidden"))) int KeylessErrorLibInit(void);
 __attribute__((visibility("hidden"))) unsigned int GetEcOrderBitsFromGroup(const char* groupName);

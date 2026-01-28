@@ -225,7 +225,12 @@ static int KeylessPssComputeDigest(const EVP_MD* hashMd, const unsigned char* mh
         return 0;
     }
     (void)memset_s(mprime, prefixZeroLen, 0x00, prefixZeroLen);
-    (void)memcpy_s(mprime + prefixZeroLen, hashLen + saltLen, mhash, hashLen);
+    int ret = memcpy_s(mprime + prefixZeroLen, hashLen + saltLen, mhash, hashLen);
+    if (ret != 0) {
+        DYN_OPENSSL_secure_free(mprime, dynMsg);
+        return 0;
+    }
+
     if (saltLen > 0) {
         (void)memcpy_s(mprime + prefixZeroLen + hashLen, saltLen, salt, saltLen);
     }
@@ -602,7 +607,7 @@ static int KeylessSigSignInit(void* vctx, void* keydata, const OSSL_PARAM params
     if (!c || !keydata) {
         return 0;
     }
-    KEYLESS_PROVIDER_LOG("[keyless] sign_init called\n");
+    KeylessProviderLog("[keyless] sign_init called\n");
     KeylessKeyUpRef(keydata);
     if (!KeylessSigInitInternal(c, keydata, KeylessKeyGetType(keydata))) {
         return 0;
@@ -668,7 +673,7 @@ static int KeylessSigSetCtxParams(void* vctx, const OSSL_PARAM params[])
         int pad = 0;
         if (DYN_OSSL_PARAM_get_int(p, &pad, dynMsg)) {
             c->padMode = pad;
-            KEYLESS_PROVIDER_LOG("[keyless] set_ctx_params pad_mode=%d\n", c->padMode);
+            KeylessProviderLog("[keyless] set_ctx_params pad_mode=%d\n", c->padMode);
         }
     }
 
@@ -689,7 +694,7 @@ static int KeylessSigSetCtxParams(void* vctx, const OSSL_PARAM params[])
         int salt = RSA_PSS_SALTLEN_DIGEST;
         if (DYN_OSSL_PARAM_get_int(p, &salt, dynMsg)) {
             c->pssSaltlen = salt;
-            KEYLESS_PROVIDER_LOG("[keyless] set_ctx_params saltlen=%d\n", c->pssSaltlen);
+            KeylessProviderLog("[keyless] set_ctx_params saltlen=%d\n", c->pssSaltlen);
         }
     }
 
@@ -762,15 +767,15 @@ static int BuildRemoteAlg(KeylessSignCtx* c)
 {
     if (c->type == KEYLESS_KEY_TYPE_RSA) { /* RSA */
         const char* mode = (c->padMode == RSA_PKCS1_PSS_PADDING) ? "pss" : "pkcs1";
-        (void)snprintf_s(c->algName, sizeof(c->algName), sizeof(c->algName) - 1, "rsa-raw-%s", mode);
-        return 1;
+        int ret = snprintf_s(c->algName, sizeof(c->algName), sizeof(c->algName) - 1, "rsa-raw-%s", mode);
+        return (ret == -1) ? 0 : 1;
     }
 
     if (c->type == KEYLESS_KEY_TYPE_EC) {
         const char* grp = KeylessKeyGetGroup(c->keyData);
         const char* gshort = grp ? grp : "unknown";
-        (void)snprintf_s(c->algName, sizeof(c->algName), sizeof(c->algName) - 1, "ecdsa-%s-%s", gshort, c->digestName[0] ? c->digestName : "sha256");
-        return 1;
+        int ret = snprintf_s(c->algName, sizeof(c->algName), sizeof(c->algName) - 1, "ecdsa-%s-%s", gshort, c->digestName[0] ? c->digestName : "sha256");
+        return (ret == -1) ? 0: 1;
     }
 
     return 0;
@@ -793,7 +798,7 @@ static int KeylessRsaHandleSizeRequest(size_t modlen, unsigned char* sig, size_t
     if (siglen) {
         *siglen = modlen;
     }
-    KEYLESS_PROVIDER_LOG("[keyless] RSA size query returning %zu\n", modlen);
+    KeylessProviderLog("[keyless] RSA size query returning %zu\n", modlen);
     return 1;
 }
 
@@ -861,8 +866,15 @@ static int KeylessRsaPreparePkcs1Payload(KeylessSignCtx* c, const unsigned char*
         if (desc->derLen + desc->hashLen > diBufSize) {
             return 0;
         }
-        (void)memcpy_s(diBuf, diBufSize, desc->derPrefix, desc->derLen);
-        (void)memcpy_s(diBuf + desc->derLen, diBufSize - desc->derLen, hashSrc, desc->hashLen);
+        int ret = memcpy_s(diBuf, diBufSize, desc->derPrefix, desc->derLen);
+        if (ret != 0) {
+            return 0;
+        }
+
+        ret = memcpy_s(diBuf + desc->derLen, diBufSize - desc->derLen, hashSrc, desc->hashLen);
+        if (ret != 0) {
+            return 0;
+        }
         digestinfo_ptr = diBuf;
         digestinfoLen = desc->derLen + desc->hashLen;
     }
@@ -900,7 +912,7 @@ static int KeylessRsaInvokeRemote(KeylessSignCtx* c, KeylessRemoteSignCb cb, uns
 {
     char* keyId = ((KeylessKey*)(c->keyData))->keyId;
     (void)keyId; /* avoid logging sensitive ids by default */
-    KEYLESS_PROVIDER_LOG("[keyless] invoking remote RSA raw alg=%s payloadLen=%zu\n", c->algName, payloadLen);
+    KeylessProviderLog("[keyless] invoking remote RSA raw alg=%s payloadLen=%zu\n", c->algName, payloadLen);
 
     int64_t written = 0;
     unsigned char* remote = (unsigned char*)cb(keyId, c->algName, payload, (int64_t)payloadLen, &written);
@@ -923,7 +935,7 @@ static int KeylessRsaInvokeRemote(KeylessSignCtx* c, KeylessRemoteSignCb cb, uns
         free(remote);
         *siglen = modlen;
     }
-    KEYLESS_PROVIDER_LOG("[keyless] RSA sign complete alg=%s wrote=%zu (padded to %zu)\n", c->algName, got, modlen);
+    KeylessProviderLog("[keyless] RSA sign complete alg=%s wrote=%zu (padded to %zu)\n", c->algName, got, modlen);
     return 1;
 }
 
@@ -954,7 +966,7 @@ static int KeylessRsaSign(KeylessSignCtx* c, KeylessRemoteSignCb cb, unsigned ch
     const EVP_MD* hashMd = ResolveMd(c->digestName, dynMsg);
     if (!hashMd) {
         int lib = KeylessErrorLibInit();
-        KEYLESS_PROVIDER_LOG("[keyless] %d: unsupported digest %s\n", lib, c->digestName);
+        KeylessProviderLog("[keyless] %d: unsupported digest %s\n", lib, c->digestName);
         return 0;
     }
 
@@ -1071,7 +1083,7 @@ static int KeylessEcdsaSign(KeylessSignCtx* c, KeylessRemoteSignCb cb, unsigned 
         if (siglen) {
             *siglen = max_need;
         }
-        KEYLESS_PROVIDER_LOG("[keyless] ECDSA size query returning %zu\n", max_need);
+        KeylessProviderLog("[keyless] ECDSA size query returning %zu\n", max_need);
         return 1;
     }
 
@@ -1080,13 +1092,13 @@ static int KeylessEcdsaSign(KeylessSignCtx* c, KeylessRemoteSignCb cb, unsigned 
     }
 
     char* keyId = ((KeylessKey*)(c->keyData))->keyId;
-    KEYLESS_PROVIDER_LOG("[keyless] invoking remote ECDSA alg=%s dlen=%zu cap=%zu\n", c->algName, tbslen, sigsize);
+    KeylessProviderLog("[keyless] invoking remote ECDSA alg=%s dlen=%zu cap=%zu\n", c->algName, tbslen, sigsize);
 
     int64_t got = 0;
     unsigned char* out = (unsigned char*)cb(keyId, c->algName, tbs, (int64_t)tbslen, &got);
     if (!out || got <= 0) {
         free(out);
-        KEYLESS_PROVIDER_LOG("[keyless] remote sign failed or returned empty\n");
+        KeylessProviderLog("[keyless] remote sign failed or returned empty\n");
         return 0;
     }
 
@@ -1095,16 +1107,21 @@ static int KeylessEcdsaSign(KeylessSignCtx* c, KeylessRemoteSignCb cb, unsigned 
             *siglen = (size_t)got;
         }
         free(out);
-        KEYLESS_PROVIDER_LOG("[keyless] ECDSA output too large: need=%ld cap=%zu (alg=%s)\n", (long)got, sigsize, c->algName);
+        KeylessProviderLog("[keyless] ECDSA output too large: need=%ld cap=%zu (alg=%s)\n", (long)got, sigsize, c->algName);
         return 0;
     }
 
-    (void)memcpy_s(sig, sigsize, out, (size_t)got);
+    int ret = memcpy_s(sig, sigsize, out, (size_t)got);
+    if (ret != 0) {
+        free(out);
+        return 0;
+    }
+
     if (siglen) {
         free(out);
         *siglen = (size_t)got;
     }
-    KEYLESS_PROVIDER_LOG("[keyless] ECDSA sign complete alg=%s wrote=%ld\n", c->algName, (long)got);
+    KeylessProviderLog("[keyless] ECDSA sign complete alg=%s wrote=%ld\n", c->algName, (long)got);
 
     return 1;
 }
@@ -1174,7 +1191,7 @@ static int KeylessSigSign(void* vctx, unsigned char* sig, size_t* siglen, size_t
         c->mdLen = DigestLenFor(c->digestName);
     }
 
-    KEYLESS_PROVIDER_LOG("[keyless] sign() entry type=%d pad_mode=%d MGF1=%s, pss_saltlen=%d, sig_null=%d tbslen=%zu sigsize=%zu\n", c->type, c->padMode,
+    KeylessProviderLog("[keyless] sign() entry type=%d pad_mode=%d MGF1=%s, pss_saltlen=%d, sig_null=%d tbslen=%zu sigsize=%zu\n", c->type, c->padMode,
                          c->mgf1Name[0] ? c->mgf1Name : "default", c->pssSaltlen, sig ? 0 : 1, tbslen, sigsize);
 
     KeylessKey* key = (KeylessKey*)(c->keyData);
@@ -1182,7 +1199,7 @@ static int KeylessSigSign(void* vctx, unsigned char* sig, size_t* siglen, size_t
     KeylessRemoteSignCb cb = KeylessLookupSignCb(keyId);
     if (!cb) {
         int lib = KeylessErrorLibInit();
-        KEYLESS_PROVIDER_LOG("[keyless] %d: sign callback not set\n", lib);
+        KeylessProviderLog("[keyless] %d: sign callback not set\n", lib);
         return 0;
     }
 
