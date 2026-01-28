@@ -226,7 +226,7 @@ static int KeylessImport(void* keyData, int selection, const OSSL_PARAM params[]
     if (!k || !params) {
         return 0;
     }
-    KEYLESS_PROVIDER_LOG("[keyless] KeylessImport: selection=0x%X\n", selection);
+    KeylessProviderLog("[keyless] KeylessImport: selection=0x%X\n", selection);
     DynMsg* dynMsg = KeylessProviderGetThreadDynMsg();
     const OSSL_PARAM* pN = DYN_OSSL_PARAM_locate_const(params, OSSL_PKEY_PARAM_RSA_N, dynMsg);
     const OSSL_PARAM* pPub = DYN_OSSL_PARAM_locate_const(params, OSSL_PKEY_PARAM_PUB_KEY, dynMsg);
@@ -242,7 +242,7 @@ static int KeylessImport(void* keyData, int selection, const OSSL_PARAM params[]
         if (!KeylessImportKeyId(k, params)) {
             return 0;
         }
-        KEYLESS_PROVIDER_LOG("[keyless] KeylessImport: imported key type=%d\n", k->type);
+        KeylessProviderLog("[keyless] KeylessImport: imported key type=%d\n", k->type);
         return 1;
     }
     return 0;
@@ -273,7 +273,7 @@ static void* KeylessLoad(void* provctx, const void* reference, size_t referenceS
         return NULL;
     }
 
-    KeylessKey* const* ref = reference;
+    KeylessKey* const *ref = reference;
     return KeylessKeyDup(*ref);
 }
 
@@ -323,7 +323,7 @@ static int KeylessHas(const void* keyData, int selection)
  */
 static int KeylessMatch(const void* keyData1, const void* keyData2, int selection)
 {
-    KEYLESS_PROVIDER_LOG("[keyless] KeylessMatch: selection=0x%X\n", selection);
+    KeylessProviderLog("[keyless] KeylessMatch: selection=0x%X\n", selection);
     const KeylessKey* a = keyData1;
     const KeylessKey* b = keyData2;
     if (!a || !b) {
@@ -604,7 +604,7 @@ static const OSSL_PARAM* KeylessExportTypes(int selection)
 static const char* KeylessRsaQueryOpName(int operation_id)
 {
     if (operation_id == OSSL_OP_SIGNATURE || operation_id == OSSL_OP_ASYM_CIPHER) {
-        KEYLESS_PROVIDER_LOG("[keyless] query operation id %d\n", operation_id);
+        KeylessProviderLog("[keyless] query operation id %d\n", operation_id);
         return "RSA";
     }
     return NULL;

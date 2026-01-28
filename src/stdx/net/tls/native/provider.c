@@ -70,7 +70,7 @@ __attribute__((visibility("hidden"))) bool KeylessCheckDynMsg(const DynMsg* dynM
 
     const char* funcName = dynMsg->funcName ? dynMsg->funcName : "(unknown)";
     const char* phase = context ? context : "operation";
-    KEYLESS_PROVIDER_LOG("[keyless] missing OpenSSL symbol %s during %s\n.", funcName, phase);
+    KeylessProviderLog("[keyless] missing OpenSSL symbol %s during %s\n.", funcName, phase);
     return false;
 }
 
@@ -328,13 +328,13 @@ extern int8_t DYN_CJ_TLS_InitEmbeddedKeylessProvider(DynMsg* dynMsg)
     LOG_LEVEL = GetKeylessLogLevel();
     const char* customProviderName = "CJ_KEYLESS_PROVIDER";
     if (DYN_OSSL_PROVIDER_add_builtin(NULL, customProviderName, KeylessProviderInit, dynMsg) != 1) {
-        KEYLESS_PROVIDER_LOG("[keyless] Failed to add builtin keyless provider\n");
+        KeylessProviderLog("[keyless] Failed to add builtin keyless provider\n");
         return KEYLESS_PROVIDER_ADD_FAILED;
     }
 
     OSSL_PROVIDER* p = DYN_OSSL_PROVIDER_load(NULL, customProviderName, dynMsg);
     if (!p) {
-        KEYLESS_PROVIDER_LOG("[keyless] Failed to load keyless provider\n");
+        KeylessProviderLog("[keyless] Failed to load keyless provider\n");
         return KEYLESS_PROVIDER_LOAD_FAILED;
     }
     (void)DYN_OSSL_PROVIDER_load(NULL, "default", dynMsg);
@@ -343,12 +343,12 @@ extern int8_t DYN_CJ_TLS_InitEmbeddedKeylessProvider(DynMsg* dynMsg)
 
 extern void DYN_CJ_TLS_RegisterKeylessSignCallback(const char* keyId, KeylessRemoteSignCb cb, ExceptionData* exception, DynMsg* dynMsg)
 {
-    KEYLESS_PROVIDER_LOG("[keyless] Register sign callback for keyId=%s\n", keyId);
+    KeylessProviderLog("[keyless] Register sign callback for keyId=%s\n", keyId);
     KeylessRegisterSignCallback(keyId, cb, exception, dynMsg);
 }
 
 extern void DYN_CJ_TLS_RegisterKeylessDecryptCallback(const char* keyId, KeylessRemoteDecryptCb cb, ExceptionData* exception, DynMsg* dynMsg)
 {
-    KEYLESS_PROVIDER_LOG("[keyless] Register decrypt callback for keyId=%s\n", keyId);
+    KeylessProviderLog("[keyless] Register decrypt callback for keyId=%s\n", keyId);
     KeylessRegisterDecryptCallback(keyId, cb, exception, dynMsg);
 }
