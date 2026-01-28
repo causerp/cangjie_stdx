@@ -432,7 +432,6 @@ public class KeylessTlsServerConfig <: TlsConfig {
     }
 
 
-    private static let dummyPrivateKey = RSAPrivateKey(2048)
 
     public init(certChain: Array<X509Certificate>, signCallback: KeylessSignFunc, decryptCallback!: ?KeylessDecryptFunc = None<KeylessDecryptFunc>) {
         if (certChain.isEmpty()) {
@@ -440,6 +439,6 @@ public class KeylessTlsServerConfig <: TlsConfig {
         }
         this._keylessSignFunc = signCallback
         this._keylessDecryptFunc = decryptCallback
-        this._certificate = (certChain, KeylessTlsServerConfig.dummyPrivateKey)
+        this._certificate = (certChain, RSAPrivateKey(2048)) // Dummy private key, not used in keyless TLS
     }
 }
