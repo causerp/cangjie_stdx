@@ -233,7 +233,7 @@ static int Pkcs1V15Unpad(unsigned char* out, size_t outLen, const unsigned char*
 static void* KeylessAcNewctx(void* provctx)
 {
     (void)provctx;
-    KEYLESS_PROVIDER_LOG("[keyless] asym new ctx\n");
+    KeylessProviderLog("[keyless] asym new ctx\n");
     DynMsg* dynMsg = KeylessProviderGetThreadDynMsg();
     KeylessAsymcipherCtx* ctx = DYN_OPENSSL_zalloc(sizeof(KeylessAsymcipherCtx), dynMsg);
     KeylessCheckDynMsg(dynMsg, "asym newctx");
@@ -300,7 +300,7 @@ static void* KeylessAcDupctx(void* v)
 static int KeylessAcDecryptInit(void* vctx, void* keydata, const OSSL_PARAM params[])
 {
     KeylessAsymcipherCtx* c = vctx;
-    KEYLESS_PROVIDER_LOG("[keyless] asym decrypt init\n");
+    KeylessProviderLog("[keyless] asym decrypt init\n");
     if (!c || !keydata) {
         return 0;
     }
@@ -318,7 +318,7 @@ static int KeylessAcDecryptInit(void* vctx, void* keydata, const OSSL_PARAM para
                     } else {
                         c->padMode = pad;
                     }
-                    KEYLESS_PROVIDER_LOG("[keyless] asym init pad_mode=%d\n", pad);
+                    KeylessProviderLog("[keyless] asym init pad_mode=%d\n", pad);
                 }
             } else if (p->data_type == OSSL_PARAM_UTF8_STRING && p->data) {
                 const char* s = (const char*)p->data;
@@ -327,7 +327,7 @@ static int KeylessAcDecryptInit(void* vctx, void* keydata, const OSSL_PARAM para
                 } else {
                     return 0; /* unsupported padding */
                 }
-                KEYLESS_PROVIDER_LOG("[keyless] asym init pad_mode(str)=%s -> %d\n", s, c->padMode);
+                KeylessProviderLog("[keyless] asym init pad_mode(str)=%s -> %d\n", s, c->padMode);
             }
         }
         KeylessCheckDynMsg(dynMsg, "KeylessAcDecryptInit params");
@@ -343,7 +343,7 @@ static int KeylessAcDecryptInit(void* vctx, void* keydata, const OSSL_PARAM para
     } else {
         KeylessCopyDynMsg(&c->dynMsg, KeylessProviderGetThreadDynMsg());
     }
-    KEYLESS_PROVIDER_LOG("[keyless] asym decrypt init type=%d\n", c->type);
+    KeylessProviderLog("[keyless] asym decrypt init type=%d\n", c->type);
     if (c->type != KEYLESS_KEY_TYPE_RSA) {
         return 0;
     }
@@ -398,7 +398,7 @@ static int KeylessAcDecrypt(void* vctx, unsigned char* out, size_t* outlen, size
         if (outlen) {
             *outlen = TLS_RSA_PMS_LENGTH;
         }
-        KEYLESS_PROVIDER_LOG("[keyless] asym size query -> %zu\n", TLS_RSA_PMS_LENGTH);
+        KeylessProviderLog("[keyless] asym size query -> %zu\n", TLS_RSA_PMS_LENGTH);
         return 1;
     }
 
@@ -411,13 +411,13 @@ static int KeylessAcDecrypt(void* vctx, unsigned char* out, size_t* outlen, size
     KeylessRemoteDecryptCb dcb = KeylessLookupDecryptCb(keyId);
     if (!dcb) {
         int lib = KeylessErrorLibInit();
-        KEYLESS_PROVIDER_LOG("[keyless] %d: decrypt callback not set.\n", lib);
+        KeylessProviderLog("[keyless] %d: decrypt callback not set.\n", lib);
         return 0;
     }
 
     if (DYN_RAND_bytes(out, TLS_RSA_PMS_LENGTH, dynMsg) <= 0) {
         int lib = KeylessErrorLibInit();
-        KEYLESS_PROVIDER_LOG("[keyless] %d: RAND_bytes failed.\n", lib);
+        KeylessProviderLog("[keyless] %d: RAND_bytes failed.\n", lib);
         return 0;
     }
 
@@ -444,7 +444,7 @@ static int KeylessAcDecrypt(void* vctx, unsigned char* out, size_t* outlen, size
         goto cleanup;
     }
 
-    KEYLESS_PROVIDER_LOG("[keyless] asym decrypt inlen=%zu paddedLen=%zu\n", inlen, modlen);
+    KeylessProviderLog("[keyless] asym decrypt inlen=%zu paddedLen=%zu\n", inlen, modlen);
 
     int64_t written = 0;
     remote = (unsigned char*)dcb(keyId, cipher, (int64_t)modlen, &written);
@@ -457,19 +457,19 @@ static int KeylessAcDecrypt(void* vctx, unsigned char* out, size_t* outlen, size
                 goto cleanup;
             }
             success = 1;
-            KEYLESS_PROVIDER_LOG("[keyless] asym decrypt PMS direct len=48\n");
+            KeylessProviderLog("[keyless] asym decrypt PMS direct len=48\n");
         } else if (produced <= modlen) {
             /* Backend returned raw RSA decrypt output (EM) of up to modulus length. */
             if (memcpy_s(em + (modlen - produced), produced, remote, produced) != EOK) {
                 goto cleanup;
             }
             success = Pkcs1V15Unpad(out, TLS_RSA_PMS_LENGTH, em, modlen);
-            KEYLESS_PROVIDER_LOG("[keyless] asym decrypt EM len=%zu success=%d\n", produced, success);
+            KeylessProviderLog("[keyless] asym decrypt EM len=%zu success=%d\n", produced, success);
         } else {
-            KEYLESS_PROVIDER_LOG("[keyless] asym decrypt invalid size=%zu (> modlen=%zu)\n", produced, modlen);
+            KeylessProviderLog("[keyless] asym decrypt invalid size=%zu (> modlen=%zu)\n", produced, modlen);
         }
     } else {
-        KEYLESS_PROVIDER_LOG("[keyless] asym decrypt remote failure (written=%ld)\n", (long)written);
+        KeylessProviderLog("[keyless] asym decrypt remote failure (written=%ld)\n", (long)written);
         (void)Pkcs1V15Unpad(out, TLS_RSA_PMS_LENGTH, em, modlen);
     }
 
@@ -520,7 +520,7 @@ static int KeylessAcSetCtxParams(void* vctx, const OSSL_PARAM params[])
         return 1;
     }
 
-    KEYLESS_PROVIDER_LOG("[keyless] asym set_ctx params\n");
+    KeylessProviderLog("[keyless] asym set_ctx params\n");
     const OSSL_PARAM* p = NULL;
     DynMsg* dynMsg = &c->dynMsg;
 
@@ -538,7 +538,7 @@ static int KeylessAcSetCtxParams(void* vctx, const OSSL_PARAM params[])
             } else {
                 c->padMode = pad;
             }
-            KEYLESS_PROVIDER_LOG("[keyless] asym set_ctx pad_mode=%d\n", pad);
+            KeylessProviderLog("[keyless] asym set_ctx pad_mode=%d\n", pad);
             if (c->padMode != RSA_PKCS1_PADDING) {
                 return 0; /* not supported */
             }
@@ -550,7 +550,7 @@ static int KeylessAcSetCtxParams(void* vctx, const OSSL_PARAM params[])
         } else {
             return 0; /* unsupported padding */
         }
-        KEYLESS_PROVIDER_LOG("[keyless] asym set_ctx pad_mode(str)=%s -> %d\n", s, c->padMode);
+        KeylessProviderLog("[keyless] asym set_ctx pad_mode(str)=%s -> %d\n", s, c->padMode);
     }
 
     KeylessCheckDynMsg(dynMsg, "KeylessAcSetCtxParams");
@@ -567,7 +567,7 @@ static const OSSL_PARAM* KeylessAcSettableCtxParams(void* provctx)
 static int KeylessAcEncryptInit(void* vctx, void* keydata, const OSSL_PARAM params[])
 {
     KeylessAsymcipherCtx* c = vctx;
-    KEYLESS_PROVIDER_LOG("[keyless] asym encrypt init\n");
+    KeylessProviderLog("[keyless] asym encrypt init\n");
     if (!c || !keydata) {
         return 0;
     }
@@ -635,7 +635,7 @@ static int KeylessAcEncrypt(void* vctx, unsigned char* out, size_t* outlen, size
         if (outlen) {
             *outlen = modlen;
         }
-        KEYLESS_PROVIDER_LOG("[keyless] asym encrypt size query -> %zu\n", modlen);
+        KeylessProviderLog("[keyless] asym encrypt size query -> %zu\n", modlen);
         return 1;
     }
 
