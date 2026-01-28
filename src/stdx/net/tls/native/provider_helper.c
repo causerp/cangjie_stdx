@@ -9,6 +9,7 @@
 #include <openssl/bn.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
+#include <openssl/sha.h>
 #include <stdlib.h>
 #include <string.h>
 #include "provider.h"
@@ -87,9 +88,9 @@ __attribute__((visibility("hidden"))) size_t KeylessKeyGetNLen(const void* keyDa
  *                 Must be at least 65 bytes to accommodate the 64-character hash and null terminator.
  * @return         0 on success, non-zero on failure.
  */
-__attribute__((visibility("hidden"))) int CertIssuerSerialSha256Hex(const X509* crt, char outHex[65])
+__attribute__((visibility("hidden"))) int CertIssuerSerialSha256Hex(const X509* crt, char outHex[65], size_t outHexSize)
 {
-    if (!crt || !outHex) {
+    if (!crt || !outHex || outHexSize != 65) { // 65: need 64 hex chars + NUL
         return 0;
     }
 
@@ -104,42 +105,40 @@ __attribute__((visibility("hidden"))) int CertIssuerSerialSha256Hex(const X509* 
     unsigned char *issuerDer = NULL, *serialDer = NULL;
     int issuerLength = DYN_i2d_X509_NAME((X509_NAME*)issuer, &issuerDer, dynMsg);
     int serialLength = DYN_i2d_ASN1_INTEGER((ASN1_INTEGER*)serial, &serialDer, dynMsg);
+    unsigned char dig[32]; // SHA-256 produces 32-byte digests
+    int ok = 0;
+
     if (issuerLength <= 0 || serialLength <= 0) {
-        DYN_OPENSSL_secure_free(issuerDer, dynMsg);
-        DYN_OPENSSL_secure_free(serialDer, dynMsg);
-        return 0;
+        goto cleanup;
     }
 
-    size_t total = (size_t)issuerLength + (size_t)serialLength;
-    unsigned char* cat = DYN_OPENSSL_secure_malloc(total, dynMsg);
-    if (!cat) {
-        DYN_OPENSSL_secure_free(issuerDer, dynMsg);
-        DYN_OPENSSL_secure_free(serialDer, dynMsg);
-        return 0;
+    SHA256_CTX ctx;
+    if (!DYN_SHA256_Init(&ctx, dynMsg)) {
+        goto cleanup;
     }
-    (void)memcpy_s(cat, total, issuerDer, issuerLength);
-    (void)memcpy_s(cat + issuerLength, total - issuerLength, serialDer, serialLength);
-
-    unsigned char dig[32]; // 32： SHA256(256bit) / 8 = 32byte
-    if (!DYN_EVP_Q_digest(NULL, "SHA256", NULL, cat, total, dig, NULL, dynMsg)) {
-        DYN_OPENSSL_secure_free(cat, dynMsg);
-        DYN_OPENSSL_secure_free(issuerDer, dynMsg);
-        DYN_OPENSSL_secure_free(serialDer, dynMsg);
-        return 0;
+    if (!DYN_SHA256_Update(&ctx, issuerDer, (size_t)issuerLength, dynMsg)) {
+        goto cleanup;
+    }
+    if (!DYN_SHA256_Update(&ctx, serialDer, (size_t)serialLength, dynMsg)) {
+        goto cleanup;
+    }
+    if (!DYN_SHA256_Final(dig, &ctx, dynMsg)) {
+        goto cleanup;
     }
 
     static const char* hex = "0123456789abcdef";
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < 32; ++i) { // 32 bytes in SHA-256 digest
         outHex[i * 2] = hex[(dig[i] >> 4) & 0xF];
         outHex[i * 2 + 1] = hex[dig[i] & 0xF];
     }
     outHex[64] = '\0'; // SHA-256 is 32 bytes -> 64 hex chars; index 64 is the NUL terminator
+    ok = 1;
 
-    DYN_OPENSSL_secure_free(cat, dynMsg);
+cleanup:
     DYN_OPENSSL_secure_free(issuerDer, dynMsg);
     DYN_OPENSSL_secure_free(serialDer, dynMsg);
     KeylessCheckDynMsg(dynMsg, "CertIssuerSerialSha256Hex");
-    return 1;
+    return ok;
 }
 
 /**
@@ -160,7 +159,7 @@ __attribute__((visibility("hidden"))) char* GetCertSha256Hex(const X509* crt)
     const size_t bufSize = 65; // 64 hex chars + null terminator
     char buf[bufSize];
 
-    if (!CertIssuerSerialSha256Hex(crt, buf)) {
+    if (!CertIssuerSerialSha256Hex(crt, buf, bufSize)) {
         return NULL;
     }
 

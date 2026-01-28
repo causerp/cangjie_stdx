@@ -350,7 +350,7 @@ static EVP_PKEY* MakeKeylessFromPubkey(EVP_PKEY* pub, const char* keyId, DynMsg*
     if (type == EVP_PKEY_EC) {
         return KeylessFromEcPubkey(pub, keyId, dynMsg);
     }
-    KEYLESS_PROVIDER_LOG("[keyless] invalid type: %d\n", type);
+    KeylessProviderLog("[keyless] invalid type: %d\n", type);
     return NULL;
 }
 
@@ -374,18 +374,18 @@ EVP_PKEY* CreateKeylessKeyFromCtx(SSL_CTX* ctx, const char* keyId, DynMsg* dynMs
     }
 
     if (!ctx || !keyId) {
-        KEYLESS_PROVIDER_LOG("[keyless] invalid args: ctx/keyId\n");
+        KeylessProviderLog("[keyless] invalid args: ctx/keyId\n");
         goto out;
     }
 
     X509* cert = DYN_SSL_CTX_get0_certificate(ctx, dynMsg);
     if (!cert) {
-        KEYLESS_PROVIDER_LOG("[keyless] SSL_CTX has no configured certificate\n");
+        KeylessProviderLog("[keyless] SSL_CTX has no configured certificate\n");
         goto out;
     }
 
     if (!DYN_X509_up_ref(cert, dynMsg)) {
-        KEYLESS_PROVIDER_LOG("[keyless] X509_up_ref failed\n");
+        KeylessProviderLog("[keyless] X509_up_ref failed\n");
         goto out;
     }
     ownedCert = cert;
@@ -394,13 +394,13 @@ EVP_PKEY* CreateKeylessKeyFromCtx(SSL_CTX* ctx, const char* keyId, DynMsg* dynMs
     DYN_X509_free(ownedCert, dynMsg);
     ownedCert = NULL;
     if (!pub) {
-        KEYLESS_PROVIDER_LOG("[keyless] cannot extract public key from ctx cert\n");
+        KeylessProviderLog("[keyless] cannot extract public key from ctx cert\n");
         goto out;
     }
 
     keyless = MakeKeylessFromPubkey(pub, keyId, dynMsg);
     if (!keyless) {
-        KEYLESS_PROVIDER_LOG("[keyless] MakeKeylessFromPubkey failed\n");
+        KeylessProviderLog("[keyless] MakeKeylessFromPubkey failed\n");
     }
 
 out:
@@ -426,8 +426,9 @@ extern int CJ_TLS_DYN_SetKeylessPrivateKey(SSL_CTX* ctx, ExceptionData* exceptio
     NOT_NULL_OR_RETURN(exception, ctx, 0, dynMsg);
 
     X509* leaf = DYN_SSL_CTX_get0_certificate(ctx, dynMsg);
-    char* spki_hex = calloc(65, sizeof(char)); // 64 hexadecimal characters + a null terminator for a SHA-256 hash of the Subject Public Key Info.
-    CertIssuerSerialSha256Hex(leaf, spki_hex);
+    const size_t hexLength = 65; // 64 hexadecimal characters + a null terminator for a SHA-256 hash of the Subject Public Key Info.
+    char* spki_hex = calloc(hexLength, sizeof(char)); 
+    CertIssuerSerialSha256Hex(leaf, spki_hex, hexLength);
 
     EVP_PKEY* key = CreateKeylessKeyFromCtx(ctx, spki_hex, dynMsg);
     if (!key) {
