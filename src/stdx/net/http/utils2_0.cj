@@ -128,7 +128,7 @@ func initializeSettings(): HashMap<UInt16, UInt32> {
 class HttpConnectionException <: Exception {
     let h2Error: H2Error
 
-    public init(h2Error: H2Error, message: String) {
+    init(h2Error: H2Error, message: String) {
         super(message)
         this.h2Error = h2Error
     }
@@ -140,7 +140,7 @@ class HttpConnectionException <: Exception {
 
 class HttpStreamException <: Exception {
     let h2Error: H2Error
-    public init(h2Error: H2Error, message: String) {
+    init(h2Error: H2Error, message: String) {
         super(message)
         this.h2Error = h2Error
     }
