@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+# This source file is part of the Cangjie project, licensed under Apache-2.0
+# with Runtime Library Exception.
+#
+# See https://cangjie-lang.cn/pages/LICENSE for license information.
+
 # Exit on any error
 set -e
 
@@ -64,7 +70,7 @@ else
 fi
 
 while getopts ":p:d:" opt; do
-  case ${opt} in
+  case "${opt}" in
     p )
       PLATFORM_ARCH=$OPTARG
       ;;
