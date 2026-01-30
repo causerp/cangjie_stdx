@@ -14,7 +14,7 @@ package stdx.string_intern
 class CacheProxy<K, V> <: Cache<K, V> where K <: Hashable & Equatable<K> & ToString {
     protected var cache: ICache<K, V> = LRUMemoryCache<K, V>(cacheConfigs: DefaultCacheConfig())
 
-    public init(cacheConfig!: ICacheConfig = DefaultCacheConfig(),
+    init(cacheConfig!: ICacheConfig = DefaultCacheConfig(),
                 cacheKeyLinkList!: ILinkList<K> = ConcurrentSkipingLinkList<K>()) {
         var configOP: ?ICacheConfig = Some(cacheConfig)
         match (cacheConfig.evictionType) {

@@ -72,7 +72,7 @@ public class CoroutinePoolRejectException <: Exception {
 }
 
 class MethodUnsupportedException <: Exception {
-    public init(message: String) {
+    init(message: String) {
         super(message)
     }
     protected func getClassName(): String {
@@ -81,7 +81,7 @@ class MethodUnsupportedException <: Exception {
 }
 
 class HpackException <: Exception {
-    public init(message: String) {
+    init(message: String) {
         super(message)
     }
     protected func getClassName(): String {
@@ -90,7 +90,7 @@ class HpackException <: Exception {
 }
 
 class ConcurrentException <: Exception {
-    public init(message: String) {
+    init(message: String) {
         super(message)
     }
     protected func getClassName(): String {

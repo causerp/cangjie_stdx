@@ -25,7 +25,7 @@ internal abstract class BaseMemoryCache<K, V> <: ICache<K, V> where K <: Hashabl
     protected var lock: Mutex = Mutex()
     protected var cacheConfigs: ?ICacheConfig
 
-    public init(cacheConfigs!: ?ICacheConfig = Option<ICacheConfig>.None) {
+    init(cacheConfigs!: ?ICacheConfig = Option<ICacheConfig>.None) {
         this.cacheConfigs = cacheConfigs
     }
 
