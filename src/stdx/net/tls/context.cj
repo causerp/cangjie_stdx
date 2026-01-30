@@ -29,7 +29,7 @@ class TlsContext <: Resource {
         this.server = server
     }
 
-    public init(
+    init(
         enableKeylog!: Bool = false,
         server!: Bool = false
     ) {
@@ -52,7 +52,7 @@ class TlsContext <: Resource {
     /**
      * Creates TlsRawSocket with SSL instance using this context or fails. The returned socket is non-negotiated.
      */
-    public func createStream(socket: IOStream): TlsRawSocket {
+    func createStream(socket: IOStream): TlsRawSocket {
         withContext {
             instance, exception => unsafe {
                 let result = CJ_TLS_CreateSsl(instance, if (server) { 1 } else { 0 }, exception)

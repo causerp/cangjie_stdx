@@ -1189,7 +1189,7 @@ class HttpEngineConn2 <: HttpEngineConn & InputStream {
      * For websocket to call.
      * Send an empty DATA with streamEnd set instead of RST_STREAM, because RST_STREAM has privilege, it may discard previous DATA.
      */
-    public func close(): Unit {
+    func close(): Unit {
         if (quit.load()) {
             return
         }
