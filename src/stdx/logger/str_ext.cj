@@ -15,7 +15,7 @@ let hex = "0123456789ABCDEF".toArray()
 
 struct JsonUtils {
     static let needEscape: Array<Bool> = Array<Bool>(128, repeat: false)
-    static let escapeTable: Array<Byte> = Array<Byte>(93, repeat: 0)
+    static let escapeTable: Array<Byte> = Array<Byte>(128, repeat: 0)
 
     static init() {
         for (i in 0..32) {

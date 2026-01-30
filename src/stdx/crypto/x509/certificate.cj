@@ -608,7 +608,12 @@ func getSystemRootCerts(): Array<X509Certificate> {
     result.toArray()
 }
 
-@When[os != "Windows"]
+@When[env != "ohos"]
+func getOhosRootCerts(): Array<X509Certificate> {
+    return Array()
+}
+
+@When[env == "ohos"]
 func getOhosRootCerts(): Array<X509Certificate> {
     let OH_CA_LIST = [
         "/etc/security/certificates",
