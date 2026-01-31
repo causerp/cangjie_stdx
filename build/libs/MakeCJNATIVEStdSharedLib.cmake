@@ -52,6 +52,12 @@ function(make_cangjie_lib target_name)
         list(APPEND flags_to_compile "-Wl,-z,relro,-z,now,-z,noexecstack")
     endif()
 
+    if(ANDROID)
+        # we need use our lld since we have modification to make it link properly
+        # otherwise it will has false alignment and finally lead to a SEGV when load std-lib.
+        list(APPEND flags_to_compile "-fuse-ld=$ENV{CANGJIE_HOME}/third_party/llvm/bin/ld.lld")
+    endif()
+    
     if(MINGW)
         list(APPEND flags_to_compile "${LINKER_OPTION_PREFIX}--no-insert-timestamp")
         list(APPEND flags_to_compile "${LINKER_OPTION_PREFIX}--export-all-symbols")
