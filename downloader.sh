@@ -160,7 +160,9 @@ unzip -q "$CACHED_FILE" -d "$TMP_EXTRACT_DIR" || error_exit "Unzip failed. The f
 TOP_LEVEL_DIR=$(find "$TMP_EXTRACT_DIR" -mindepth 1 -maxdepth 1 -type d)
 
 if [ -z "$TOP_LEVEL_DIR" ] || [ ! -d "$TOP_LEVEL_DIR" ]; then
-    rm -rf "$TMP_EXTRACT_DIR"
+    if [ -d "$TMP_EXTRACT_DIR" ]; then
+        rm -rf "$TMP_EXTRACT_DIR"
+    fi
     error_exit "Could not find a top-level directory in the zip file."
 fi
 
@@ -173,7 +175,9 @@ fi
 mv "$TOP_LEVEL_DIR" "$FINAL_PATH"
 
 # Clean up temp directory
-rm -rf "$TMP_EXTRACT_DIR"
+if [ -d "$TMP_EXTRACT_DIR" ]; then
+    rm -rf "$TMP_EXTRACT_DIR"
+fi
 
 # 6. Post-extraction for macOS
 if [[ "$(uname -s)" == "Darwin" && "$PLATFORM_ARCH" == mac-* ]]; then
