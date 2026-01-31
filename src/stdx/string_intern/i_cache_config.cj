@@ -54,7 +54,7 @@ class DefaultCacheConfig <: ICacheConfig {
         }
     }
 
-    public init(maxObjects!: Int64 = 0, cacheName!: String = "", spoolChunkSize!: Int64 = 2,
+    init(maxObjects!: Int64 = 0, cacheName!: String = "", spoolChunkSize!: Int64 = 2,
                 evictionType!: CacheEvictionType = CacheEvictionType.LRU) {
         this._maxObjects = maxObjects
         this._cacheName = cacheName

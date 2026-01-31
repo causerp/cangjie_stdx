@@ -159,7 +159,7 @@ class TlsRawSocket <: IOStream & Resource & ToString {
      * @throws TlsException if handshake fails
      * @throws SocketException or other types from the underlying socket
      */
-    public func handshake(): Unit {
+    func handshake(): Unit {
         synchronized(readLock) {
             synchronized(writeLock) {
                 try {

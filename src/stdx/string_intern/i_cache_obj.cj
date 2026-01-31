@@ -56,7 +56,7 @@ class DefaultCacheObj<K, V> <: Object & ICacheObj<K, V> {
         }
     }
 
-    public init(key: K, value: V, attribute!: ICacheObjAttr = DefaultCacheObjAttr(), name!: String = "") {
+    init(key: K, value: V, attribute!: ICacheObjAttr = DefaultCacheObjAttr(), name!: String = "") {
         this._name = name
         this._attribute = attribute
         this._key = key

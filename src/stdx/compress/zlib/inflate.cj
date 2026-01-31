@@ -66,7 +66,7 @@ class Inflate {
      * @param inBuf Set inBuf as new input buffer.
      * @param availIn Number of bytes of available data in the input buffer.
      */
-    public func addInputBytes(inBuf: Array<UInt8>, availIn: Int64): Unit {
+    func addInputBytes(inBuf: Array<UInt8>, availIn: Int64): Unit {
         this.inBuf = inBuf
         this.inBufOffset = 0
         this.availIn = availIn
@@ -81,7 +81,7 @@ class Inflate {
      *
      * @throws ZlibException if failed to decode stream.
      */
-    public func inflate(outBuf: Array<UInt8>, flush: FlushType): Int64 {
+    func inflate(outBuf: Array<UInt8>, flush: FlushType): Int64 {
         unsafe {
             let nextIn: CPointerHandle<UInt8> = acquireArrayRawData(this.inBuf)
             CJ_SetInput(nextIn.pointer + inBufOffset, UInt32(availIn), zlibStreamCPtr)
@@ -112,7 +112,7 @@ class Inflate {
      * @return true The input buffer needs to be set.
      * @return false The input buffer does not need to be set.
      */
-    public func needsInput(): Bool {
+    func needsInput(): Bool {
         return !finished && availIn == 0
     }
 
@@ -122,7 +122,7 @@ class Inflate {
      * @return true The decompression is complete.
      * @return false The decompression is not complete.
      */
-    public func isFinished(): Bool {
+    func isFinished(): Bool {
         return finished
     }
 
@@ -131,7 +131,7 @@ class Inflate {
      *
      * @throws ZlibException if failed to release decompressed resources.
      */
-    public func inflateEnd(): Unit {
+    func inflateEnd(): Unit {
         if (zlibStreamCPtr.isNull()) {
             return
         }
