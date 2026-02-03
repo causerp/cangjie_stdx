@@ -18,7 +18,7 @@ Compared with Random, there are three main differences:
 
 - Security: Random should not be used for cryptographic security applications or privacy data protection, whereas [SecureRandom](crypto_package_classes.md#class-securerandom) can be used for such purposes.
 
-For usage examples, see [SecureRandom Usage](../crypto_samples/sample_secure_random.md#securerandom-usage).
+For usage examples, see [SecureRandom Usage](../crypto_samples/sample_secure_random.md).
 
 ### init(Bool)
 
@@ -535,13 +535,13 @@ Currently, SM4 supports encryption and decryption modes defined by [OperationMod
 Different operation modes may have varying implementations and security levels. It is essential to choose the appropriate mode for the specific scenario.
 
 - **iv (Initialization Vector)**:
-  - Recommended length is 12 bytes in GCM mode.
-  - Length must be 16 bytes in CBC, OFB, CFB, and CTR modes.
-  - Optional in ECB mode.
+    - Recommended length is 12 bytes in GCM mode.
+    - Length must be 16 bytes in CBC, OFB, CFB, and CTR modes.
+    - Optional in ECB mode.
 
 - **paddingMode**: Defined by [PaddingMode](crypto_package_structs.md#struct-paddingmode), currently supporting:
-  - `NoPadding`: No padding.
-  - `PKCS7Padding`: PKCS7 padding (default).
+    - `NoPadding`: No padding.
+    - `PKCS7Padding`: PKCS7 padding (default).
 
 Padding mode is effective only for ECB and CBC modes, where block length must equal `blockSize`. Padding is applied accordingly. Padding mode settings are irrelevant for OFB, CFB, CTR, and GCM modes, as these modes do not require padding.
 
@@ -552,7 +552,7 @@ If `NoPadding` is selected, the user is responsible for ensuring data can be div
 
 In GCM mode, the last `tagSize` bytes of the encrypted result are the digest data.
 
-For usage examples, see [SM4 Usage](../crypto_samples/sample_crypto.md#sm4-usage).
+For usage examples, see [SM4 Usage](../crypto_samples/sample_crypto.md).
 
 > **Note:**
 >

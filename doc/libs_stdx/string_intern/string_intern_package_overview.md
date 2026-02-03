@@ -24,4 +24,4 @@ string_intern 包提供 string 对象的池化缓存能力。可以通过代码�
 
 | 接口名                                                                                                | 功能                                     |
 | -------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [Internable](./string_intern_package_api/string_intern_package_interfaces.md#interface-Internable) | 为 String 扩展 intern、configInternPool 等函数接口。 |
+| [Internable](./string_intern_package_api/string_intern_package_interfaces.md#interface-internable) | 为 String 扩展 intern、configInternPool 等函数接口。 |
