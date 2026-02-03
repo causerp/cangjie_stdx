@@ -24,4 +24,4 @@ This function primarily achieves the aforementioned effects through the followin
 
 | Interface Name                                               | Description                  |
 | -------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [Internable](./string_intern_package_api/string_intern_package_interfaces.md#interface-Internable) | Extend struct String with functions such as intern and configInternPool. |
+| [Internable](./string_intern_package_api/string_intern_package_interfaces.md#interface-internable) | Extend struct String with functions such as intern and configInternPool. |

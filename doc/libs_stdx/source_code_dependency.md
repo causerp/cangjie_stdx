@@ -39,7 +39,7 @@ stdx 有两种源码集成方式：git 源码依赖和本地源码依赖。
 
 ## 交叉编译 OpenHarmony
 
-Linux 和 macOS 平台交叉编译 OpenHarmony 需要配置交叉编译工具链的环境变量（非 DevEco Studio 项目），[请参考编译ohos-x86_64、ohos-aarch64工具链](https://gitcode.com/Cangjie/cangjie_build/blob/dev/docs/linux_ohos_toolchain.md)
+Linux 和 macOS 平台交叉编译 OpenHarmony 需要配置交叉编译工具链的环境变量（非 DevEco Studio 项目），[请参考编译 ohos-x86_64、ohos-aarch64 工具链](https://gitcode.com/Cangjie/cangjie_build/blob/dev/docs/linux_ohos_toolchain.md)
 
 1. OHOS_TOOLCHAIN_PATH (编译工具链中 Clang/LLVM 编译器的二进制目录, 如 /opt/buildtools/ohos_root/prebuilts/clang/ohos/linux-x86_64/llvm/bin)
 
@@ -66,4 +66,4 @@ DevEco Studio 自带 OpenHarmony 交叉编译工具链，无需设置上面的�
 - ninja: >1.10
 - openssl: >= 3 （需要配置环境变量 OPENSSL_ROOT_DIR，指向 OpenSSL 安装的根目录）
 - clang: >= 15.0.4 且 < 16 (Linux or macOS)
-- mingw-w64 (Windows) [下载地址](https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev2/x86_64-12.2.0-release-posix-seh-msvcrt-rt_v10-rev2.7z) 
+- mingw-w64 (Windows) [下载地址](https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev2/x86_64-12.2.0-release-posix-seh-msvcrt-rt_v10-rev2.7z)

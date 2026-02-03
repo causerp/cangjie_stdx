@@ -20,7 +20,7 @@ Compared with Random, there are three main differences:
 - Random number generation: Random employs the Mersenne Twister pseudo-random number generator; [SecureRandom](crypto_package_classes.md#class-securerandom) uses random algorithms like [MD5](../../digest/digest_package_api/digest_package_classes.md#class-md5) provided by the OpenSSL library, generating true random numbers using entropy sources. If hardware supports it, hardware random number generators can be used to produce even more secure random numbers.
 - Security: Random should not be used for cryptographic security applications or privacy data protection, whereas [SecureRandom](crypto_package_classes.md#class-securerandom) can be used for such purposes.
 
-For usage examples, see [SecureRandom Usage](../crypto_samples/sample_secure_random.md#securerandom-usage).
+For usage examples, see [SecureRandom Usage](../crypto_samples/sample_secure_random.md).
 
 ### init(Bool)
 
@@ -550,7 +550,7 @@ If `NoPadding` is selected, the user is responsible for ensuring data can be div
 
 In GCM mode, the last `tagSize` bytes of the encrypted result are the digest data.
 
-For usage examples, see [SM4 Usage](../crypto_samples/sample_crypto.md#sm4-usage).
+For usage examples, see [SM4 Usage](../crypto_samples/sample_crypto.md).
 
 > **Note:**
 >

@@ -208,7 +208,7 @@ public func toString(): String
 
 返回值：
 
-- String - C 指针类型的字符串表示（CPointer<elementType>）。
+- String - C 指针类型的字符串表示（CPointer\<elementType>）。
 
 示例：
 
@@ -864,7 +864,6 @@ main() {
 Int32 是有符号的: true
 UInt32 是有符号的: false
 ```
-
 
 ## class NothingType
 
@@ -1794,7 +1793,6 @@ main() {
 类型: Int32
 ```
 
-
 ## class UnitType
 
 ```cangjie
@@ -1872,5 +1870,3 @@ main() {
 ```text
 两个 UnitType 相等: true
 ```
-
-
