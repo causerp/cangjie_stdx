@@ -138,7 +138,7 @@ public prop clientCertificate: ?Array<X509Certificate>
 
 > **注意：**
 >
-> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见 [peerCertificate](./tls_package_classes.md#prop-peerCertificate)。
+> 获取对端证书时，如果对端没有发送证书，该接口可能获取失败，返回 None，详见 [peerCertificate](./tls_package_classes.md#prop-peercertificate)。
 
 类型：?Array<[X509Certificate](../../../crypto/x509/x509_package_api/x509_package_classes.md#class-x509certificate)>
 
@@ -181,7 +181,7 @@ public override prop localAddress: SocketAddress
 public prop peerCertificate: ?Array<X509Certificate>
 ```
 
-功能：获取对端证书。在客户端获取时同 [serverCertificate](./tls_package_classes.md#prop-serverCertificate)，在服务端获取时同 [clientCertificate](./tls_package_classes.md#prop-clientCertificate)。
+功能：获取对端证书。在客户端获取时同 [serverCertificate](./tls_package_classes.md#prop-servercertificate)，在服务端获取时同 [clientCertificate](./tls_package_classes.md#prop-clientcertificate)。
 
 > **注意：**
 >
