@@ -603,7 +603,7 @@ public func toJsonString(): String
 public func toJsonString(depth: Int64, bracketInNewLine!: Bool = false, indent!: String = "  "): String
 ```
 
-功能：将 [JsonObject](encoding_json_package_classes.md#class-jsonobject) 转换为 Json格式的字符串。该函数将指定初始的缩进深度、第一个括号后是否换行以及缩进字符串。
+功能：将 [JsonObject](encoding_json_package_classes.md#class-jsonobject) 转换为 Json 格式的字符串。该函数将指定初始的缩进深度、第一个括号后是否换行以及缩进字符串。
 
 参数：
 
