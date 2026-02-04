@@ -208,7 +208,7 @@ Function: Converts this CPointerType to its string representation.
 
 Return Value:
 
-- String - A string representation of the C pointer type (CPointer<elementType>).
+- String - A string representation of the C pointer type (CPointer\<elementType>).
 
 Example:
 
@@ -831,7 +831,6 @@ Output:
 Int32 is signed: true
 UInt32 is signed: false
 ```
-
 
 ## class NothingType
 
@@ -1761,7 +1760,6 @@ Output:
 Type: Int32
 ```
 
-
 ## class UnitType
 
 ```cangjie
@@ -1839,5 +1837,3 @@ Output:
 ```text
 Two UnitType instances are equal: true
 ```
-
-
