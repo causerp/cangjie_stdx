@@ -13,7 +13,7 @@ public struct WriteConfig {
 
 示例：
 
-使用示例见 [WriteConfig 使用示例](../json_stream_samples/sample_json_writeconfig.md#writeconfig-使用示例)。
+使用示例见 [WriteConfig 使用示例](../json_stream_samples/sample_json_writeconfig.md)。
 
 ### static let compact
 
