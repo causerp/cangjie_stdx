@@ -47,7 +47,6 @@ class DocStubGenerator <: ASTRewriter {
         match (node) {
             case fn: FuncDecl =>
                 let comment = Comment(
-                    CommentKind.Document,
                     "// @brief describe ${fn.name}"
                 )
                 let newComments = ArrayList<Comment>(fn.comments)
@@ -82,7 +81,7 @@ main() {
 }
 ```
 
-运行结果为：
+运行结果：
 
 ```text
 package a
