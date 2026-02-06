@@ -74,7 +74,7 @@ main() {
    - 如果是 `CallExpr`，返回 `STOP`，遍历立即终止；
 3. 最终打印统计结果。
 
-运行结果为：
+运行结果：
 
 ```text
 Found CallExpr, stop traversal
