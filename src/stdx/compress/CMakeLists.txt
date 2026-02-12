@@ -5,7 +5,4 @@
 #
 # See https://cangjie-lang.cn/pages/LICENSE for license information.
 
-file(GLOB COMPRESS_SRCS "*.cj")
-
 add_subdirectory(zlib)
-add_subdirectory(tar)
