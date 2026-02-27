@@ -24,6 +24,7 @@
 #include "cangjie/Macro/MacroCommon.h"
 #include "cangjie/Macro/TokenSerialization.h"
 #include "cangjie/Utils/FileUtil.h"
+#include "cangjie/Basic/StringConvertor.h"
 
 using namespace Cangjie;
 namespace {
@@ -120,7 +121,28 @@ ParseRes* CJ_ParseFile(const char* path)
     SetDiagEngine(diag, sm);
     std::string filePath(path, path + strlen(path));
     std::string failedReason;
+#ifdef _WIN32
+    // On Windows, detect encoding and convert to GBK for file system operations if needed
+    const char* pathToUse = path;
+    std::optional<std::string> gbkPathOpt;
+    auto encoding = StringConvertor::GetStringEncoding(filePath);
+    if (encoding == StringConvertor::UTF8) {
+        gbkPathOpt = StringConvertor::UTF8ToGBK(filePath);
+    } else if (encoding == StringConvertor::GBK) {
+        gbkPathOpt = filePath;
+    }
+    if (gbkPathOpt.has_value()) {
+        pathToUse = gbkPathOpt.value().c_str();
+    }
+    auto content = FileUtil::ReadFileContent(pathToUse, failedReason);
+#else
     auto content = FileUtil::ReadFileContent(path, failedReason);
+#endif
+
+    if (!content.has_value()) {
+        ParseRes* errorRes = createParseResult();
+        return errorRes;
+    }
     auto fileID = sm.AddSource(filePath, content.value());
     Parser parser(fileID, content.value(), diag, sm, true);
     auto file = parser.ParseTopLevel();
