@@ -8,7 +8,7 @@
 
 package stdx.compress.tar
 
-import std.io.{InputStream, ByteBuffer}
+import std.io.{InputStream, Seekable}
 import std.collection.{Map, HashMap, concat, forEach}
 import std.deriving.Derive
 
@@ -27,6 +27,8 @@ func calculateDataBlockPadding(size: Int64): Int64 {
 
 public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     let stream: T
+    private let archiveSize: ?Int64
+    private var activeDataStream: ?TarDataInputStream = None
 
     // IEEE 1003.1-2008, pax Format
     // Section: Extended Header Records
@@ -41,6 +43,7 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
 
     public init(stream: T) {
         this.stream = stream
+        this.archiveSize = getArchiveSize(stream)
     }
 
     public func iterator(): Iterator<TarEntry> {
@@ -48,9 +51,11 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     }
 
     func tryGetNextEntry(): ?TarEntry {
+        drainPreviousEntryData()
         var header: TarHeader
         do {
             header = TarHeader.tryReadHeader(TarHeaderBuffer(stream)) ?? return None
+            validateDataBlockSize(header.size)
             match (header.entryType) {
                 case TarEntryType.GlobalExtendedHeader => paxGlobalData.add(all: readPaxData(header.size))
                 case TarEntryType.ExtendedHeader => paxData.add(all: readPaxData(header.size))
@@ -187,7 +192,17 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
         return padding
     }
 
+    private func validateDataBlockSize(size: Int64) {
+        if (size < 0) {
+            throw TarException("Invalid tar entry size: ${size}.")
+        }
+        if (let Some(totalSize) <- archiveSize && size > totalSize) {
+            throw TarException("Invalid tar entry size ${size}: exceeds tar archive size ${totalSize}.")
+        }
+    }
+
     private func readDataBlock(size: Int64): Array<UInt8> {
+        validateDataBlockSize(size)
         if (size == 0) {
             return []
         }
@@ -199,7 +214,28 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     }
 
     private func readDataStream(size: Int64): ?InputStream {
-        return ByteBuffer(readDataBlock(size))
+        validateDataBlockSize(size)
+        let dataStream = TarDataInputStream(stream, size)
+        activeDataStream = dataStream
+        return dataStream
+    }
+
+    private func drainPreviousEntryData() {
+        if (let Some(dataStream) <- activeDataStream) {
+            dataStream.discardRemaining()
+            activeDataStream = None
+        }
+    }
+
+    private static func getArchiveSize(stream: InputStream): ?Int64 {
+        match (stream) {
+            case s: Seekable =>
+                if (s.length >= 0) {
+                    return s.length
+                }
+                return None
+            case _ => return None
+        }
     }
 }
 
@@ -222,5 +258,94 @@ class TarEntryIterator<T> <: Iterator<TarEntry> where T <: InputStream {
 
     public func next(): ?TarEntry {
         tarReader.tryGetNextEntry()
+    }
+}
+
+private class TarDataInputStream <: InputStream {
+    private static const SKIP_BUFFER_SIZE = 8 * 1024
+
+    private let source: InputStream
+    private let skipBuffer = Array<UInt8>(SKIP_BUFFER_SIZE, repeat: 0)
+    private let paddingSize: Int64
+
+    private var remainingDataSize: Int64
+    private var finished = false
+
+    init(source: InputStream, dataSize: Int64) {
+        this.source = source
+        this.remainingDataSize = dataSize
+        this.paddingSize = calculateDataBlockPadding(dataSize)
+    }
+
+    public func read(outBuf: Array<UInt8>): Int64 {
+        if (finished || outBuf.isEmpty()) {
+            return 0
+        }
+        if (remainingDataSize == 0) {
+            finishAndSkipPadding()
+            return 0
+        }
+
+        let expect = if (remainingDataSize > outBuf.size) {
+            outBuf.size
+        } else {
+            remainingDataSize
+        }
+        let readSize = source.read(outBuf[..expect])
+        if (readSize == 0) {
+            throw TarException("End of stream reached before tar data block was exactly read.")
+        }
+
+        remainingDataSize -= readSize
+        if (remainingDataSize == 0) {
+            finishAndSkipPadding()
+        }
+        return readSize
+    }
+
+    func discardRemaining() {
+        if (finished) {
+            return
+        }
+
+        while (remainingDataSize > 0) {
+            let chunkSize = if (remainingDataSize > skipBuffer.size) {
+                skipBuffer.size
+            } else {
+                remainingDataSize
+            }
+            let readSize = source.read(skipBuffer[..chunkSize])
+            if (readSize == 0) {
+                throw TarException("End of stream reached before tar data block was exactly read.")
+            }
+            remainingDataSize -= readSize
+        }
+        finishAndSkipPadding()
+    }
+
+    private func finishAndSkipPadding() {
+        if (finished) {
+            return
+        }
+        if (paddingSize > 0) {
+            skipExactly(paddingSize)
+        }
+        finished = true
+    }
+
+    private func skipExactly(size: Int64) {
+        var remaining = size
+        while (remaining > 0) {
+            let chunkSize = if (remaining > skipBuffer.size) {
+                skipBuffer.size
+            } else {
+                remaining
+            }
+            let readSize = source.read(skipBuffer[..chunkSize])
+            if (readSize == 0) {
+                throw TarException("End of stream reached before tar data block padding was exactly read.")
+            }
+            remaining -= readSize
+        }
     }
 }
