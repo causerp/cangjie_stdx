@@ -25,9 +25,8 @@ extend Array<UInt8> {
 
 func readExactly(stream: InputStream, buffer: Array<UInt8>): Unit {
     var start = 0
-    var num = 0
-    while (num < buffer.size) {
-        num = stream.read(buffer.slice(start, buffer.size - start))
+    while (start < buffer.size) {
+        let num = stream.read(buffer.slice(start, buffer.size - start))
         if (num == 0) {
             throw TarException("End of stream reached before tar header was exactly read.")
         }
