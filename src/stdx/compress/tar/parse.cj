@@ -86,8 +86,8 @@ extend Int64 {
         }
         var result: Int64 = 0
         for (d in trim) {
-            if (d < b'0' || d > b'8') {
-                throw TarException("Invalid octal number when parse ${buffer}.")
+            if (d < b'0' || d > b'7') {
+                throw TarException("Invalid octal digit '${d}' in buffer: ${buffer}.")
             }
             let digit = d - b'0'
             result *= OCTAL
