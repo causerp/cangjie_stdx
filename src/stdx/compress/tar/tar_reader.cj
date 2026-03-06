@@ -61,10 +61,18 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
             header = TarHeader.tryReadHeader(TarHeaderBuffer(stream)) ?? return None
             validateDataBlockSize(header.size)
             match (header.entryType) {
-                case TarEntryType.GlobalExtendedHeader => paxGlobalData.add(all: readPaxData(header.size))
-                case TarEntryType.ExtendedHeader => paxData.add(all: readPaxData(header.size))
-                case TarEntryType.GnuLongName => gnuLongName = String.fromUtf8(readDataBlock(header.size))
-                case TarEntryType.GnuLongLink => gnuLongLink = String.fromUtf8(readDataBlock(header.size))
+                case TarEntryType.GlobalExtendedHeader =>
+                    validatePaxHeaderSize(header.size, header.entryType)
+                    paxGlobalData.add(all: readPaxData(header.size))
+                case TarEntryType.ExtendedHeader =>
+                    validatePaxHeaderSize(header.size, header.entryType)
+                    paxData.add(all: readPaxData(header.size))
+                case TarEntryType.GnuLongName =>
+                    validateGnuLongPathSize(header.size, header.entryType)
+                    gnuLongName = String.fromUtf8(readDataBlock(header.size))
+                case TarEntryType.GnuLongLink =>
+                    validateGnuLongPathSize(header.size, header.entryType)
+                    gnuLongLink = String.fromUtf8(readDataBlock(header.size))
                 case TarEntryType.GnuSparse |
                      TarEntryType.GnuDumpDir |
                      TarEntryType.GnuMultiVolume |
@@ -203,6 +211,22 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
         // Reject clearly malicious/corrupted headers that declare a single entry larger than the archive itself.
         if (let Some(totalSize) <- archiveSize && size > totalSize) {
             throw TarException("Invalid tar entry size ${size}: exceeds tar archive size ${totalSize}.")
+        }
+    }
+
+    private func validatePaxHeaderSize(size: Int64, entryType: TarEntryType) {
+        // PAX headers carry textual key-value metadata. In practice they are small.
+        const MAX_PAX_HEADER_SIZE = 8 * 1024 * 1024 // 8 MiB
+        if (size > MAX_PAX_HEADER_SIZE) {
+            throw TarException("${entryType} size ${size} exceeds supported maximum ${MAX_PAX_HEADER_SIZE}.")
+        }
+    }
+
+    private func validateGnuLongPathSize(size: Int64, entryType: TarEntryType) {
+        // GNU long name/link store a single long path string (usually path length + '\0').
+        const MAX_GNU_LONG_PATH_SIZE = 256 * 1024 // 256 KiB
+        if (size > MAX_GNU_LONG_PATH_SIZE) {
+            throw TarException("${entryType} size ${size} exceeds supported maximum ${MAX_GNU_LONG_PATH_SIZE}.")
         }
     }
 
