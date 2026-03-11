@@ -33,43 +33,52 @@ private class AutoCString <: Resource {
     }
 }
 
-private func callNativeGetFunc(nativeFunc: CFunc<(CString) -> Int32>, path: Path): Int32 {
+private func callNativeGetFunc(nativeFunc: CFunc<(CString) -> Int32>, funcName: String, path: Path): Int32 {
     try (s = AutoCString(path)) {
         let result = unsafe { nativeFunc(s.str) }
         if (result == -1) {
-            return 0
+            throw TarException("Failed to call native function ${funcName} for path: ${path}.")
         }
         return result
     }
     throw TarException("Unreachable code.")
 }
 
-private func callNativeGetFunc(nativeFunc: CFunc<(CString) -> CString>, path: Path): String {
+private func callNativeGetFunc(nativeFunc: CFunc<(CString) -> CString>, funcName: String, path: Path): String {
     try (s = AutoCString(path)) {
         let result = unsafe { nativeFunc(s.str) }
         if (result.isNull()) {
-            return ""
+            throw TarException("Failed to call native function ${funcName} for path: ${path}.")
         }
         return result.toString()
     }
     throw TarException("Unreachable code.")
 }
 
-private func callNativeSetFunc(nativeFunc: CFunc<(CString, Int32) -> Int32>, path: Path, value: Int32): Unit {
+private func callNativeSetFunc(nativeFunc: CFunc<(CString, Int32) -> Int32>, funcName: String, path: Path, value: Int32, ignoreFailure!: Bool = false): Unit {
     try (s = AutoCString(path)) {
-        unsafe { nativeFunc(s.str, value) }
+        let result = unsafe { nativeFunc(s.str, value) }
+        if (result == -1 && !ignoreFailure) {
+            throw TarException("Failed to call native function ${funcName} for path: ${path}, value: ${value}.")
+        }
     }
 }
 
-private func callNativeSetFunc(nativeFunc: CFunc<(CString, Int64) -> Int32>, path: Path, value: Int64): Unit {
+private func callNativeSetFunc(nativeFunc: CFunc<(CString, Int64) -> Int32>, funcName: String, path: Path, value: Int64): Unit {
     try (s = AutoCString(path)) {
-        unsafe { nativeFunc(s.str, value) }
+        let result = unsafe { nativeFunc(s.str, value) }
+        if (result == -1) {
+            throw TarException("Failed to call native function ${funcName} for path: ${path}, value: ${value}.")
+        }
     }
 }
 
-private func callNativeSetFunc(nativeFunc: CFunc<(CString, CString) -> Int32>, path: Path, value: String): Unit {
+private func callNativeSetFunc(nativeFunc: CFunc<(CString, CString) -> Int32>, funcName: String, path: Path, value: String, ignoreFailure!: Bool = false): Unit {
     try (s = AutoCString(path), v = AutoCString(value)) {
-        unsafe { nativeFunc(s.str, v.str) }
+        let result = unsafe { nativeFunc(s.str, v.str) }
+        if (result == -1 && !ignoreFailure) {
+            throw TarException("Failed to call native function ${funcName} for path: ${path}, value: ${value}.")
+        }
     }
 }
 
@@ -109,20 +118,20 @@ class Native {
     private init() { } // static class
 
     @When[os != "Windows"]
-    static func getMode(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetMode, path) }
+    static func getMode(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetMode, "CJ_TAR_GetMode", path) }
     @When[os != "Windows"]
-    static func getUid(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetUid, path) }
+    static func getUid(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetUid, "CJ_TAR_GetUid", path) }
     @When[os != "Windows"]
-    static func getGid(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetGid, path) }
+    static func getGid(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetGid, "CJ_TAR_GetGid", path) }
 
     @When[os != "Windows"]
-    static func getUserName(path: Path): String { callNativeGetFunc(CJ_TAR_GetUserName, path) }
+    static func getUserName(path: Path): String { callNativeGetFunc(CJ_TAR_GetUserName, "CJ_TAR_GetUserName", path) }
     @When[os != "Windows"]
-    static func getGroupName(path: Path): String { callNativeGetFunc(CJ_TAR_GetGroupName, path) }
+    static func getGroupName(path: Path): String { callNativeGetFunc(CJ_TAR_GetGroupName, "CJ_TAR_GetGroupName", path) }
     @When[os != "Windows"]
-    static func getDeviceMajor(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetDeviceMajor, path) }
+    static func getDeviceMajor(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetDeviceMajor, "CJ_TAR_GetDeviceMajor", path) }
     @When[os != "Windows"]
-    static func getDeviceMinor(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetDeviceMinor, path) }
+    static func getDeviceMinor(path: Path): Int32 { callNativeGetFunc(CJ_TAR_GetDeviceMinor, "CJ_TAR_GetDeviceMinor", path) }
 
     @When[os == "Windows"]
     static func getMode(path: Path): Int32 {
@@ -155,16 +164,32 @@ class Native {
     static func getDeviceMinor(path: Path): Int32 { 0 }
 
     @When[os != "Windows"]
-    static func setMode(path: Path, mode: Int32): Unit { callNativeSetFunc(CJ_TAR_SetMode, path, mode) }
+    static func setMode(path: Path, mode: Int32): Unit { callNativeSetFunc(CJ_TAR_SetMode, "CJ_TAR_SetMode", path, mode) }
     @When[os != "Windows"]
-    static func setUid(path: Path, uid: Int32): Unit { callNativeSetFunc(CJ_TAR_SetUid, path, uid) }
+    static func setUid(path: Path, uid: Int32): Unit { 
+        // Ignore failure when setting UID/GID as normal users cannot change ownership
+        // This matches GNU tar behavior where non-root users extract files as themselves
+        callNativeSetFunc(CJ_TAR_SetUid, "CJ_TAR_SetUid", path, uid, ignoreFailure: true) 
+    }
     @When[os != "Windows"]
-    static func setGid(path: Path, gid: Int32): Unit { callNativeSetFunc(CJ_TAR_SetGid, path, gid) }
+    static func setGid(path: Path, gid: Int32): Unit { 
+        // Ignore failure when setting UID/GID as normal users cannot change ownership
+        // This matches GNU tar behavior where non-root users extract files as themselves
+        callNativeSetFunc(CJ_TAR_SetGid, "CJ_TAR_SetGid", path, gid, ignoreFailure: true) 
+    }
 
     @When[os != "Windows"]
-    static func setUserName(path: Path, userName: String): Unit { callNativeSetFunc(CJ_TAR_SetUserName, path, userName) }
+    static func setUserName(path: Path, userName: String): Unit { 
+        // Ignore failure when setting user/group name as the user/group may not exist on target system
+        // This matches GNU tar behavior which falls back to UID/GID when name lookup fails
+        callNativeSetFunc(CJ_TAR_SetUserName, "CJ_TAR_SetUserName", path, userName, ignoreFailure: true) 
+    }
     @When[os != "Windows"]
-    static func setGroupName(path: Path, groupName: String): Unit { callNativeSetFunc(CJ_TAR_SetGroupName, path, groupName) }
+    static func setGroupName(path: Path, groupName: String): Unit { 
+        // Ignore failure when setting user/group name as the user/group may not exist on target system
+        // This matches GNU tar behavior which falls back to UID/GID when name lookup fails
+        callNativeSetFunc(CJ_TAR_SetGroupName, "CJ_TAR_SetGroupName", path, groupName, ignoreFailure: true) 
+    }
 
     @When[os == "Windows"]
     static func setMode(path: Path, mode: Int32): Unit {
@@ -183,10 +208,10 @@ class Native {
     static func setGroupName(path: Path, groupName: String): Unit { }
 
     static func setModificationTime(path: Path, timestamp: Int64): Unit {
-        callNativeSetFunc(CJ_TAR_SetModificationTime, path, timestamp)
+        callNativeSetFunc(CJ_TAR_SetModificationTime, "CJ_TAR_SetModificationTime", path, timestamp)
     }
     static func setAccessTime(path: Path, timestamp: Int64): Unit {
-        callNativeSetFunc(CJ_TAR_SetAccessTime, path, timestamp)
+        callNativeSetFunc(CJ_TAR_SetAccessTime, "CJ_TAR_SetAccessTime", path, timestamp)
     }
 
     @When[os != "Windows"]
@@ -196,7 +221,7 @@ class Native {
 
     @When[os == "Windows"]
     static func setChangeTime(path: Path, timestamp: Int64): Unit {
-        callNativeSetFunc(CJ_TAR_SetChangeTime, path, timestamp)
+        callNativeSetFunc(CJ_TAR_SetChangeTime, "CJ_TAR_SetChangeTime", path, timestamp)
     }
 
     static func setFileAttributes(path: Path, entry: TarEntry): Unit {

@@ -51,6 +51,29 @@ private class GnuBase256 {
 }
 
 extend Int64 {
+    static func parseDecimal(buffer: Array<UInt8>): Int64 {
+        const DECIMAL = 10
+
+        if (buffer.size == 0) {
+            return 0
+        }
+
+        let trim = buffer.trimEnd(b'\0', b' ')
+        if (trim.size == 0) {
+            return 0
+        }
+
+        var result: Int64 = 0
+        for (d in trim) {
+            if (d < b'0' || d > b'9') {
+                throw TarException("Invalid decimal number when parse ${buffer}.")
+            }
+            result *= DECIMAL
+            result += Int64(d - b'0')
+        }
+        return result
+    }
+
     static func parseOctal(buffer: Array<UInt8>): Int64 {
         const OCTAL = 8
 
@@ -61,8 +84,8 @@ extend Int64 {
         }
         var result: Int64 = 0
         for (d in trim) {
-            if (d < b'0' || d > b'8') {
-                throw TarException("Invalid octal number when parse ${buffer}.")
+            if (d < b'0' || d > b'7') {
+                throw TarException("Invalid octal digit '${d}' in buffer: ${buffer}.")
             }
             let digit = d - b'0'
             result *= OCTAL
@@ -87,6 +110,10 @@ extend Int64 {
 }
 
 extend Int32 {
+    static func parseDecimal(buffer: Array<UInt8>): Int32 {
+        return Int32(Int64.parseDecimal(buffer))
+    }
+
     static func parseOctal(buffer: Array<UInt8>): Int32 {
         return Int32(Int64.parseOctal(buffer))
     }

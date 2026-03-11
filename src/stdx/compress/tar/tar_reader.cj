@@ -8,7 +8,7 @@
 
 package stdx.compress.tar
 
-import std.io.{InputStream, ByteBuffer}
+import std.io.{InputStream, Seekable}
 import std.collection.{Map, HashMap, concat, forEach}
 import std.deriving.Derive
 
@@ -39,8 +39,14 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     private var gnuLongName: ?String = None
     private var gnuLongLink: ?String = None
 
+    // Total archive size if the input stream is seekable; used for basic sanity checks.
+    private let archiveSize: ?Int64
+    // Tracks the current entry stream so we can drain unread bytes before parsing the next header.
+    private var activeDataStream: ?TarDataInputStream = None
+
     public init(stream: T) {
         this.stream = stream
+        this.archiveSize = getArchiveSize(stream)
     }
 
     public func iterator(): Iterator<TarEntry> {
@@ -48,14 +54,25 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     }
 
     func tryGetNextEntry(): ?TarEntry {
+        // Keep reader state aligned even when caller does not fully consume entry.stream.
+        drainPreviousEntryData()
         var header: TarHeader
         do {
             header = TarHeader.tryReadHeader(TarHeaderBuffer(stream)) ?? return None
+            validateDataBlockSize(header.size)
             match (header.entryType) {
-                case TarEntryType.GlobalExtendedHeader => paxGlobalData.add(all: readPaxData(header.size))
-                case TarEntryType.ExtendedHeader => paxData.add(all: readPaxData(header.size))
-                case TarEntryType.GnuLongName => gnuLongName = String.fromUtf8(readDataBlock(header.size))
-                case TarEntryType.GnuLongLink => gnuLongLink = String.fromUtf8(readDataBlock(header.size))
+                case TarEntryType.GlobalExtendedHeader =>
+                    validatePaxHeaderSize(header.size, header.entryType)
+                    paxGlobalData.add(all: readPaxData(header.size))
+                case TarEntryType.ExtendedHeader =>
+                    validatePaxHeaderSize(header.size, header.entryType)
+                    paxData.add(all: readPaxData(header.size))
+                case TarEntryType.GnuLongName =>
+                    validateGnuLongPathSize(header.size, header.entryType)
+                    gnuLongName = String.fromUtf8(readDataBlock(header.size))
+                case TarEntryType.GnuLongLink =>
+                    validateGnuLongPathSize(header.size, header.entryType)
+                    gnuLongLink = String.fromUtf8(readDataBlock(header.size))
                 case TarEntryType.GnuSparse |
                      TarEntryType.GnuDumpDir |
                      TarEntryType.GnuMultiVolume |
@@ -187,7 +204,34 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
         return padding
     }
 
+    private func validateDataBlockSize(size: Int64) {
+        if (size < 0) {
+            throw TarException("Invalid tar entry size: ${size}.")
+        }
+        // Reject clearly malicious/corrupted headers that declare a single entry larger than the archive itself.
+        if (let Some(totalSize) <- archiveSize && size > totalSize) {
+            throw TarException("Invalid tar entry size ${size}: exceeds tar archive size ${totalSize}.")
+        }
+    }
+
+    private func validatePaxHeaderSize(size: Int64, entryType: TarEntryType) {
+        // PAX headers carry textual key-value metadata. In practice they are small.
+        const MAX_PAX_HEADER_SIZE = 8 * 1024 * 1024 // 8 MiB
+        if (size > MAX_PAX_HEADER_SIZE) {
+            throw TarException("${entryType} size ${size} exceeds supported maximum ${MAX_PAX_HEADER_SIZE}.")
+        }
+    }
+
+    private func validateGnuLongPathSize(size: Int64, entryType: TarEntryType) {
+        // GNU long name/link store a single long path string (usually path length + '\0').
+        const MAX_GNU_LONG_PATH_SIZE = 256 * 1024 // 256 KiB
+        if (size > MAX_GNU_LONG_PATH_SIZE) {
+            throw TarException("${entryType} size ${size} exceeds supported maximum ${MAX_GNU_LONG_PATH_SIZE}.")
+        }
+    }
+
     private func readDataBlock(size: Int64): Array<UInt8> {
+        validateDataBlockSize(size)
         if (size == 0) {
             return []
         }
@@ -199,7 +243,30 @@ public class TarReader<T> <: Iterable<TarEntry> where T <: InputStream {
     }
 
     private func readDataStream(size: Int64): ?InputStream {
-        return ByteBuffer(readDataBlock(size))
+        validateDataBlockSize(size)
+        // Lazily read entry payload to avoid allocating a huge byte array up front.
+        let dataStream = TarDataInputStream(stream, size)
+        activeDataStream = dataStream
+        return dataStream
+    }
+
+    private func drainPreviousEntryData() {
+        if (let Some(dataStream) <- activeDataStream) {
+            // Consume any unread payload + padding so next header starts at a block boundary.
+            dataStream.discardRemaining()
+            activeDataStream = None
+        }
+    }
+
+    private static func getArchiveSize(stream: InputStream): ?Int64 {
+        match (stream) {
+            case s: Seekable =>
+                if (s.length >= 0) {
+                    return s.length
+                }
+                return None
+            case _ => return None
+        }
     }
 }
 
@@ -222,5 +289,95 @@ class TarEntryIterator<T> <: Iterator<TarEntry> where T <: InputStream {
 
     public func next(): ?TarEntry {
         tarReader.tryGetNextEntry()
+    }
+}
+
+private class TarDataInputStream <: InputStream {
+    private static const SKIP_BUFFER_SIZE = 8 * 1024
+
+    private let source: InputStream
+    private let skipBuffer = Array<UInt8>(SKIP_BUFFER_SIZE, repeat: 0)
+    private let paddingSize: Int64
+
+    private var remainingDataSize: Int64
+    private var finished = false
+
+    init(source: InputStream, dataSize: Int64) {
+        this.source = source
+        this.remainingDataSize = dataSize
+        this.paddingSize = calculateDataBlockPadding(dataSize)
+    }
+
+    public func read(outBuf: Array<UInt8>): Int64 {
+        if (finished || outBuf.isEmpty()) {
+            return 0
+        }
+        if (remainingDataSize == 0) {
+            finishAndSkipPadding()
+            return 0
+        }
+
+        let expect = if (remainingDataSize > outBuf.size) {
+            outBuf.size
+        } else {
+            remainingDataSize
+        }
+        let readSize = source.read(outBuf[..expect])
+        if (readSize == 0) {
+            throw TarException("End of stream reached before tar data block was exactly read.")
+        }
+
+        remainingDataSize -= readSize
+        if (remainingDataSize == 0) {
+            finishAndSkipPadding()
+        }
+        return readSize
+    }
+
+    func discardRemaining() {
+        if (finished) {
+            return
+        }
+
+        // Fast-forward remaining payload with a fixed-size scratch buffer.
+        while (remainingDataSize > 0) {
+            let chunkSize = if (remainingDataSize > skipBuffer.size) {
+                skipBuffer.size
+            } else {
+                remainingDataSize
+            }
+            let readSize = source.read(skipBuffer[..chunkSize])
+            if (readSize == 0) {
+                throw TarException("End of stream reached before tar data block was exactly read.")
+            }
+            remainingDataSize -= readSize
+        }
+        finishAndSkipPadding()
+    }
+
+    private func finishAndSkipPadding() {
+        if (finished) {
+            return
+        }
+        if (paddingSize > 0) {
+            skipExactly(paddingSize)
+        }
+        finished = true
+    }
+
+    private func skipExactly(size: Int64) {
+        var remaining = size
+        while (remaining > 0) {
+            let chunkSize = if (remaining > skipBuffer.size) {
+                skipBuffer.size
+            } else {
+                remaining
+            }
+            let readSize = source.read(skipBuffer[..chunkSize])
+            if (readSize == 0) {
+                throw TarException("End of stream reached before tar data block padding was exactly read.")
+            }
+            remaining -= readSize
+        }
     }
 }

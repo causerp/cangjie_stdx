@@ -75,18 +75,18 @@ class TarHeader {
         let valueData = unsafe { value.rawData() }
         match (key) {
             case "path"      => name = value.normalizePath()
-            case "size"      => size = Int64.parseOctal(valueData)
+            case "size"      => size = Int64.parseDecimal(valueData)
             case "mode"      => mode = Int32.parseOctal(valueData)
-            case "uid"       => uid = Int32.parseOctal(valueData)
-            case "gid"       => gid = Int32.parseOctal(valueData)
+            case "uid"       => uid = Int32.parseDecimal(valueData)
+            case "gid"       => gid = Int32.parseDecimal(valueData)
             case "mtime"     => mTime = parsePaxTimestamp(valueData)
             case "linkpath"  => linkName = value.normalizePath()
             case "uname"     => uName = value
             case "gname"     => gName = value
             case "atime"     => aTime = parsePaxTimestamp(valueData)
             case "ctime"     => cTime = parsePaxTimestamp(valueData)
-            case "devmajor"  => devMajor = Int32.parseOctal(valueData)
-            case "devminor"  => devMinor = Int32.parseOctal(valueData)
+            case "devmajor"  => devMajor = Int32.parseDecimal(valueData)
+            case "devminor"  => devMinor = Int32.parseDecimal(valueData)
             case _           => paxData[key] = value
         }
     }
