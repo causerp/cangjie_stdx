@@ -29,7 +29,7 @@ During extraction, the setuid/setgid permission bits are restored to the file as
 - The permissions of the user/process performing the extraction
 - Operating system security restrictions
 
-On most Unix/Linux systems, regular users cannot set the setuid/setgid bits; only the root user or processes with appropriate capabilities can successfully restore these permission bits.
+On most Unix/Linux systems, regular users cannot set the setgid bit; only the root user or processes with appropriate capabilities can successfully restore these permission bits.
 
 ### uid/gid Restoration Behavior
 
