@@ -33,6 +33,7 @@ private class GnuBase256 {
 
     private static const BYTE_SIZE = 8
 
+    @OverflowThrowing
     static func parsePositive(buffer: Array<UInt8>): Int64 {
         var value: Int64 = 0
         for (b in buffer.iterator().skip(1)) {
@@ -41,6 +42,7 @@ private class GnuBase256 {
         return value
     }
 
+    @OverflowThrowing
     static func parseNegative(buffer: Array<UInt8>): Int64 {
         var value: Int64 = 0
         for (b in buffer) {
