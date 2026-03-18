@@ -59,9 +59,9 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 
 ### Parameters
 
--   `<version>`: **Required**. Specifies the version to download, e.g., `1.0.0.1`.
--   `-p <platform-arch>`: **Optional**. Specifies the platform and architecture. If omitted, the script will auto-detect the current system.
--   `-d <extract-dir>`: **Optional**. Specifies the target path for extraction. If omitted, it defaults to the current directory.
+- `<version>`: **Required**. Specifies the version to download, e.g., `1.0.0.1`.
+- `-p <platform-arch>`: **Optional**. Specifies the platform and architecture. If omitted, the script will auto-detect the current system.
+- `-d <extract-dir>`: **Optional**. Specifies the target path for extraction. If omitted, it defaults to the current directory.
 
 **Usage Examples:**
 
@@ -79,13 +79,13 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 
 The following platform and architecture combinations are currently supported:
 
--   `linux-aarch64`
--   `linux-x64`
--   `mac-aarch64`
--   `mac-x64`
--   `ohos-aarch64`
--   `ohos-x64`
--   `windows-x64`
+- `linux-aarch64`
+- `linux-x64`
+- `mac-aarch64`
+- `mac-x64`
+- `ohos-aarch64`
+- `ohos-x64`
+- `windows-x64`
 
 ## Project Directory
 
@@ -219,6 +219,7 @@ explain:
 >
 > - `cjpm.toml` is the configuration file of the Cangjie package management tool CJPM. For details, please refer to the Cangjie Programming Language Tool User Guide.
 > - The configuration method is the same for Windows, Linux, and MacOS.
+> - On MacOS, using stdx may trigger a popup warning about unknown source or inability to detect malware. After extracting stdx, you can run `xattr -dr com.apple.quarantine <stdx extraction path> &> /dev/null || true` in the terminal to remove the quarantine attribute. For example: `xattr -dr com.apple.quarantine ~/Downloads/darwin_x86_64_cjnative/ &> /dev/null || true`
 > - If you import the static library of `stdx` and use the crypto and net packages, you need to add `-lcrypt32` to `compile-option` on `Windows`.
 > - When using dynamic `stdx` binaries (`.so`/`.dll`), OpenSSL is resolved at runtime via `dlopen/dlsym` (Unix-like) or `LoadLibrary/GetProcAddress` (Windows); linking OpenSSL statically (`.a`/`.lib`) into the application will not be used by this runtime resolver.
 > - On `Linux`, static `stdx` uses an OpenSSL resolver in `auto` mode: it prefers direct linking when OpenSSL symbols are available, and falls back to `dlopen/dlsym` only when needed (add `-ldl` if the fallback is used). When linking OpenSSL statically (`.a`), you may need `--whole-archive` to ensure the archive is actually pulled in; otherwise the fallback may try to load system `libssl/libcrypto`.
@@ -314,8 +315,9 @@ main () {
     server.serve()
 }
 ```
+
 ### Configure stdx source dependencies
- 	 
+
 In addition to integrating stdx binaries, stdx currently supports source code dependency. For detailed usage, see [see Source Code Integration Guidance](./doc/libs_stdx_en/source_code_dependency.md)
 
 ## License
