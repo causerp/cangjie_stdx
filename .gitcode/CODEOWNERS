@@ -19,15 +19,7 @@ OAT.xml @xuanjz
 /src/stdx/syntax/ @mini-tang
 
 #stdx docs
-/doc/ @luojianing
-/doc/libs_stdx/chir/ @Mr_Kang_Yi @luojianing
-/doc/libs_stdx/compress/ @jiyaun_99 @luojianing
-/doc/libs_stdx/encoding/ @jiyaun_99 @luojianing
-/doc/libs_stdx/serialization/ @jiyaun_99 @luojianing
-/doc/libs_stdx/crypto/ @chongweizhi @luojianing
-/doc/libs_stdx/log/ @ChaosJohn @luojianing
-/doc/libs_stdx/logger/ @ChaosJohn @luojianing
-/doc/libs_stdx/net/ @ovy @luojianing
-/doc/libs_stdx/syntax/ @mini-tang @luojianing
+/doc/ @luojianing @renyi43
 
+/doc/libs_stdx/chir/ @Mr_Kang_Yi @luojianing
 /doc/libs_stdx_en/chir/ @Mr_Kang_Yi @luojianing
