@@ -2,7 +2,7 @@
 
 ## 简介
 
-拓展库 `stdx` 是仓颉编程语言提供的拓展模块（即非核心的标准库，但官方提供的附加功能集），是该语言生态中的重要组成部分，为仓颉补充了更多实用能力，涵盖面向切面编程、压缩和解压缩、安全（安全加密能力/消息摘要算法/非对称加解密和签名算法/数字证书处理功能）、编解码（base64/hex/json/url）、网络（http/tls）、日志、单元测试拓展、序列化、并发编程模型、非局部控制操作等多个领域。 
+拓展库 `stdx` 是仓颉编程语言提供的拓展模块（即非核心的标准库，但官方提供的附加功能集），是该语言生态中的重要组成部分，为仓颉补充了更多实用能力，涵盖面向切面编程、压缩和解压缩、安全（安全加密能力/消息摘要算法/非对称加解密和签名算法/数字证书处理功能）、编解码（base64/hex/json/url）、网络（http/tls）、日志、单元测试拓展、序列化、并发编程模型、非局部控制操作等多个领域。
 
 架构图：
 
@@ -23,7 +23,7 @@
 
 ## 使用说明
 
-`stdx` 相关 API 请参见 [API接口说明](./doc/summary_cjnative.md)。
+`stdx` 相关 API 请参见 [API 接口说明](./doc/summary_cjnative.md)。
 相关指导请参见 [开发指南](https://gitcode.com/Cangjie/cangjie_docs/)。
 
 ## 快速获取
@@ -58,9 +58,9 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 
 ### 参数说明
 
--   `<版本号>`: **必选参数**，指定要下载的版本，例如 `1.0.0.1`。
--   `-p <平台-架构>`: **可选参数**，指定平台和架构。如果省略，脚本将自动检测当前系统。
--   `-d <解压目录>`: **可选参数**，指定解压的目标路径。如果省略，默认为当前目录。
+- `<版本号>`: **必选参数**，指定要下载的版本，例如 `1.0.0.1`。
+- `-p <平台-架构>`: **可选参数**，指定平台和架构。如果省略，脚本将自动检测当前系统。
+- `-d <解压目录>`: **可选参数**，指定解压的目标路径。如果省略，默认为当前目录。
 
 **参数使用示例:**
 
@@ -78,13 +78,13 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 
 当前支持以下平台与架构组合：
 
--   `linux-aarch64`
--   `linux-x64`
--   `mac-aarch64`
--   `mac-x64`
--   `ohos-aarch64`
--   `ohos-x64`
--   `windows-x64`
+- `linux-aarch64`
+- `linux-x64`
+- `mac-aarch64`
+- `mac-x64`
+- `ohos-aarch64`
+- `ohos-x64`
+- `windows-x64`
 
 ## 目录结构
 
@@ -93,9 +93,9 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 ├─ build                        # 工程构建目录，编译构建工具、脚本等
 ├─ doc                          # STDX 库资料目录
 ├─ figures                      # 存放readme中的架构图
-├─ src                          # STDX 各个包代码目录                        
+├─ src                          # STDX 各个包代码目录
 │   └─ stdx
-│       ├── actors              # 提供 Actors 功能                     
+│       ├── actors              # 提供 Actors 功能
 │       ├── aspectCJ            # 提供 AOP 功能
 │       ├── compress            # 提供压缩和解压缩功能
 │       ├── crypto              # 提供安全相关能力
@@ -159,7 +159,7 @@ python3 build.py install
 1. `build.py clean` 命令用于清空工作区临时文件。
 2. `build.py build` 命令开始执行编译：
    - `-t` 即 `--build-type`，指定编译产物类型，可以是 `release` 或 `debug`
-   - `--target-lib` 指定openssl lib目录
+   - `--target-lib` 指定 openssl lib 目录
 3. `build.py install` 命令将编译产物安装到 `target` 目录下。
 
 编译成功会在工程目录中得到默认名称为 target 产物目录。
@@ -215,6 +215,7 @@ cjpm 的详细使用可以参考 [cjpm 文档](https://gitcode.com/Cangjie/cangj
 >
 > - `cjpm.toml` 是仓颉包管理工具 CJPM 的配置文件，详情请参见《仓颉编程语言工具使用指南》。
 > - Windows、Linux、MacOS 的配置方式相同。
+> - MacOS 使用 stdx 可能弹出未知来源或者无法检测是否包含恶意软件等弹框，可以在解压 stdx 后，终端执行 `xattr -dr com.apple.quarantine <stdx 解压路径> &> /dev/null || true` 来移除隔离属性。例如：`xattr -dr com.apple.quarantine ~/Downloads/darwin_x86_64_cjnative/ &> /dev/null || true`
 > - 如果导入 `stdx` 的静态库并使用 crypto、net 包：`Windows` 需要在 `compile-option` 里额外添加 `-lcrypt32`。
 > - 使用 `stdx` 动态二进制（`.so`/`.dll`）时，OpenSSL 会通过运行时加载方式解析：类 Unix 使用 `dlopen/dlsym`，Windows 使用 `LoadLibrary/GetProcAddress`；此时即使应用侧以静态方式链接 OpenSSL（`.a`/`.lib`），也不会被该运行时解析路径直接使用。
 > - `Linux` 下静态 `stdx` 使用 OpenSSL 解析 `auto` 模式：优先直连 OpenSSL 符号，必要时才回退到 `dlopen/dlsym`（若会走回退，需额外添加 `-ldl`）。当以静态方式链接 OpenSSL（`.a`）时，可能需要使用 `--whole-archive` 确保 `.a` 被真正拉入产物；否则回退路径可能尝试加载系统的 `libssl/libcrypto`。
