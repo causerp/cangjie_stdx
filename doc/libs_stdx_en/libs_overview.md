@@ -133,6 +133,10 @@ Add the following configuration to `cjpm.toml`:
 In the above configuration, `x86_64-unknown-linux-gnu` represents the system architecture information, which can be obtained via `cjc -v`. Replace it with your system's architecture information.
 `CANGJIE_STDX_PATH` is the path to the stdx library.
 
+> **Note:**
+>
+> In cross-compilation scenarios, if there is a need to develop custom macro packages and their business logic must rely on stdx for implementation, the stdx path for the local development platform must also be configured in addition to that for the target runtime platform.
+
 ## Package List
 
 stdx includes several packages that offer rich extension functionalities:
