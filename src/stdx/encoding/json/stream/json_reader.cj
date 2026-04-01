@@ -29,11 +29,11 @@ func ensureFiniteJsonFloat(value: Float64): Float64 {
 }
 
 func isHighSurrogate(num: UInt32): Bool {
-    return num >= 0xD800u32 && num <= 0xDBFFu32
+    return num >= 0xD800u32 && num <= 0xDBFFu32 // UTF-16 high-surrogate range: D800..DBFF.
 }
 
 func isLowSurrogate(num: UInt32): Bool {
-    return num >= 0xDC00u32 && num <= 0xDFFFu32
+    return num >= 0xDC00u32 && num <= 0xDFFFu32 // UTF-16 low-surrogate range: DC00..DFFF.
 }
 
 public class JsonReader {
@@ -477,21 +477,8 @@ public class JsonReader {
             stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
             stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
             return 0
-        } else if (ch <= UTF8_5_MAX) {
-            stringBuffer.append(UInt8(((ch >> SHIFT_24) & LOW_2_MASK) | HIGH_5_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_18) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_12) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
-            return 0
         } else {
-            stringBuffer.append(UInt8(((ch >> SHIFT_30) & LOW_1_MASK) | HIGH_6_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_24) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_18) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_12) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
-            return 0
+            throw IllegalStateException("Maximum of 4 bytes allowed for UTF-8.")
         }
     }
 
@@ -815,45 +802,13 @@ public class JsonReader {
 
     @OverflowWrapping
     func readString(): String {
-        if (nextNonJsonWhitespace() != b'\"') {
-            return readStringUnquoted()
+        let nextByte = nextNonJsonWhitespace()
+        if (nextByte != b'\"') {
+            throw IllegalStateException("The next Token is not JSON String.")
         }
         index++
         availLen--
         return readStringQuoted()
-    }
-
-    @OverflowWrapping
-    func readStringUnquoted(): String {
-        checkBuffer()
-        var byte = buffer[index]
-        if (byte == b'{' || byte == b'[' || byte == b']' || byte == b'}') {
-            throw IllegalStateException(
-                "Expect a JsonBool, JsonNull, JsonNumber or a JsonString, but peeked '${Rune(byte)}'.")
-        }
-        var sb = StringBuilder()
-        while (true) {
-            for (i in index..index + availLen) {
-                byte = buffer[i]
-                if (byte > 128u8) {
-                    throw IllegalStateException("Expect an ascii byte sequence, but peeked '${byte}'.")
-                }
-                if (byte == b']' || byte == b',' || byte == b'}' || byte == b'\t' || byte == b'\f' || byte == b'\r' ||
-                    byte == b'\n' || byte == b' ') {
-                    unsafe { sb.appendFromUtf8Unchecked(buffer[index..i]) }
-                    availLen -= (i - index)
-                    index = i
-                    return sb.toString()
-                }
-            }
-            unsafe { sb.appendFromUtf8Unchecked(buffer[index..index + availLen]) }
-            availLen = 0
-            fillInBuf()
-            if (availLen <= 0) {
-                return sb.toString()
-            }
-        }
-        throw IllegalStateException() // unreachable
     }
 
     @OverflowWrapping
