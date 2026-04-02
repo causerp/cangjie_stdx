@@ -541,7 +541,7 @@ func checkOtherTeStr(te: String): Unit {
     }
 }
 
-private func isValidContentLengthFormat(s: String): Bool {
+private func hasNoLeadingZeros(s: String): Bool {
     if (s.isEmpty()) {
         return false
     }
@@ -558,8 +558,8 @@ private func isValidContentLengthFormat(s: String): Bool {
 
 func checkCl(hv: HeaderValue, headers: HttpHeaders): Int64 {
     let clStr = checkFirstClStr(hv.single) ?? throw HttpException("The content-length invalid.")
-    if (!isValidContentLengthFormat(clStr.toString())) {
-        throw HttpException("The content-length format is invalid.")
+    if (!hasNoLeadingZeros(clStr.toString())) {
+        throw HttpException("The content-length has leading zeros.")
     }
     let cl = Int64.tryParse(clStr.toString()) ?? throw HttpException("The content-length invalid.")
     if (cl < 0) {
