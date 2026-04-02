@@ -194,14 +194,15 @@ class CookieJarImpl <: CookieJar {
 
         let cononicalizeHost = cononicalizeHostName(url.hostName)
         let defaultPath = computeDefaultPath(url)
+        let isSecureScheme = (url.scheme == "https" || url.scheme == "wss")
         synchronized(cookieEntriesLock) {
             for (cookie in cookies) {
-                doStoreCookie(cookie, cononicalizeHost, defaultPath)
+                doStoreCookie(cookie, cononicalizeHost, defaultPath, isSecureScheme)
             }
         }
     }
 
-    private func doStoreCookie(cookie: Cookie, cononicalizeHost: String, defaultPath: String): Unit {
+    private func doStoreCookie(cookie: Cookie, cononicalizeHost: String, defaultPath: String, isSecureScheme: Bool): Unit {
         // cookie name and cookie value
         let name = cookie.cookieName
         let value = cookie.cookieValue
@@ -238,9 +239,15 @@ class CookieJarImpl <: CookieJar {
         // path
         let path = getCookiePath(cookie) ?? defaultPath
         // if the cookie was received from a "non-HTTP" API and the
-        // cookie’s http-only-flag is set,
+        // cookie's http-only-flag is set,
         // abort these steps and ignore the cookie entirely
         if (cookie.httpOnly && !isHttp) {
+            return
+        }
+        // if the cookie's secure-only-flag is true and the scheme is not secure,
+        // abort these steps and ignore the cookie entirely
+        // RFC 6265bis Section 5.4
+        if (cookie.secure && !isSecureScheme) {
             return
         }
 
@@ -658,6 +665,40 @@ func cononicalizeHostName(host: String): String {
     }
 }
 
+func isIPAddress(host: String): Bool {
+    if (host.isEmpty()) {
+        return false
+    }
+    var s = host
+    if (host.size >= 2 && host[0] == b'[' && host[host.size - 1] == b']') {
+        s = host[1..host.size - 1]
+    }
+    var hasColon = false
+    var hasDot = false
+    for (c in s) {
+        if (c == b':') {
+            hasColon = true
+        } else if (c == b'.') {
+            hasDot = true
+        }
+    }
+    if (hasColon) {
+        return true
+    }
+    if (hasDot) {
+        var dotCount = 0
+        for (c in s) {
+            if (c == b'.') {
+                dotCount++
+            } else if (!c.isAsciiNumber()) {
+                return false
+            }
+        }
+        return dotCount == 3
+    }
+    return false
+}
+
 /**
  * the algorithm to check whether a string domain-matches a given domain string
  * RFC 6265 5.1.3.
@@ -665,21 +706,20 @@ func cononicalizeHostName(host: String): String {
 func domainMatch(hostString: String, domain: String): Bool {
     let hostLower = hostString.toLower()
     let domainLower = domain.toLower()
-    // the domain string and the string are identical
     if (hostLower == domainLower) {
         return true
     }
     // the domain string is a suffix of the string,
-    // and the last character of the string that is not
-    // included in the domain string is "."
-    // and the string is a host name (not an IP address)
-    // for example:
-    // bar.example.com       domain-matches   example.com
-    // bar.example.com   not domain-matches   le.com
-    // 127.0.0.1         not domain-matches   0.0.1
+    // and the last character of the string that is not 
+    // included in the domain string is "." 
+    // and the string is a host name (not an IP address) 
+    // for example: 
+    // bar.example.com       domain-matches   example.com 
+    // bar.example.com   not domain-matches   le.com 
+    // 127.0.0.1         not domain-matches   0.0.1 
     // 127.0.0.1             domain-matches   127.0.0.1
-    let hostEnd = hostLower[hostLower.size - 1]
-    if (hostLower.endsWith("." + domainLower) && hostEnd.isAsciiLetter()) {
+    // api.server1           domain-matches   server1
+    if (hostLower.endsWith("." + domainLower) && !isIPAddress(hostLower)) {
         return true
     }
     return false
