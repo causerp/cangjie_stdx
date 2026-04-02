@@ -7,6 +7,7 @@
  */
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include "utf8_fix.h"
 
@@ -29,7 +30,10 @@ static inline __attribute__((always_inline)) void ForceContinuationByte(uint8_t*
 
 int64_t CJ_fix_to_utf8(uint8_t* data, int64_t data_len)
 {
-    int offset = 0;
+    if (data == NULL) {
+        return 0;
+    }
+    int64_t offset = 0;
     bool stop = false;
     while (!stop && offset < data_len) {
         uint8_t c0 = data[offset];
