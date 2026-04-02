@@ -541,8 +541,26 @@ func checkOtherTeStr(te: String): Unit {
     }
 }
 
+private func hasNoLeadingZeros(s: String): Bool {
+    if (s.isEmpty()) {
+        return false
+    }
+    
+    if (s == "0" || s[0] == b'-') {
+        return true
+    }
+
+    if (s[0] < b'1') {
+        return false
+    }
+    return true
+}
+
 func checkCl(hv: HeaderValue, headers: HttpHeaders): Int64 {
     let clStr = checkFirstClStr(hv.single) ?? throw HttpException("The content-length invalid.")
+    if (!hasNoLeadingZeros(clStr.toString())) {
+        throw HttpException("The content-length has leading zeros.")
+    }
     let cl = Int64.tryParse(clStr.toString()) ?? throw HttpException("The content-length invalid.")
     if (cl < 0) {
         throw HttpException("The content-length should not be negative.")

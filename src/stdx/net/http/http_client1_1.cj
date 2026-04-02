@@ -246,6 +246,10 @@ class HttpEngine1 {
         logger = client.logger
     }
 
+    private func isIdempotentMethod(method: String): Bool {
+        return ["GET", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"].contains(method.toAsciiUpper()) 
+    }
+
     /**
      * @throws HttpException if too many connections to the same server.
      * @throws HttpException if too many 1xx responses.
@@ -264,14 +268,18 @@ class HttpEngine1 {
             closeConnInUse(connNode)
             // prevent connection in the pool is disconnected.
             // reconnect and resend the request
-            httpLogDebug(logger, "[HttpEngine1#sendRequest] Client1_1 connection failed, reconnect and resend request")
-            reconnectSendRequest(request, isToProxy)
+            if (isIdempotentMethod(request.method)) {
+                httpLogDebug(logger, "[HttpEngine1#sendRequest] Client1_1 connection failed, reconnect and resend request")
+                return reconnectSendRequest(request, isToProxy)
+            } else {
+                throw e
+            }
         } catch (e: SocketException | TlsException) {
             closeConnInUse(connNode)
-            if (isFromPool) {
+            if (isFromPool && isIdempotentMethod(request.method)) {
                 httpLogDebug(logger,
                     "[HttpEngine1#sendRequest] Client1_1 connection failed, reconnect and resend request")
-                reconnectSendRequest(request, isToProxy)
+                return reconnectSendRequest(request, isToProxy)
             } else {
                 throw e
             }
@@ -431,7 +439,8 @@ class HttpEngine1 {
         if (let Some(auth) <- parseProxyAuth(proxyUrl)) {
             headers.add("proxy-authorization", auth)
         }
-        httpLogDebug(logger, "[HttpEngine1#getTunnelConnector] Client1_1 getTunnelConnector,https proxy:" + client.httpsProxy.toString())
+        let safeProxyUrl = "${proxyUrl.scheme}://${proxyUrl.hostName}:${proxyUrl.port}"
+        httpLogDebug(logger, "[HttpEngine1#getTunnelConnector] Client1_1 getTunnelConnector,https proxy:${safeProxyUrl}")
         let req = HttpRequestBuilder().connect().url(client.httpsProxy).version(HTTP1_1).setHeaders(headers).build()
         let (resp, conn) = httpClient1.connect(req)
         return conn.getOrThrow()
