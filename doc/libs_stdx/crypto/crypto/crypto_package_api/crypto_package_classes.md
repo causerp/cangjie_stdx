@@ -1268,6 +1268,7 @@ tagSize 设置摘要长度，仅在 GCM 模式下使用，默认值为 SM4_GCM_T
 > - GCM 模式需要 OpenSSL 3.2 或者以上版本。
 >
 > - 对块密码来说 ECB 是已知不安全的模式。请谨慎使用。
+
 父类型：
 
 - BlockCipher
