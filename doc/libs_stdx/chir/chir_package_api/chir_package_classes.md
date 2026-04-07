@@ -46,7 +46,7 @@ MyAnno
 public init(classSrcCodeName: String)
 ```
 
-功能：构造一个 `Annotation` 对象，指定注解类名且**参数表初始为空**；可通过 [`setFieldValue`](#func-setfieldvalue-string-string) 写入键值。
+功能：构造一个 `Annotation` 对象，指定注解类名且**参数表初始为空**；可通过 [`setFieldValue`](#func-setfieldvaluestring-string) 写入键值。
 
 参数：
 
@@ -1458,7 +1458,6 @@ main() {
 prop_identifier: true
 ```
 
-
 ### prop srcCodeName
 
 ```cangjie
@@ -1487,7 +1486,6 @@ main() {
 ```text
 X
 ```
-
 
 ### prop packageName
 
@@ -1518,7 +1516,6 @@ main() {
 p
 ```
 
-
 ### prop ty
 
 ```cangjie
@@ -1547,7 +1544,6 @@ main() {
 ```text
 prop_ty: true
 ```
-
 
 ### prop genericTypeParams
 
@@ -1578,7 +1574,6 @@ main() {
 0
 ```
 
-
 ### prop genericDecl
 
 ```cangjie
@@ -1607,7 +1602,6 @@ main() {
 ```text
 mut_prop_genericDecl: true
 ```
-
 
 ### prop instanceVars
 
@@ -1638,7 +1632,6 @@ main() {
 0
 ```
 
-
 ### prop extends
 
 ```cangjie
@@ -1667,7 +1660,6 @@ main() {
 ```text
 0
 ```
-
 
 ### prop implementedInterfaceTypes
 
@@ -1698,7 +1690,6 @@ main() {
 0
 ```
 
-
 ### func setPublic()
 
 ```cangjie
@@ -1726,7 +1717,6 @@ main() {
 ```text
 fn_setPublic: true
 ```
-
 
 ### func setPrivate()
 
@@ -1756,7 +1746,6 @@ main() {
 fn_setPrivate: true
 ```
 
-
 ### func setProtected()
 
 ```cangjie
@@ -1784,7 +1773,6 @@ main() {
 ```text
 fn_setProtected: true
 ```
-
 
 ### func setInternal()
 
@@ -1814,7 +1802,6 @@ main() {
 fn_setInternal: true
 ```
 
-
 ### func isImported()
 
 ```cangjie
@@ -1841,7 +1828,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isPublic()
 
@@ -1870,7 +1856,6 @@ main() {
 false
 ```
 
-
 ### func isPrivate()
 
 ```cangjie
@@ -1897,7 +1882,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isInternal()
 
@@ -1926,7 +1910,6 @@ main() {
 false
 ```
 
-
 ### func isProtected()
 
 ```cangjie
@@ -1953,7 +1936,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isAbstract()
 
@@ -1982,7 +1964,6 @@ main() {
 false
 ```
 
-
 ### func isOpen()
 
 ```cangjie
@@ -2009,7 +1990,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isSealed()
 
@@ -2038,7 +2018,6 @@ main() {
 false
 ```
 
-
 ### func isGeneric()
 
 ```cangjie
@@ -2065,7 +2044,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isClassLike()
 
@@ -2094,7 +2072,6 @@ main() {
 fn_isClassLike: true
 ```
 
-
 ### func isClass()
 
 ```cangjie
@@ -2121,7 +2098,6 @@ main() {
 ```text
 fn_isClass: true
 ```
-
 
 ### func isInterface()
 
@@ -2150,7 +2126,6 @@ main() {
 false
 ```
 
-
 ### func isEnum()
 
 ```cangjie
@@ -2177,7 +2152,6 @@ main() {
 ```text
 false
 ```
-
 
 ### func isExtend()
 
@@ -2206,7 +2180,6 @@ main() {
 false
 ```
 
-
 ### func isStruct()
 
 ```cangjie
@@ -2233,8 +2206,6 @@ main() {
 ```text
 false
 ```
-
-
 
 ### func hashCode()
 
