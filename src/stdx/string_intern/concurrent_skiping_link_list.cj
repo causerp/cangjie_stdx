@@ -94,11 +94,13 @@ internal class ConcurrentSkipingLinkList<T> <: ILinkList<T> where T <: Hashable 
     }
 
     public func getNextNode(element: T): ?LinkedListNode<T> {
-        var item = valueMap.get(element)
-        if (let Some(node) <- item) {
-            return node.next
+        synchronized(mtx) {
+            var item = valueMap.get(element)
+            if (let Some(node) <- item) {
+                return node.next
+            }
+            return None
         }
-        return None
     }
 
     public func appendBefore(element: T, oldkey: ?T): LinkedListNode<T> {
