@@ -50,9 +50,17 @@
 #endif
 #endif
 
+/**
+ * Dynamic message structure for tracking function resolution status.
+ *
+ * Lifecycle:
+ * - Callers must allocate using MallocDynMsg() before use.
+ * - Callers must free using FreeDynMsg() after use.
+ * - The funcName pointer is managed internally and valid for the struct's lifetime.
+ */
 typedef struct DynMsg {
     bool found;
-    char* funcName;
+    const char* funcName;
 } DynMsg;
 
 DynMsg* MallocDynMsg(void);
@@ -68,15 +76,15 @@ void* DYN_OPENSSL_secure_malloc(size_t num, DynMsg* dynMsg);
 void DYN_OPENSSL_secure_free(void* ptr, DynMsg* dynMsg);
 void* DYN_OPENSSL_zalloc(size_t num, DynMsg* dynMsg);
 
-int DYN_SSL_CTX_set_min_proto_version(SSL_CTX* ctx, int version, DynMsg* dynMsg);
-int DYN_SSL_CTX_set_max_proto_version(SSL_CTX* ctx, int version, DynMsg* dynMsg);
+long DYN_SSL_CTX_set_min_proto_version(SSL_CTX* ctx, int version, DynMsg* dynMsg);
+long DYN_SSL_CTX_set_max_proto_version(SSL_CTX* ctx, int version, DynMsg* dynMsg);
 long DYN_SSL_CTX_set_dh_auto(SSL_CTX* ctx, int onoff, DynMsg* dynMsg);
-int DYN_SSL_CTX_add0_chain_cert(SSL_CTX* ctx, X509* x509, DynMsg* dynMsg);
+long DYN_SSL_CTX_add0_chain_cert(SSL_CTX* ctx, X509* x509, DynMsg* dynMsg);
 long DYN_SSL_CTX_set_mode(SSL_CTX* ctx, long mode, DynMsg* dynMsg);
 long DYN_SSL_CTX_set1_sigalgs_list(SSL_CTX* ctx, const char* str, DynMsg* dynMsg);
 long DYN_SSL_CTX_set_session_cache_mode(SSL_CTX* ctx, long mode, DynMsg* dynMsg);
 
-size_t DYN_BIO_pending(BIO* b, DynMsg* dynMsg);
+long DYN_BIO_pending(BIO* b, DynMsg* dynMsg);
 int DYN_BIO_eof(BIO* b, DynMsg* dynMsg);
 void DYN_BIO_clear_retry_flags(BIO* b, DynMsg* dynMsg);
 long DYN_BIO_get_mem_ptr(BIO* b, BUF_MEM** pp, DynMsg* dynMsg);
@@ -95,7 +103,17 @@ bool LoadDynFuncCertVerifyCallback(DynMsg* dynMsg);
 bool LoadDynFuncForCustomVerifyCallback(DynMsg* dynMsg);
 bool LoadDynForInfoCallback(DynMsg* dynMsg);
 
-void DynPopFree(void* extlist, char* funcName, DynMsg* dynMsg);
+/**
+ * Free a stack of OpenSSL objects using a named destructor function.
+ *
+ * @param extlist The stack to free
+ * @param funcName Name of the destructor function (e.g., "GENERAL_NAME_free").
+ *                 MUST be a string literal or have static storage duration.
+ *                 The pointer is stored in dynMsg and must remain valid
+ *                 for the lifetime of the DynMsg structure.
+ * @param dynMsg Dynamic message for error reporting
+ */
+void DynPopFree(void* extlist, const char* funcName, DynMsg* dynMsg);
 
 #define DECLAREFUNCTION0(name, type0) type0 DYN_##name(DynMsg* dynMsg);
 #define DECLAREFUNCTION1(name, type0, type1) type0 DYN_##name(type1 arg1, DynMsg* dynMsg);
