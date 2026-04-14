@@ -12,7 +12,7 @@ import std.fs.{Path, File, FileInfo, Directory, SymbolicLink, HardLink, OpenMode
 import std.io.{InputStream, OutputStream, copy}
 
 public class Tar {
-    private init() { } // static class
+    private init() {} // static class
 
     public static func archive(fromDir!: String, destFile!: String, includeBaseDirectory!: Bool): Unit {
         try (file = File(destFile, OpenMode.Write)) {
@@ -31,24 +31,26 @@ public class Tar {
     }
 
     public static func archive<T>(fromDir!: Path, destStream!: T, includeBaseDirectory!: Bool): Unit where T <: OutputStream {
-        Tar.archive(fromDir: fromDir, filter: { _ => true }, destStream: destStream, includeBaseDirectory: includeBaseDirectory)
+        Tar.archive(fromDir: fromDir, filter: {_ => true}, destStream: destStream,
+            includeBaseDirectory: includeBaseDirectory)
     }
 
-    public static func archive(fromDir!: String, filter!: (String) -> Bool, destFile!: String, includeBaseDirectory!: Bool): Unit {
+    public static func archive(fromDir!: String, filter!: (String) -> Bool, destFile!: String,
+        includeBaseDirectory!: Bool): Unit {
         try (file = File(destFile, OpenMode.Write)) {
-            Tar.archive(fromDir: Path(fromDir), filter: { p: Path => filter(p.toString()) },
-                destStream: file, includeBaseDirectory: includeBaseDirectory)
+            Tar.archive(fromDir: Path(fromDir), filter: {p: Path => filter(p.toString())}, destStream: file,
+                includeBaseDirectory: includeBaseDirectory)
         }
     }
 
     public static func archive(fromDir!: Path, filter!: (Path) -> Bool, destFile!: Path, includeBaseDirectory!: Bool): Unit {
         try (file = File(destFile, OpenMode.Write)) {
-            Tar.archive(fromDir: fromDir, filter: filter,
-                destStream: file, includeBaseDirectory: includeBaseDirectory)
+            Tar.archive(fromDir: fromDir, filter: filter, destStream: file, includeBaseDirectory: includeBaseDirectory)
         }
     }
 
-    protected static func archive<T>(fromDir!: Path, filter!: (Path) -> Bool, destStream!: T, includeBaseDirectory!: Bool): Unit where T <: OutputStream {
+    protected static func archive<T>(fromDir!: Path, filter!: (Path) -> Bool, destStream!: T,
+        includeBaseDirectory!: Bool): Unit where T <: OutputStream {
         if (!exists(fromDir)) {
             throw TarException("From directory not exists: ${fromDir}.")
         }
@@ -69,15 +71,16 @@ public class Tar {
         } else {
             prefixLength = fromDirNormalized.size + 1
         }
-        Directory.walkRecursively(Path(fromDirNormalized)) { fileInfo, targetType =>
-            if (!filter(fileInfo.path)) {
-                return
-            }
-            var entryName = fileInfo.path.toString()[prefixLength..]
-            if (targetType == TargetType.Directory) {
-                entryName += "/"
-            }
-            tarWriter.write(fileInfo, entryName: entryName)
+        Directory.walkRecursively(Path(fromDirNormalized)) {
+            fileInfo, targetType =>
+                if (!filter(fileInfo.path)) {
+                    return
+                }
+                var entryName = fileInfo.path.toString()[prefixLength..]
+                if (targetType == TargetType.Directory) {
+                    entryName += "/"
+                }
+                tarWriter.write(fileInfo, entryName: entryName)
         }
         tarWriter.finish()
     }
@@ -103,7 +106,7 @@ public class Tar {
             Directory.create(destDir, recursive: true)
         }
         let destAbsoluteDir = canonicalize(destDir)
-        
+
         let tarReader = TarReader(fromStream)
         for (entry in tarReader) {
             let entryPath = destAbsoluteDir.join(entry.name)
@@ -121,12 +124,10 @@ public class Tar {
                 }
             }
 
+            // check slip for both file and directory
             match (entry.entryType) {
-                case TarEntryType.Directory =>
-                    if (!exists(entryPath)) {
-                        Directory.create(entryPath, recursive: true)
-                    }
-                case TarEntryType.RegularFile | TarEntryType.V7RegularFile | TarEntryType.ContiguousFile =>
+                case TarEntryType.RegularFile | TarEntryType.V7RegularFile | TarEntryType.ContiguousFile
+                    | TarEntryType.Directory =>
                     let parentDir = entryPath.parent
                     // For the first time, before creating the parent directory, prevent existing symlinks.
                     // For example, if an existing ancestor of parentDir is a symbolic link pointing outside the
@@ -142,6 +143,15 @@ public class Tar {
                     // check on the complete parentDir can ensure that the final actual parent directory has not been
                     // redirected before proceeding with file writing.
                     ensureRegularFileParentWithinDirectory(parentDir, destAbsoluteDir, entry.name)
+                case _ => ()
+            }
+
+            match (entry.entryType) {
+                case TarEntryType.Directory =>
+                    if (!exists(entryPath)) {
+                        Directory.create(entryPath, recursive: true)
+                    }
+                case TarEntryType.RegularFile | TarEntryType.V7RegularFile | TarEntryType.ContiguousFile =>
                     if (let Some(stream) <- entry.stream) {
                         try (outputFile = File(entryPath.toString(), OpenMode.Write)) {
                             copy(stream, to: outputFile)
@@ -184,7 +194,7 @@ public class Tar {
     }
 
     /**
-     * Check whether a path is within the directory. 
+     * Check whether a path is within the directory.
      */
     private static func isPathWithinDirectory(path: Path, dir: Path): Bool {
         let normalizedPath = path.normalize().toString()
