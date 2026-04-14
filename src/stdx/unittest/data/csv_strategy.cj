@@ -424,9 +424,9 @@ enum Header {
  */
 public func csv<T>(
     fileName: String,
-    delimiter!: Rune = CSV_DEFAULT_DELIMITER,
-    quoteChar!: Rune = CSV_DEFAULT_QUOTE,
-    escapeChar!: Rune = CSV_DEFAULT_ESCAPE,
+    delimiter!: Rune = r',',
+    quoteChar!: Rune = r'"',
+    escapeChar!: Rune = r'"',
     commentChar!: Option<Rune> = None,
     header!: Option<Array<String>> = None,
     skipRows!: Array<UInt64> = [],
@@ -465,8 +465,8 @@ public func csv<T>(
  */
 public func tsv<T>(
     fileName: String,
-    quoteChar!: Rune = CSV_DEFAULT_QUOTE,
-    escapeChar!: Rune = CSV_DEFAULT_ESCAPE,
+    quoteChar!: Rune = r'"',
+    escapeChar!: Rune = r'"',
     commentChar!: Option<Rune> = None,
     header!: Option<Array<String>> = None,
     skipRows!: Array<UInt64> = [],

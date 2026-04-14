@@ -1,6 +1,6 @@
 # 类
 
-## class CsvStrategy
+## class CsvStrategy\<T>
 
 ```cangjie
 public class CsvStrategy<T> <: DataStrategy<T> where T <: Serializable<T> {}
@@ -28,7 +28,7 @@ public override func provider(configuration: Configuration): SerializableProvide
 
 - [SerializableProvider](#class-serializableprovider)\<T> - 序列化迭代器对象。
 
-## class JsonStrategy
+## class JsonStrategy\<T>
 
 ```cangjie
 public class JsonStrategy<T> <: DataStrategy<T> where T <: Serializable<T> {}
@@ -56,7 +56,7 @@ public override func provider(configuration: Configuration): SerializableProvide
 
 - SerializableProvider\<T> - 序列化迭代器对象。
 
-## class SerializableProvider
+## class SerializableProvider\<T>
 
 ```cangjie
 public class SerializableProvider<T> <: DataProvider<T> where T <: Serializable<T> {}
@@ -67,16 +67,6 @@ public class SerializableProvider<T> <: DataProvider<T> where T <: Serializable<
 父类型：
 
 - DataProvider\<T>
-
-### prop isInfinite
-
-```cangjie
-public prop isInfinite: Bool
-```
-
-功能：是否生成无限的数据。
-
-Bool。
 
 ### func provide()
 
