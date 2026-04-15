@@ -8,7 +8,7 @@
 
 package stdx.net.http
 
-import std.sync.{AtomicBool, Mutex, AtomicOptionReference}
+import std.sync.{AtomicBool, AtomicInt64, Mutex, AtomicOptionReference}
 import std.net.*
 import std.fs.File
 import stdx.net.tls.common.*
@@ -397,6 +397,7 @@ public class ServerBuilder {
 
 public class Server { // cjlint-ignore !G.ENU.01
     let pool: CoroutinePool
+    let activeConns = AtomicInt64(0)
     var tlsServerSession: ?TlsSession = None
 
     private var _connId: UInt64 = 0
@@ -592,7 +593,13 @@ public class Server { // cjlint-ignore !G.ENU.01
         synchronized(callBackMutex) {
             _afterBind()
         }
+        let maxConns = _servicePoolConfig.capacity + _servicePoolConfig.queueCapacity
         while (!quit.load()) {
+            // Pause accepting when at capacity to avoid accepting connections only to immediately close them
+            if (activeConns.load() >= maxConns) {
+                sleep(10 * Duration.millisecond)
+                continue
+            }
             // try accept
             let conn: StreamingSocket
             try {
@@ -619,6 +626,7 @@ public class Server { // cjlint-ignore !G.ENU.01
                  * Since the Server#close may conflict with Worker#run, the AtomicOptionReference is used to store the protocol-service instance.
                  */
                 let psRef = AtomicOptionReference<ProtocolService>()
+                activeConns.fetchAdd(1)
                 pool.submit<Unit>(
                     {
                         =>
@@ -632,6 +640,7 @@ public class Server { // cjlint-ignore !G.ENU.01
                             httpLogWarn(logger, "[Server#serve] failed to serve a client connection, ${e}")
                             conn.close()
                         }
+                        activeConns.fetchSub(1)
                         httpLogDebug(logger, "[Server#serve] serve client connection end")
                     },
                     connId: _connId,
@@ -653,6 +662,7 @@ public class Server { // cjlint-ignore !G.ENU.01
             } catch (e: Exception) {
                 httpLogWarn(logger,
                     "[conn#${_connId}] [Server#serve] failed to submit task servicing a client connection, ${e}")
+                activeConns.fetchSub(1)
                 conn.close()
             }
         }
