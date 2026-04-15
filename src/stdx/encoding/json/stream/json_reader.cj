@@ -19,6 +19,22 @@ const HIGH_3_UInt8: UInt8 = 0b11100000 // 0xe0
 const HIGH_4_UInt8: UInt8 = 0b11110000 // 0xf0
 const HIGH_5_UInt8: UInt8 = 0b11111000 // 0xf8
 const HIGH_6_UInt8: UInt8 = 0b11111100 // 0xfc
+const MAX_JSON_STREAM_STRING_BUFFER_SIZE: Int64 = 32 * 1024 * 1024
+
+func ensureFiniteJsonFloat(value: Float64): Float64 {
+    if (value.isNaN() || value.isInf()) {
+        throw IllegalStateException("Invalid float detected.")
+    }
+    return value
+}
+
+func isHighSurrogate(num: UInt32): Bool {
+    return num >= 0xD800u32 && num <= 0xDBFFu32 // UTF-16 high-surrogate range: D800..DBFF.
+}
+
+func isLowSurrogate(num: UInt32): Bool {
+    return num >= 0xDC00u32 && num <= 0xDFFFu32 // UTF-16 low-surrogate range: DC00..DFFF.
+}
 
 public class JsonReader {
     let inputStream: InputStream // the input stream
@@ -424,10 +440,15 @@ public class JsonReader {
                     let byte6 = readNextHexNum()
                     let byte7 = readNextHexNum()
                     let byte8 = readNextHexNum()
-                    let num1 = ((byteToUint(byte1) << 12) + (byteToUint(byte2) << 8) + (byteToUint(byte3) << 4) +
-                        byteToUint(byte4)) & 0b0000001111111111
-                    let num2 = ((byteToUint(byte5) << 12) + (byteToUint(byte6) << 8) + (byteToUint(byte7) << 4) +
-                        byteToUint(byte8)) & 0b0000001111111111
+                    let rawNum1 = (byteToUint(byte1) << 12) + (byteToUint(byte2) << 8) + (byteToUint(byte3) << 4) +
+                        byteToUint(byte4)
+                    let rawNum2 = (byteToUint(byte5) << 12) + (byteToUint(byte6) << 8) + (byteToUint(byte7) << 4) +
+                        byteToUint(byte8)
+                    if (!isHighSurrogate(rawNum1) || !isLowSurrogate(rawNum2)) {
+                        throw IllegalStateException("Illegal escape character.")
+                    }
+                    let num1 = rawNum1 & 0b0000001111111111
+                    let num2 = rawNum2 & 0b0000001111111111
                     let ch = Rune(((num1 << 10) | num2) + 0x10000)
                     charToByteArr(UInt32(ch))
                 }
@@ -456,21 +477,8 @@ public class JsonReader {
             stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
             stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
             return 0
-        } else if (ch <= UTF8_5_MAX) {
-            stringBuffer.append(UInt8(((ch >> SHIFT_24) & LOW_2_MASK) | HIGH_5_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_18) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_12) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
-            return 0
         } else {
-            stringBuffer.append(UInt8(((ch >> SHIFT_30) & LOW_1_MASK) | HIGH_6_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_24) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_18) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_12) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8(((ch >> SHIFT_6) & LOW_6_MASK) | HIGH_1_MASK))
-            stringBuffer.append(UInt8((ch & LOW_6_MASK) | HIGH_1_MASK))
-            return 0
+            throw IllegalStateException("Maximum of 4 bytes allowed for UTF-8.")
         }
     }
 
@@ -794,45 +802,13 @@ public class JsonReader {
 
     @OverflowWrapping
     func readString(): String {
-        if (nextNonJsonWhitespace() != b'\"') {
-            return readStringUnquoted()
+        let nextByte = nextNonJsonWhitespace()
+        if (nextByte != b'\"') {
+            throw IllegalStateException("The next Token is not JSON String.")
         }
         index++
         availLen--
         return readStringQuoted()
-    }
-
-    @OverflowWrapping
-    func readStringUnquoted(): String {
-        checkBuffer()
-        var byte = buffer[index]
-        if (byte == b'{' || byte == b'[' || byte == b']' || byte == b'}') {
-            throw IllegalStateException(
-                "Expect a JsonBool, JsonNull, JsonNumber or a JsonString, but peeked '${Rune(byte)}'.")
-        }
-        var sb = StringBuilder()
-        while (true) {
-            for (i in index..index + availLen) {
-                byte = buffer[i]
-                if (byte > 128u8) {
-                    throw IllegalStateException("Expect an ascii byte sequence, but peeked '${byte}'.")
-                }
-                if (byte == b']' || byte == b',' || byte == b'}' || byte == b'\t' || byte == b'\f' || byte == b'\r' ||
-                    byte == b'\n' || byte == b' ') {
-                    unsafe { sb.appendFromUtf8Unchecked(buffer[index..i]) }
-                    availLen -= (i - index)
-                    index = i
-                    return sb.toString()
-                }
-            }
-            unsafe { sb.appendFromUtf8Unchecked(buffer[index..index + availLen]) }
-            availLen = 0
-            fillInBuf()
-            if (availLen <= 0) {
-                return sb.toString()
-            }
-        }
-        throw IllegalStateException() // unreachable
     }
 
     @OverflowWrapping
@@ -1032,7 +1008,7 @@ public class JsonReader {
             throw IllegalStateException("Failed to read json number.")
         }
 
-        let result = readFloatEx()
+        let result = ensureFiniteJsonFloat(readFloatEx())
         if (let Some(c) <- tryNextNonJsonWhitespace()) {
             if (c == b'e' || c == b'E') {
                 index++
@@ -1041,7 +1017,7 @@ public class JsonReader {
                 if (overflow) {
                     throw OverflowException("Overflow while reading JSON number.")
                 }
-                return result * (10.0 ** exponent)
+                return ensureFiniteJsonFloat(result * (10.0 ** exponent))
             }
         }
         return result
@@ -1140,6 +1116,9 @@ class StringBuffer {
     var size = 0
 
     func grow(minCapacity: Int64): Unit {
+        if (minCapacity > MAX_JSON_STREAM_STRING_BUFFER_SIZE) {
+            throw IllegalStateException("Json string length exceeds ${MAX_JSON_STREAM_STRING_BUFFER_SIZE}.")
+        }
         let oldCapacity: Int64 = data.size
         var newCapacity: Int64 = oldCapacity << 1
         if (newCapacity < minCapacity) {
@@ -1154,6 +1133,9 @@ class StringBuffer {
     func appendAll(elements: Array<Byte>) {
         let cSize: Int64 = elements.size
 
+        if (cSize > MAX_JSON_STREAM_STRING_BUFFER_SIZE - size) {
+            throw IllegalStateException("Json string length exceeds ${MAX_JSON_STREAM_STRING_BUFFER_SIZE}.")
+        }
         if (size + cSize > data.size) {
             grow(size + cSize)
         }
@@ -1164,6 +1146,9 @@ class StringBuffer {
 
     @OverflowWrapping
     func append(element: Byte) {
+        if (size >= MAX_JSON_STREAM_STRING_BUFFER_SIZE) {
+            throw IllegalStateException("Json string length exceeds ${MAX_JSON_STREAM_STRING_BUFFER_SIZE}.")
+        }
         if (size == data.size) {
             grow(size + 1)
         }
