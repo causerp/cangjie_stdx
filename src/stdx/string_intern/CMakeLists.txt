@@ -15,5 +15,4 @@ set(STRING_INTERN_SRCS
     intern_string.cj
     lfu_memory_cache.cj
     lru_memory_cache.cj
-    wyrand.cj
     CACHE INTERNAL "")
