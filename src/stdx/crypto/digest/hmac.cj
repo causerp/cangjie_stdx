@@ -102,7 +102,7 @@ func getHash(algorithm: HashType): () -> Digest {
  * init、write、finish reset Combined use for digest encryption.
  */
 public class HMAC <: Digest {
-    private var ctxPtr: UInt64
+    private var ctxPtr: CPointer<Unit>
     private var hashName: String
     private var hash: Digest
     private var hasFinished: Bool = false
@@ -140,9 +140,9 @@ public class HMAC <: Digest {
         if (key.size <= 0) {
             throw CryptoException("The key cannot be empty.")
         }
-        this.key = key
+        this.key = key.clone()
         var ctxPtr = hmacCtxNew()
-        if (ctxPtr == 0) {
+        if (ctxPtr.isNull()) {
             throw CryptoException("HMAC init failed, malloc failed.")
         }
         this.ctxPtr = ctxPtr
@@ -165,15 +165,22 @@ public class HMAC <: Digest {
             throw CryptoException("The key cannot be empty.")
         }
         this.hashName = algorithm.toString()
-        this.key = key
+        this.key = key.clone()
         this.hash = digest()
         var ctxPtr = hmacCtxNew()
-        if (ctxPtr == 0) {
+        if (ctxPtr.isNull()) {
             throw CryptoException("HMAC init failed, malloc failed.")
         }
         this.ctxPtr = ctxPtr
         hmacInitC(this.ctxPtr, this.key, Int32(this.key.size), this.hashName)
         this.hasFinished = false
+    }
+
+    ~init() {
+        if (!this.hasFinished) {
+            hmacCtxFree(this.ctxPtr)
+        }
+        key.fill(0)
     }
 
     /*
@@ -190,7 +197,7 @@ public class HMAC <: Digest {
         if (buffer.size <= 0) {
             throw CryptoException("The data cannot be empty.")
         }
-        hmacUpdateC(this.ctxPtr, buffer, Int32(buffer.size))
+        hmacUpdateC(this.ctxPtr, buffer, UIntNative(buffer.size))
     }
 
     /*
@@ -212,8 +219,9 @@ public class HMAC <: Digest {
         if (to.size != size) {
             throw CryptoException("The length of output is not equal to the digest length.")
         }
-        hmacFinalC(this.ctxPtr, to, 0)
+        hmacFinalC(this.ctxPtr, to)
         this.hasFinished = true
+        this.ctxPtr = CPointer<Unit>()
     }
 
     /*
@@ -226,7 +234,7 @@ public class HMAC <: Digest {
             hmacCtxFree(this.ctxPtr)
         }
         var ctxPtr = hmacCtxNew()
-        if (ctxPtr == 0) {
+        if (ctxPtr.isNull()) {
             throw CryptoException("HMAC malloc failed.")
         }
         this.ctxPtr = ctxPtr
@@ -247,18 +255,24 @@ public class HMAC <: Digest {
         if (mac1.size != mac2.size) {
             return false
         }
-        var v: Byte = 0
-        for (i in 0..mac1.size) {
-            v |= mac1[i] ^ mac2[i]
+        let ptr1 = unsafe { acquireArrayRawData(mac1) }
+        let ptr2 = unsafe { acquireArrayRawData(mac2) }
+        let res = try {
+            cryptoMemcmp(ptr1.pointer, ptr2.pointer, UIntNative(mac1.size)) == 0
+        } finally {
+            unsafe {
+                releaseArrayRawData(ptr1)
+                releaseArrayRawData(ptr2)
+            }
         }
-        return Int64((UInt32(v ^ 0) - 1) >> 31) == 1
+        return res
     }
 }
 
-func hmacInitC(ctx: UInt64, key: Array<Byte>, len: Int32, algorithm: String): Unit {
+func hmacInitC(ctx: CPointer<Unit>, key: Array<Byte>, len: Int32, algorithm: String): Unit {
     unsafe {
         let algorithmCstr: CString = LibC.mallocCString(algorithm.toString())
-        var md: UInt64 = 0
+        var md: CPointer<Unit> = CPointer<Unit>()
         try {
             md = getDigestbyname(algorithmCstr)
         } finally {
@@ -267,7 +281,7 @@ func hmacInitC(ctx: UInt64, key: Array<Byte>, len: Int32, algorithm: String): Un
         let dynMsgPtr = generateDynMsg()
         let keyptr: CPointerHandle<UInt8> = acquireArrayRawData(key)
         let res = try {
-            DYN_HMAC_Init_ex(ctx, keyptr.pointer, len, md, 0, dynMsgPtr)
+            DYN_HMAC_Init_ex(ctx, keyptr.pointer, len, md, CPointer<Unit>(), dynMsgPtr)
         } finally {
             releaseArrayRawData(keyptr)
         }
@@ -278,7 +292,7 @@ func hmacInitC(ctx: UInt64, key: Array<Byte>, len: Int32, algorithm: String): Un
     }
 }
 
-func hmacUpdateC(ctx: UInt64, data: Array<Byte>, len: Int32): Unit {
+func hmacUpdateC(ctx: CPointer<Unit>, data: Array<Byte>, len: UIntNative): Unit {
     unsafe {
         let dynMsgPtr = generateDynMsg()
         let dataptr: CPointerHandle<UInt8> = acquireArrayRawData(data)
@@ -294,12 +308,13 @@ func hmacUpdateC(ctx: UInt64, data: Array<Byte>, len: Int32): Unit {
     }
 }
 
-func hmacFinalC(ctx: UInt64, md: Array<Byte>, len: UInt32): Unit {
+func hmacFinalC(ctx: CPointer<Unit>, md: Array<Byte>): Unit {
     unsafe {
+        var len: UInt32 = 0
         let dynMsgPtr = generateDynMsg()
         let mdptr: CPointerHandle<UInt8> = acquireArrayRawData(md)
         let res = try {
-            DYN_HMAC_Final(ctx, mdptr.pointer, len, dynMsgPtr)
+            DYN_HMAC_Final(ctx, mdptr.pointer, inout len, dynMsgPtr)
         } finally {
             releaseArrayRawData(mdptr)
         }

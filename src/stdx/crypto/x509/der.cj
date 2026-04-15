@@ -12,11 +12,14 @@ import std.time.DateTime
 import std.collection.{ArrayList, map}
 import stdx.crypto.common.*
 
+const MAX_DER_DEPTH = 32
+
 struct DerField <: ToString {
     DerField(
         let fieldType: DerType,
         let length: Int64,
-        let body: Array<Byte>
+        let body: Array<Byte>,
+        let depth: Int64
     ) {}
 
     func asSequence(): DerSequence {
@@ -24,7 +27,7 @@ struct DerField <: ToString {
             throw X509Exception("The field is not a sequence: ${fieldType}.")
         }
 
-        DerSequence(body)
+        DerSequence(body, depth: this.depth + 1)
     }
 
     func asArrayByte(): Array<Byte> {
@@ -59,6 +62,22 @@ struct DerField <: ToString {
 
     func asString(): String {
         String.fromUtf8(body)
+    }
+
+    func checkVersion(): Unit {
+        // version type body size should be 3 bytes
+        // first byte 0x02 denotes integer
+        // second byte 0x01 denotes length
+        // third byte is version value {0x01, 0x02}, 0x00 is usually omitted
+        if (body.size != 3) {
+            throw X509Exception("Invalid version: Invalid version field length.")
+        }
+        if (body[0] != 0x02 || body[1] != 0x01) {
+            throw X509Exception("Invalid version field value.")
+        }
+        if (body[2] != 0 && body[2] != 1 && body[2] != 2) {
+            throw X509Exception("X509Cert init failed: Invalid version value: ${body[2]}. Must be 0, 1, or 2.")
+        }
     }
 
     public override func toString(): String {
@@ -97,15 +116,18 @@ struct DerField <: ToString {
         // identifier tag number greater than 30
         first = (first << 5) | 0x1f
         var arr = ArrayList<Byte>.of(first)
-        while (true) {
-            var tag: Byte = UInt8(identifier) & 0x7f
+        let bytes = ArrayList<Byte>()
+        while (identifier > 0) {
+            bytes.add(UInt8(identifier & 0x7f))
             identifier = identifier >> 7
-            if (identifier == 0) {
-                arr.add(tag)
-                break
+        }
+        bytes.reverse()
+        for (i in 0..bytes.size) {
+            if (i < bytes.size - 1) {
+                arr.add(bytes[i] | 0x80)
+            } else {
+                arr.add(bytes[i])
             }
-            tag = tag | 0x80
-            arr.add(tag)
         }
         arr
     }
@@ -133,11 +155,13 @@ struct DerField <: ToString {
         arr
     }
 }
-
 class DerSequence <: Collection<DerField> {
     private let fields: Array<(DerType, Int64)>
 
-    DerSequence(private let body: Array<Byte>) {
+    DerSequence(private let body: Array<Byte>, let depth!: Int64 = 0) {
+        if (depth > MAX_DER_DEPTH) {
+            throw X509Exception("X509 parse failed: DER nesting depth exceeds maximum limit (${MAX_DER_DEPTH}).")
+        }
         var parser = DerParser(body)
         let positions = ArrayList<(DerType, Int64)>()
 
@@ -170,7 +194,7 @@ class DerSequence <: Collection<DerField> {
                 throw X509Exception("X509 parse failed: out of index.")
             }
             var parser = DerParser(body[position..])
-            parser.parseNextDerField()
+            parser.parseNextDerField(depth)
         }
     }
 
@@ -183,6 +207,6 @@ class DerSequence <: Collection<DerField> {
             throw X509Exception("X509 parse failed: out of index.")
         }
         var parser = DerParser(body[position..])
-        parser.parseNextDerField()
+        parser.parseNextDerField(depth)
     }
 }

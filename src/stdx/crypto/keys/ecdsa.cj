@@ -35,11 +35,17 @@ public class ECDSAPrivateKey <: PrivateKey {
 
     init(blob: DerBlob) {
         pkey = loadPrivateKey(EC_id, blob.body)
+        if (pkey.isNull()) {
+            throw CryptoException("Init ECDSA PrivateKey failed.")
+        }
         evpKeyCtx = EVPKEYCTX(pkey)
     }
 
     public init(curve: Curve) {
         pkey = unsafe { generateECDSA(curve) }
+        if (pkey.isNull()) {
+            throw CryptoException("Init ECDSA PrivateKey failed.")
+        }
         evpKeyCtx = EVPKEYCTX(pkey)
     }
 
@@ -132,6 +138,9 @@ public class ECDSAPublicKey <: PublicKey {
 
     init(blob: DerBlob) {
         pkey = loadPublicKey(EC_id, blob.body)
+        if (pkey.isNull()) {
+            throw CryptoException("Init ECDSA PublicKey failed.")
+        }
         evpKeyCtx = EVPKEYCTX(pkey)
     }
 
@@ -215,24 +224,24 @@ unsafe func generateECDSA(curve: Curve) {
 func sign(ctx: EVPKEYCTX, pkey: CPointer<UInt64>, data: Array<Byte>) {
     unsafe {
         var ecSize = Int64(getSize(pkey))
-        var sig: Array<UInt8> = Array<UInt8>(Int64(ecSize), repeat: 0)
+        var sig: Array<UInt8> = Array<UInt8>(ecSize, repeat: 0)
         let sigHandle: CPointerHandle<Byte> = acquireArrayRawData(sig)
         let dataHandle: CPointerHandle<Byte> = acquireArrayRawData(data)
-        try (sizePtr = LibC.malloc<Int64>().asResource()) {
+        try (sizePtr = LibC.malloc<UIntNative>().asResource()) {
             if (sizePtr.value.isNull()) {
                 throw CryptoException("Sign init error, malloc failed.")
             }
 
-            sizePtr.value.write(ecSize)
+            sizePtr.value.write(UIntNative(ecSize))
             var ret = signInit(ctx.ptr)
             if (ret <= 0) {
                 throw CryptoException("Sign init error.")
             }
-            ret = sign(ctx.ptr, sigHandle.pointer, sizePtr.value, dataHandle.pointer, data.size)
-            if (ret != 1 || ecSize < sizePtr.value.read()) {
+            ret = sign(ctx.ptr, sigHandle.pointer, sizePtr.value, dataHandle.pointer, UIntNative(data.size))
+            if (ret != 1 || ecSize < Int64(sizePtr.value.read())) {
                 throw CryptoException("Sign error.")
             }
-            ecSize = sizePtr.value.read()
+            ecSize = Int64(sizePtr.value.read())
         } finally {
             releaseArrayRawData(sigHandle)
             releaseArrayRawData(dataHandle)
@@ -251,7 +260,7 @@ func verify(ctx: EVPKEYCTX, data: Array<Byte>, sig: Array<Byte>) {
             if (ret <= 0) {
                 throw CryptoException("Verify init error.")
             }
-            result = verify(ctx.ptr, sigHandle.pointer, sig.size, dataHandle.pointer, data.size)
+            result = verify(ctx.ptr, sigHandle.pointer, UIntNative(sig.size), dataHandle.pointer, UIntNative(data.size))
         } finally {
             releaseArrayRawData(sigHandle)
             releaseArrayRawData(dataHandle)

@@ -338,6 +338,10 @@ public class RSAPrivateKey <: PrivateKey{
 
 Function: RSA private key class, providing the capability to generate RSA private keys. RSA private keys support signing and decryption operations, and can be encoded/decoded in PEM and DER formats, complying with the PKCS1 standard. For usage examples, see [RSA Key Example](../keys_samples/sample_keys.md#rsa-key-example).
 
+> **Note:**
+>
+> - Recommended length is not less than 3072 bits. Keys shorter than 3072 bits may be insecure.
+
 Parent Type:
 
 - [PrivateKey](../../x509/x509_package_api/x509_package_interfaces.md#interface-privatekey)
