@@ -12,6 +12,7 @@ import std.collection.ArrayList
 import std.sync.{AtomicUInt64, AtomicReference, Mutex}
 
 let loggerHolderList = ArrayList<LoggerHolder>()
+let globalMtx = Mutex()
 
 class LoggerHolder <: Logger {
     static let id = AtomicUInt64(0)
@@ -52,19 +53,19 @@ class LoggerHolder <: Logger {
     }
 
     public func withAttrs(attrs: Array<Attr>): Logger {
-        match (holder) {
-            case Some(l) => l.withAttrs(attrs)
-            case _ =>
-                if (attrs.size > 0) {
-                    let nh = this.clone()
-                    synchronized(mtx) {
+        synchronized(globalMtx) {
+            match (holder) {
+                case Some(l) => l.withAttrs(attrs)
+                case _ =>
+                    if (attrs.size > 0) {
+                        let nh = this.clone()
                         loggerHolderList.add(nh)
+                        nh.level = this.level
+                        nh._attrs.add(all: attrs)
+                        return nh
                     }
-                    nh.level = this.level
-                    nh._attrs.add(all: attrs)
-                    return nh
-                }
-                return this
+                    return this
+            }
         }
     }
 
