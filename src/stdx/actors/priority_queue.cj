@@ -15,41 +15,47 @@
 
 package stdx.actors
 
-import std.collection.concurrent.ConcurrentLinkedQueue
+import std.collection.concurrent.ArrayBlockingQueue
 
-const DEFAULT_CAPACITY = 10
+private const DEFAULT_NUM_OF_PRIORITIES = 10
 
 class ConcurrentPriorityQueue<T> {
-    private let capacity: Int64
-    private let queuePool: Array<ConcurrentLinkedQueue<T>>
-
-    init() {
-        this(DEFAULT_CAPACITY)
-    }
+    private let numOfPriorities: Int64
+    private let queuePool: Array<ArrayBlockingQueue<T>>
+    private let semaphore = SingleConsumerSemaphore()
 
     init(capacity: Int64) {
-        this.capacity = capacity
-        this.queuePool = Array<ConcurrentLinkedQueue<T>>(capacity, {_ => ConcurrentLinkedQueue<T>()})
+        this(DEFAULT_NUM_OF_PRIORITIES, capacity)
     }
 
-    func add(value: T, priority: Int64): Unit {
-        if (priority <= 0 || priority > capacity) {
-            throw IllegalArgumentException("Priority must be in the range [1..${capacity}].")
+    init(numOfPriorities: Int64, capacity: Int64) {
+        this.numOfPriorities = numOfPriorities
+        this.queuePool = Array<ArrayBlockingQueue<T>>(numOfPriorities, { _ => ArrayBlockingQueue<T>(capacity) })
+    }
+
+    func add(item: T, priority: Int64): Unit {
+        if (priority <= 0 || priority > numOfPriorities) {
+            throw IllegalArgumentException("Priority must be in the range [1..${numOfPriorities}].")
         }
-        // Note: ConcurrentLinkedQueue.add() will never return false
-        queuePool[priority - 1].add(value)
+        queuePool[priority - 1].add(item)
+        semaphore.signal()
     }
 
-    func remove(): Option<T> {
+    func remove(timeout: Duration): Option<T> {
+        if (!semaphore.wait(timeout)) {
+            return None
+        }
+
         var index: Int64 = -1
-        for (i in 0..queuePool.size) {
-            if (!queuePool[i].isEmpty()) {
+        for (i in 0..numOfPriorities) {
+            if (queuePool[i].size > 0) {
                 index = i
             }
         }
         if (index != -1) {
             return queuePool[index].remove()
         }
+
         return None
     }
 }

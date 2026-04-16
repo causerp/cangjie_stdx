@@ -15,34 +15,33 @@
 
 package stdx.actors
 
-import std.collection.concurrent.ConcurrentLinkedQueue
-
 public class SequentialDispatcher {
     let mailbox: Mailbox
-    let numMsg: SingleConsumerSemaphore
     let threadHandle: Future<Unit>
 
     public init(enableReceiverPriority!: Bool = false) {
         this.mailbox = if (enableReceiverPriority) {
-            UnboundedPriorityMailbox()
+            BoundedPriorityMailbox()
         } else {
-            UnboundedMailbox()
+            BoundedMailbox()
         }
-        this.numMsg = SingleConsumerSemaphore()
-        this.threadHandle = startActorLoop(mailbox, numMsg)
+        this.threadHandle = startActorLoop(mailbox)
     }
 
-    static func startActorLoop(mailbox: Mailbox, numMsg: SingleConsumerSemaphore): Future<Unit> {
+    static func startActorLoop<M>(mailbox: M): Future<Unit> where M <: Mailbox {
         spawn {
             while (true) {
-                numMsg.wait()
-
                 if (Thread.currentThread.hasPendingCancellation) {
                     return
                 }
 
-                match (mailbox.remove()) {
-                    case Some((_, f)) => f()
+                match (mailbox.remove(timeout: Duration.second)) {
+                    case Some((_, f)) =>
+                        try {
+                            f()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     case None => ()
                 }
             }
@@ -52,14 +51,10 @@ public class SequentialDispatcher {
     public func post<T>(f: () -> T, priority!: Int64 = 5): ActorFuture<T> {
         let fut = ActorFuture<T>(f)
         mailbox.add((this, fut.execute), priority)
-        numMsg.signal()
         return fut
     }
 
     ~init() {
-        while (!threadHandle.thread.hasPendingCancellation) {
-            threadHandle.cancel()
-        }
-        numMsg.signal()
+        threadHandle.cancel()
     }
 }
