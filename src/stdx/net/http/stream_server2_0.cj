@@ -727,6 +727,12 @@ class HttpEngineConn2 <: HttpEngineConn & InputStream {
                     }
                     request._url = URL.parse(value)
                 case ":protocol" =>
+                    if (stream.server.localSettings[SettingsEnableConnectProtocol.code] == 0) {
+                        throw HttpStreamException(
+                            ProtocolError,
+                            "Malformed request, extended CONNECT protocol is disabled."
+                        )
+                    }
                     if (!h2UpgradeProtocols.contains(value)) {
                         throw HttpStreamException(
                             ProtocolError,
