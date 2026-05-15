@@ -1346,7 +1346,7 @@ public class Field <: Expression & Equatable<Field> {
      */
     public static func create(location: Value, path: ArrayList<UInt64>): Field {
         let expr = Field(location, path)
-        let retTy = getFieldOfType(location.ty, path.map({ i => Int64(i) }))
+        let retTy = getFieldOfType(location.ty, collectArrayList<Int64>(map<UInt64, Int64>({ i => Int64(i) })(path)))
         expr._result._type = retTy
         expr._result._expr = expr
         return expr
@@ -3270,7 +3270,7 @@ public class Tuple <: Expression & Equatable<Tuple> {
     public static func create(elements: ArrayList<Value>): Tuple {
         assert(!elements.isEmpty(), "Tuple: elements are not set")
         let expr = Tuple(elements)
-        expr._result._type = TupleType.get(elements.map({ e => e.ty }).toArray())
+        expr._result._type = TupleType.get(collectArray<Type>(map<Value, Type>({ e => e.ty })(elements)))
         expr._result._expr = expr
         return expr
     }
