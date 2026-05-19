@@ -706,6 +706,9 @@ add_cangjie_library(
     SOURCES ${CHIR_SRCS}
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/stdx/chir
     DEPENDS ${CHIR_DEPENDENCIES})
+if(TARGET CHIR_FLATC_OUTPUTS)
+    add_dependencies(cangjie${BACKEND_TYPE}Chir CHIR_FLATC_OUTPUTS)
+endif()
 
 make_cangjie_lib(
     chir IS_SHARED
