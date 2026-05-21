@@ -81,6 +81,22 @@ Since stdx needs to pull and compile external open-source C libraries, and there
 - clang: >= 15.0.4 且 < 16 (Linux or macOS)
 - mingw-w64 (Windows) [Download link](https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev2/x86_64-12.2.0-release-posix-seh-msvcrt-rt_v10-rev2.7z)
 
+## Notes
+
+- If the configured stdx compilation output type is dynamic, and the user's cjpm project output is an executable file, before manually running the executable, you need to add the target/release/stdx directory under the project directory to the environment variables: LD_LIBRARY_PATH (Linux), DYLD_LIBRARY_PATH (macOS), or PATH (Windows).
+- If the configured stdx compilation output type is static, and the user has used libraries with FFI calls, you need to manually add linking options to the `compile-option` in the project's cjpm.toml file. The corresponding relationships are shown in the following table:
+
+| Library Name | Linking Options |
+| ------------ | --------------- |
+| stdx.compress.tar | -lstdx.compress.tarFFI |
+| stdx.compress.zlib | -lstdx.compress.zlibFFI |
+| stdx.crypto.keys | -lstdx.crypto.keysFFI -lcangjie-dynamicLoader-opensslFFI |
+| stdx.crypto.x509 | -lstdx.crypto.x509FFI -lcangjie-dynamicLoader-opensslFFI |
+| stdx.net.tls | -lstdx.net.tlsFFI -lcangjie-dynamicLoader-opensslFFI |
+| stdx.encoding.json | -lstdx.encoding.jsonFFI |
+| stdx.encoding.json.stream | -lstdx.encoding.json.streamFFI |
+| stdx.fuzz | -lstdx.fuzzFFI |
+
 ## Common Issues
 
 - **Cannot find OPENSSL**: Please check if the environment variable OPENSSL_ROOT_DIR is configured, and if the lib directory under OPENSSL_ROOT_DIR contains the openssl dynamic library.
