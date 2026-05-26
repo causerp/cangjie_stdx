@@ -175,24 +175,24 @@ Donald Sweet,28
 
 有几种方式可以序列化上述数据：
 
-1. 将数据表示为 HashMap\<String, String> 类型。
+第一种方式是将数据表示为 HashMap\<String, String> 类型。
 
-    具体示例为：
+具体示例为：
 
-    <!--compile-->
-    ```cangjie
-    import std.collection.HashMap
-    import std.unittest.*
-    import std.unittest.testmacro.*
+<!--compile-->
+```cangjie
+import std.collection.HashMap
+import std.unittest.*
+import std.unittest.testmacro.*
 
-    @Test[user in csv("testdata.csv")]
-    func testUser(user: HashMap<String, String>) {
-        @Assert(user["username"] == "Alex Great" || user["username"] == "Donald Sweet")
-        @Assert(user["age"] == "21" || user["age"] == "28")
-    }
-    ```
+@Test[user in csv("testdata.csv")]
+func testUser(user: HashMap<String, String>) {
+    @Assert(user["username"] == "Alex Great" || user["username"] == "Donald Sweet")
+    @Assert(user["age"] == "21" || user["age"] == "28")
+}
+```
 
-2. 将数据表示为 [Serializable](../../../serialization/serialization_package_api/serialization_package_interfaces.md#interface-serializable)\<T> 类型数据，其 String 类型的数据可被反序列化为 [DataModelStruct](../../../serialization/serialization_package_api/serialization_package_classes.md#class-datamodelstruct) 格式对象。
+第二种方式是将数据表示为 [Serializable](../../../serialization/serialization_package_api/serialization_package_interfaces.md#interface-serializable)\<T> 类型数据，其 String 类型的数据可被反序列化为 [DataModelStruct](../../../serialization/serialization_package_api/serialization_package_classes.md#class-datamodelstruct) 格式对象。
 
 具体示例为：
 
@@ -227,7 +227,7 @@ public class User <: Serializable<User> {
 
 @Test[user in csv("testdata.csv")]
 func testUser(user: User) {
-   @Assert(user.name == "Alex Great" || user.name == "Donald Sweet")
-   @Assert(user.age == 21 || user.age == 28)
+    @Assert(user.name == "Alex Great" || user.name == "Donald Sweet")
+    @Assert(user.age == 21 || user.age == 28)
 }
 ```

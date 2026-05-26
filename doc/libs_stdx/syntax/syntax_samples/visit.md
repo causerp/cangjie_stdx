@@ -17,11 +17,11 @@ ASTVisitor 是 SyntaxTreeNode 访问器的基类。
 ```cangjie
 package a
 
-main(){
-  var expr = 1 + 2
-  println(expr)
-  var nextExpr = expr + 1
-  println(nextExpr)
+main() {
+    var expr = 1 + 2
+    println(expr)
+    var nextExpr = expr + 1
+    println(nextExpr)
 }
 ```
 
@@ -60,7 +60,7 @@ main() {
     let root = parseFile("example.cj")
 
     let counter = BinaryCounter()
-    counter.walk(root.node.getOrThrow())          // 开始遍历
+    counter.walk(root.node.getOrThrow()) // 开始遍历
 
     println("Total BinaryExpr count: ${counter.count}")
 }

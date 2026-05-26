@@ -16,6 +16,7 @@ ERROR: no interesting inputs were found. Is the code instrumented for coverage? 
 
 触发的代码：
 
+<!-- code_no_check -->
 ```cangjie
 // main.cj
 import stdx.fuzz.*
@@ -50,6 +51,7 @@ ERROR: no interesting inputs were found. Is the code instrumented for coverage? 
 
 此外，除了使用 Fake Coverage 模式，还可以在测试用例中主动调用待测函数的某些不重要的 API 来将覆盖率信息传递给 libfuzzer，也能起到让 fuzz 继续下去的作用。
 
+<!-- code_no_check -->
 ```cangjie
 // main.cj
 import stdx.fuzz.*

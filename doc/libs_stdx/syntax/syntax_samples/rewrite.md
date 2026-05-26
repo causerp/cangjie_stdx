@@ -46,9 +46,7 @@ class DocStubGenerator <: ASTRewriter {
     public override func rewrite(node: SyntaxTreeNode): SyntaxTreeNode {
         match (node) {
             case fn: FuncDecl =>
-                let comment = Comment(
-                    "// @brief describe ${fn.name}"
-                )
+                let comment = Comment("// @brief describe ${fn.name}")
                 let newComments = ArrayList<Comment>(fn.comments)
                 newComments.add(comment)
                 // 2. 修改 FuncDecl 中的 comments 属性

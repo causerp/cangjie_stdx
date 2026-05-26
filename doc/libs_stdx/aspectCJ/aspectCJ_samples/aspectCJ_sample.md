@@ -12,7 +12,8 @@ package AOP_demo1
 import stdx.aspectCJ.*
 import std.time.DateTime
 
-@InsertAtEntry[packageName: "AOP_demo1", className: "", methodName: "printCurrentTime", isStatic: false, funcTypeStr: "()->Unit", recursive: false]
+@InsertAtEntry[packageName: "AOP_demo1", className: "", methodName: "printCurrentTime", isStatic: false,
+    funcTypeStr: "()->Unit", recursive: false]
 public func printCurrentTimeImpl() {
     println("----- ${DateTime.now()} -----")
 }
@@ -55,7 +56,8 @@ package AOP_demo2
 import stdx.aspectCJ.*
 import std.time.DateTime
 
-@InsertAtExit[packageName: "AOP_demo2", className: "", methodName: "printCurrentTime", isStatic: false, funcTypeStr: "()->std.core:String", recursive: false]
+@InsertAtExit[packageName: "AOP_demo2", className: "", methodName: "printCurrentTime", isStatic: false,
+    funcTypeStr: "()->std.core:String", recursive: false]
 public func printCurrentTimeImpl() {
     println("----- ${DateTime.now()} -----")
 }
@@ -100,8 +102,9 @@ package AOP_demo3
 import stdx.aspectCJ.*
 import std.time.DateTime
 
-@ReplaceFuncBody[packageName: "AOP_demo3", className: "", methodName: "printCurrentTime", isStatic: false, recursive: false]
-public func printCurrentTimeImpl(original: (String)->String) {
+@ReplaceFuncBody[packageName: "AOP_demo3", className: "", methodName: "printCurrentTime", isStatic: false,
+    recursive: false]
+public func printCurrentTimeImpl(original: (String) -> String) {
     println("----- ${DateTime.now()} -----")
     println(original("abc"))
     println("----- end -----")

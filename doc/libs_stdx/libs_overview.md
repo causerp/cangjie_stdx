@@ -68,6 +68,7 @@
 
 cjc 的介绍和编译请查看 cangjie 用户手册
 
+<!-- code_no_check -->
 ```cangjie
 import stdx.actors.*
 import stdx.actors.macros.*

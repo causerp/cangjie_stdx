@@ -3,6 +3,7 @@
 - 编写被测 API，当且仅当输入数组长度是 8、内容是 "Cangjie!" 对应的 ASCII 时抛出异常，纯随机的情况下最差需要 2<sup>64</sup> 次猜测才会触发异常。
 - 创建 Fuzzer 并且调用待测 API，进入主流程。
 
+<!-- code_no_check -->
 ```cangjie
 // 导入依赖的类
 import stdx.fuzz.Fuzzer

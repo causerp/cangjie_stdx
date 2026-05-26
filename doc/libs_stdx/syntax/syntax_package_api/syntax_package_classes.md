@@ -73,11 +73,13 @@ import stdx.syntax.*
 
 main() {
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 identifier
     let identifier = "MyAnnotation"
@@ -87,8 +89,8 @@ main() {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
 
@@ -122,11 +124,13 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 identifier
     let identifier = "MyAnnotation"
@@ -136,8 +140,8 @@ main(): Unit {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
     let pos = annotation.getAtOpPos()
@@ -187,15 +191,16 @@ main(): Unit {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
     let posArr = annotation.getCommasPos()
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("annotation.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "annotation.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -227,11 +232,13 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 identifier
     let identifier = "MyAnnotation"
@@ -241,8 +248,8 @@ main(): Unit {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
     let pos = annotation.getIdentifierPos()
@@ -278,11 +285,13 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 identifier
     let identifier = "MyAnnotation"
@@ -292,8 +301,8 @@ main(): Unit {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
 
@@ -330,11 +339,13 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 identifier
     let identifier = "MyAnnotation"
@@ -344,8 +355,8 @@ main(): Unit {
 
     // 创建 Annotation 实例
     let annotation = Annotation(
-        arguments, 
-        identifier, 
+        arguments,
+        identifier,
         opKind
     )
 
@@ -455,8 +466,8 @@ main() {
 
     // 创建 Argument 实例
     let argument = Argument(
-        identifier, 
-        isInOut, 
+        identifier,
+        isInOut,
         value
     )
 
@@ -500,8 +511,8 @@ main(): Unit {
 
     // 创建 Argument 实例
     let argument = Argument(
-        identifier, 
-        isInOut, 
+        identifier,
+        isInOut,
         value
     )
 
@@ -548,8 +559,8 @@ main(): Unit {
 
     // 创建 Argument 实例
     let argument = Argument(
-        identifier, 
-        isInOut, 
+        identifier,
+        isInOut,
         value
     )
 
@@ -596,8 +607,8 @@ main(): Unit {
 
     // 创建 Argument 实例
     let argument = Argument(
-        identifier, 
-        isInOut, 
+        identifier,
+        isInOut,
         value
     )
 
@@ -667,9 +678,7 @@ main() {
     ]
 
     // 创建 ArrayLiteral 实例
-    let arrayLiteral = ArrayLiteral(
-        elements
-    )
+    let arrayLiteral = ArrayLiteral(elements)
 
     println("arrayLiteral: ${arrayLiteral}")
 }
@@ -713,7 +722,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("arrayLiteral.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "arrayLiteral.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -870,7 +880,7 @@ main() {
 
     // 创建 AsExpr 实例
     let asExpr = AsExpr(
-        srcVal, 
+        srcVal,
         targetTypeAnnotation
     )
 
@@ -1003,8 +1013,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -1103,9 +1113,7 @@ class DocStubGenerator <: ASTRewriter {
     public override func rewrite(node: SyntaxTreeNode): SyntaxTreeNode {
         match (node) {
             case fn: FuncDecl =>
-                let comment = Comment(
-                    "// @brief describe ${fn.name}"
-                )
+                let comment = Comment("// @brief describe ${fn.name}")
                 let newComments = ArrayList<Comment>(fn.comments)
                 newComments.add(comment)
                 // 2. 修改 FuncDecl 中的 comments 属性
@@ -1175,9 +1183,7 @@ class DocStubGenerator <: ASTRewriter {
     public override func rewrite(node: SyntaxTreeNode): SyntaxTreeNode {
         match (node) {
             case fn: FuncDecl =>
-                let comment = Comment(
-                    "// @brief describe ${fn.name}"
-                )
+                let comment = Comment("// @brief describe ${fn.name}")
                 let newComments = ArrayList<Comment>(fn.comments)
                 newComments.add(comment)
                 // 2. 修改 FuncDecl 中的 comments 属性
@@ -1438,9 +1444,7 @@ main() {
     let kind = AtomicTypeKind.UInt32Type
 
     // 创建 AtomicType 实例
-    let atomicType = AtomicType(
-        kind
-    )
+    let atomicType = AtomicType(kind)
 
     println("atomicType: ${atomicType}")
 }
@@ -1531,8 +1535,8 @@ main() {
 
     // 创建 BinaryExpr 实例
     let binaryExpr = BinaryExpr(
-        lhs, 
-        opKind, 
+        lhs,
+        opKind,
         rhs
     )
 
@@ -1638,14 +1642,10 @@ import stdx.syntax.*
 
 main() {
     // 创建 nodes
-    let nodes: Array<SyntaxTreeNode> = [
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    ]
+    let nodes: Array<SyntaxTreeNode> = [LitConstExpr(LitConstKind.IntergerLiteral, "123")]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     println("block: ${block}")
 }
@@ -1679,9 +1679,7 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 nodes
-    let nodes: Array<SyntaxTreeNode> = [
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    ]
+    let nodes: Array<SyntaxTreeNode> = [LitConstExpr(LitConstKind.IntergerLiteral, "123")]
 
     // 创建 Block 实例
     let block = Block(nodes)
@@ -1718,9 +1716,7 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 nodes
-    let nodes: Array<SyntaxTreeNode> = [
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    ]
+    let nodes: Array<SyntaxTreeNode> = [LitConstExpr(LitConstKind.IntergerLiteral, "123")]
 
     // 创建 Block 实例
     let block = Block(nodes)
@@ -1784,13 +1780,13 @@ main() {
     // 创建一个变量声明
     let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
     let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
-    
+
     // 创建成员声明列表
     let memberDecls: Array<Decl> = [varDecl]
-    
+
     // 创建 Body 实例
     let body = Body(memberDecls)
-    
+
     println("body: ${body}")
 }
 ```
@@ -1825,16 +1821,16 @@ main(): Unit {
     // 创建一个变量声明
     let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
     let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
-    
+
     // 创建成员声明列表
     let memberDecls: Array<Decl> = [varDecl]
-    
+
     // 创建 Body 实例
     let body = Body(memberDecls)
-    
+
     // 获取左花括号位置
     let pos = body.getLCurlPos()
-    
+
     // 输出左花括号位置
     println("body.getLCurlPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -1868,16 +1864,16 @@ main(): Unit {
     // 创建一个变量声明
     let initializer = LitConstExpr(LitConstKind.IntergerLiteral, "1")
     let varDecl = VarDecl(initializer, VarKind.Let, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))
-    
+
     // 创建成员声明列表
     let memberDecls: Array<Decl> = [varDecl]
-    
+
     // 创建 Body 实例
     let body = Body(memberDecls)
-    
+
     // 获取右花括号位置
     let pos = body.getRCurlPos()
-    
+
     // 输出右花括号位置
     println("body.getRCurlPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -2002,15 +1998,17 @@ main() {
     let callee = SymbolRef("foo", [])
 
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 CallExpr 实例
     let callExpr = CallExpr(
-        callee, 
+        callee,
         arguments
     )
 
@@ -2059,7 +2057,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("callExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "callExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -2220,7 +2219,7 @@ main() {
 
     // 创建 CatchPattern 实例
     let catchPattern = CatchPattern(
-        pattern, 
+        pattern,
         exceptionType
     )
 
@@ -2269,7 +2268,8 @@ main(): Unit {
 
     // 遍历输出竖线位置
     for (i in 0..posArr.size) {
-        println("catchPattern.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "catchPattern.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -2424,36 +2424,38 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
-    
+
     println("classDecl: ${classDecl}")
 }
 ```
@@ -2487,31 +2489,32 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取 class 关键字位置
     let pos = classDecl.getClassKeyWordPos()
-    
+
     // 输出 class 关键字位置
     println("classDecl.getClassKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -2544,34 +2547,36 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T"), GenericParam("U"), GenericParam("V")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数中逗号的位置
     let posArr = classDecl.getGenericParamsCommasPos()
-    
+
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("classDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "classDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -2604,32 +2609,34 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数左尖括号的位置
     if (let Some(pos) <- classDecl.getGenericParamsLAnglePos()) {
         // 输出左尖括号位置
-        println("classDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "classDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     } else {
         println("No left angle bracket found")
     }
@@ -2663,32 +2670,34 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数右尖括号的位置
     if (let Some(pos) <- classDecl.getGenericParamsRAnglePos()) {
         // 输出右尖括号位置
-        println("classDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "classDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     } else {
         println("No right angle bracket found")
     }
@@ -2722,31 +2731,32 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取标识符的位置
     let pos = classDecl.getIdentifierPos()
-    
+
     // 输出标识符位置
     println("classDecl.getIdentifierPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -2779,38 +2789,40 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建多个父类型（使用 & 连接）
     let superTyAnnotations: Array<TypeAnnotation> = [
         CompositeType("I1", [], []),
         CompositeType("I2", [], []),
         CompositeType("I3", [], [])
     ]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取父类型中 & 的位置
     let posArr = classDecl.getSuperTyAnnotationsBitAndsPos()
-    
+
     // 遍历输出 & 位置
     for (i in 0..posArr.size) {
-        println("classDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "classDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -2843,28 +2855,29 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ClassDecl 实例
     let classDecl = ClassDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
-    
+
     // 获取 <: 位置
     if (let Some(pos) <- classDecl.getUpperBoundPos()) {
         // 输出 <: 位置
@@ -2938,9 +2951,7 @@ main() {
     let content = "// This is a comment"
 
     // 创建 Comment 实例
-    let comment = Comment(
-        content
-    )
+    let comment = Comment(content)
 
     println("comment: ${comment}")
 }
@@ -3029,12 +3040,12 @@ main() {
     let prefixes = ["p0"]
 
     // 创建 typeArguments
-    let typeArguments : Array<TypeAnnotation> = [CompositeType("I1", [], [])]
+    let typeArguments: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
 
     // 创建 CompositeType 实例
     let compositeType = CompositeType(
-        name, 
-        prefixes, 
+        name,
+        prefixes,
         typeArguments
     )
 
@@ -3074,7 +3085,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("compositeType.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "compositeType.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -3110,7 +3122,8 @@ main(): Unit {
 
     // 遍历输出点位置
     for (i in 0..posArr.size) {
-        println("compositeType.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "compositeType.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -3246,14 +3259,12 @@ import stdx.syntax.*
 main() {
     // 创建 cond
     let cond = [
-            AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []),BinaryOpKind.Equal, SymbolRef("y", []))), 
-            AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []),BinaryOpKind.Gt, SymbolRef("b", [])))
-        ]
+        AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []), BinaryOpKind.Equal, SymbolRef("y", []))),
+        AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []), BinaryOpKind.Gt, SymbolRef("b", [])))
+    ]
 
     // 创建 ConjunctionCondition 实例
-    let conjunctionCondition = ConjunctionCondition(
-        cond
-    )
+    let conjunctionCondition = ConjunctionCondition(cond)
 
     println("conjunctionCondition: ${conjunctionCondition}")
 }
@@ -3297,7 +3308,8 @@ main(): Unit {
 
     // 遍历输出 && 位置
     for (i in 0..posArr.size) {
-        println("conjunctionCondition.getAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "conjunctionCondition.getAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -3359,9 +3371,7 @@ main() {
     let litConstExpr = LitConstExpr(LitConstKind.BoolLiteral, "true")
 
     // 创建 ConstPattern 实例
-    let constPattern = ConstPattern(
-        litConstExpr
-    )
+    let constPattern = ConstPattern(litConstExpr)
 
     println("constPattern: ${constPattern}")
 }
@@ -3536,14 +3546,14 @@ import stdx.syntax.*
 main() {
     // 创建 cond
     let cond = [
-            ConjunctionCondition(AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []),BinaryOpKind.Equal, SymbolRef("y", [])))), 
-            ConjunctionCondition(AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []),BinaryOpKind.Equal, SymbolRef("b", []))))
-        ]
+        ConjunctionCondition(
+            AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []), BinaryOpKind.Equal, SymbolRef("y", [])))),
+        ConjunctionCondition(
+            AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []), BinaryOpKind.Equal, SymbolRef("b", []))))
+    ]
 
     // 创建 DisjunctionCondition 实例
-    let disjunctionCondition = DisjunctionCondition(
-        cond
-    )
+    let disjunctionCondition = DisjunctionCondition(cond)
 
     println("disjunctionCondition: ${disjunctionCondition}")
 }
@@ -3576,9 +3586,12 @@ import stdx.syntax.*
 main(): Unit {
     // 创建 cond
     let cond = [
-        ConjunctionCondition(AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []), BinaryOpKind.Equal, SymbolRef("y", [])))),
-        ConjunctionCondition(AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []), BinaryOpKind.Equal, SymbolRef("b", [])))),
-        ConjunctionCondition(AtomicCondition.Expression(BinaryExpr(SymbolRef("m", []), BinaryOpKind.Equal, SymbolRef("n", []))))
+        ConjunctionCondition(
+            AtomicCondition.Expression(BinaryExpr(SymbolRef("x", []), BinaryOpKind.Equal, SymbolRef("y", [])))),
+        ConjunctionCondition(
+            AtomicCondition.Expression(BinaryExpr(SymbolRef("a", []), BinaryOpKind.Equal, SymbolRef("b", [])))),
+        ConjunctionCondition(
+            AtomicCondition.Expression(BinaryExpr(SymbolRef("m", []), BinaryOpKind.Equal, SymbolRef("n", []))))
     ]
 
     // 创建 DisjunctionCondition 实例
@@ -3587,7 +3600,8 @@ main(): Unit {
 
     // 遍历输出 || 位置
     for (i in 0..posArr.size) {
-        println("disjunctionCondition.getOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "disjunctionCondition.getOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -3658,11 +3672,11 @@ main() {
     let body = Block([])
 
     // 创建循环条件
-    let condition = BinaryExpr(SymbolRef("x", []),BinaryOpKind.Gt, SymbolRef("y", []))
+    let condition = BinaryExpr(SymbolRef("x", []), BinaryOpKind.Gt, SymbolRef("y", []))
 
     // 创建 DoWhileExpr 实例
     let doWhileExpr = DoWhileExpr(
-        body, 
+        body,
         condition
     )
 
@@ -3908,12 +3922,13 @@ main() {
     let paramTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
 
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
 
     // 创建 EnumConstructor 实例
     let enumConstructor = EnumConstructor(
-        name, 
-        paramTyAnnotations, 
+        name,
+        paramTyAnnotations,
         annotations: annotations
     )
 
@@ -3988,7 +4003,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("enumConstructor.getParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "enumConstructor.getParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -4024,7 +4040,8 @@ main(): Unit {
 
     if (let Some(pos) <- enumConstructor.getParamsLParenPos()) {
         // 输出参数左括号位置
-        println("enumConstructor.getParamsLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "enumConstructor.getParamsLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -4060,7 +4077,8 @@ main(): Unit {
 
     if (let Some(pos) <- enumConstructor.getParamsRParenPos()) {
         // 输出参数右括号位置
-        println("enumConstructor.getParamsRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "enumConstructor.getParamsRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -4190,7 +4208,8 @@ main() {
     let constructor = [EnumConstructor("EnumA", [])]
 
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
@@ -4206,12 +4225,12 @@ main() {
 
     // 创建 EnumDecl 实例
     let enumDecl = EnumDecl(
-        body, 
-        constructor, 
-        genericConstraints, 
-        genericParams, 
-        isNonExhaustive, 
-        name, 
+        body,
+        constructor,
+        genericConstraints,
+        genericParams,
+        isNonExhaustive,
+        name,
         superTyAnnotations
     )
 
@@ -4254,7 +4273,8 @@ main(): Unit {
 
     // 遍历输出竖线位置
     for (i in 0..posArr.size) {
-        println("enumDecl.getCaseSeparatorsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "enumDecl.getCaseSeparatorsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -4328,7 +4348,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("enumDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "enumDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -4365,7 +4386,8 @@ main(): Unit {
 
     if (let Some(pos) <- enumDecl.getGenericParamsLAnglePos()) {
         // 输出泛型参数左尖括号位置
-        println("enumDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "enumDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -4402,7 +4424,8 @@ main(): Unit {
 
     if (let Some(pos) <- enumDecl.getGenericParamsRAnglePos()) {
         // 输出泛型参数右尖括号位置
-        println("enumDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "enumDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -4473,7 +4496,8 @@ main(): Unit {
 
     if (let Some(pos) <- enumDecl.getNonExhaustiveTripleDotPos()) {
         // 输出三点位置
-        println("enumDecl.getNonExhaustiveTripleDotPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "enumDecl.getNonExhaustiveTripleDotPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -4511,7 +4535,8 @@ main(): Unit {
 
     // 遍历输出&位置
     for (i in 0..posArr.size) {
-        println("enumDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "enumDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -4639,8 +4664,8 @@ main() {
 
     // 创建 EnumPattern 实例
     let enumPattern = EnumPattern(
-        enumConstructor, 
-        enumType, 
+        enumConstructor,
+        enumType,
         subPatterns
     )
 
@@ -4681,7 +4706,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("enumPattern.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "enumPattern.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -4922,7 +4948,8 @@ main() {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
@@ -4931,15 +4958,16 @@ main() {
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
 
     // 创建注解
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
 
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
-        superTyAnnotations, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
+        superTyAnnotations,
         annotations: annotations
     )
 
@@ -4982,26 +5010,27 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
 
     // 设置父类型注解
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取 extend 关键字位置
     let pos = extendDecl.getExtendKeyWordPos()
-    
+
     // 输出 extend 关键字位置
     println("extendDecl.getExtendKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -5039,29 +5068,31 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T"), GenericParam("U"), GenericParam("V")]
 
     // 设置父类型注解
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数中逗号的位置
     let posArr = extendDecl.getGenericParamsCommasPos()
-    
+
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("extendDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "extendDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -5099,27 +5130,29 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
 
     // 设置父类型注解
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数左尖括号的位置
     if (let Some(pos) <- extendDecl.getGenericParamsLAnglePos()) {
         // 输出左尖括号位置
-        println("extendDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "extendDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     } else {
         println("No left angle bracket found")
     }
@@ -5158,27 +5191,29 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
 
     // 设置父类型注解
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取泛型参数右尖括号的位置
     if (let Some(pos) <- extendDecl.getGenericParamsRAnglePos()) {
         // 输出右尖括号位置
-        println("extendDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "extendDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     } else {
         println("No right angle bracket found")
     }
@@ -5217,33 +5252,35 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
-    
+
     // 创建多个父类型（使用 & 连接）
     let superTyAnnotations: Array<TypeAnnotation> = [
         CompositeType("I1", [], []),
         CompositeType("I2", [], []),
         CompositeType("I3", [], [])
     ]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取父类型中 & 的位置
     let posArr = extendDecl.getSuperTyAnnotationsBitAndsPos()
-    
+
     // 遍历输出 & 位置
     for (i in 0..posArr.size) {
-        println("extendDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "extendDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -5281,23 +5318,24 @@ main(): Unit {
     let extendedTyAnnotation = CompositeType("C1", [], [])
 
     // 创建泛型约束（无）
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建泛型参数
     let genericParams = [GenericParam("T")]
 
     // 设置父类型注解
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 ExtendDecl 实例
     let extendDecl = ExtendDecl(
-        body, 
-        extendedTyAnnotation, 
-        genericConstraints, 
-        genericParams, 
+        body,
+        extendedTyAnnotation,
+        genericConstraints,
+        genericParams,
         superTyAnnotations
     )
-    
+
     // 获取 <: 位置
     if (let Some(pos) <- extendDecl.getUpperBoundPos()) {
         // 输出 <: 位置
@@ -5366,9 +5404,7 @@ main() {
     let identifiers = ["std", "core", "feature"]
 
     // 创建 FeatureId 实例
-    let featureId = FeatureId(
-        identifiers
-    )
+    let featureId = FeatureId(identifiers)
 
     println("featureId: ${featureId}")
 }
@@ -5404,13 +5440,14 @@ main(): Unit {
 
     // 创建 FeatureId 实例
     let featureId = FeatureId(identifiers)
-    
+
     // 获取点的位置
     let posArr = featureId.getDotPoses()
-    
+
     // 遍历输出点的位置
     for (i in 0..posArr.size) {
-        println("featureId.getDotPoses()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "featureId.getDotPoses()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -5446,13 +5483,14 @@ main(): Unit {
 
     // 创建 FeatureId 实例
     let featureId = FeatureId(identifiers)
-    
+
     // 获取标识符的位置
     let posArr = featureId.getIdentifierPos()
-    
+
     // 遍历输出标识符位置
     for (i in 0..posArr.size) {
-        println("featureId.getIdentifierPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "featureId.getIdentifierPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -5536,7 +5574,7 @@ main() {
 
     // 创建 FeaturesDirective 实例
     let featuresDirective = FeaturesDirective(
-        annotations, 
+        annotations,
         featuresSet
     )
 
@@ -5580,7 +5618,7 @@ main(): Unit {
 
     // 创建 FeaturesDirective 实例
     let featuresDirective = FeaturesDirective(
-        annotations, 
+        annotations,
         featuresSet
     )
 
@@ -5588,7 +5626,8 @@ main(): Unit {
     let pos = featuresDirective.getFeaturesKeywordPos()
 
     // 输出关键字位置
-    println("featuresDirective.getFeaturesKeywordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "featuresDirective.getFeaturesKeywordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -5769,7 +5808,8 @@ main(): Unit {
 
     // 输出逗号位置
     for (i in 0..posArr.size) {
-        println("featuresSet.getCommaPoses()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "featuresSet.getCommaPoses()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -5874,13 +5914,13 @@ main() {
     let pattern = VarPattern("x")
 
     // 创建 patternGuard
-    let patternGuard = BinaryExpr(SymbolRef("x", []),BinaryOpKind.NotEq, LitConstExpr(LitConstKind.IntergerLiteral, "5"))
+    let patternGuard = BinaryExpr(SymbolRef("x", []), BinaryOpKind.NotEq, LitConstExpr(LitConstKind.IntergerLiteral, "5"))
 
     // 创建 ForInExpr 实例
     let forInExpr = ForInExpr(
-        body, 
-        expr, 
-        pattern, 
+        body,
+        expr,
+        pattern,
         patternGuard
     )
 
@@ -6195,7 +6235,8 @@ main() {
     let body = Block([ReturnExpr(None)])
 
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
@@ -6214,12 +6255,12 @@ main() {
 
     // 创建 FuncDecl 实例
     let funcDecl = FuncDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        kind, 
-        name, 
-        params, 
+        body,
+        genericConstraints,
+        genericParams,
+        kind,
+        name,
+        params,
         retTyAnnotation
     )
 
@@ -6315,7 +6356,8 @@ main(): Unit {
 
     if (let Some(pos) <- operatorFuncDecl.getFuncKindKeyWordPos()) {
         // 输出 operator 关键字位置
-        println("operatorFuncDecl.getFuncKindKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "operatorFuncDecl.getFuncKindKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -6361,7 +6403,8 @@ main(): Unit {
 
     // 输出逗号位置
     for (i in 0..posArr.size) {
-        println("funcDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "funcDecl.getGenericParamsCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -6405,7 +6448,8 @@ main(): Unit {
 
     if (let Some(pos) <- funcDecl.getGenericParamsLAnglePos()) {
         // 输出左尖括号位置
-        println("funcDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "funcDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -6448,7 +6492,8 @@ main(): Unit {
 
     if (let Some(pos) <- funcDecl.getGenericParamsRAnglePos()) {
         // 输出右尖括号位置
-        println("funcDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "funcDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -6539,7 +6584,8 @@ main(): Unit {
 
     if (let Some(pos) <- funcDecl.getRetTyAnnotationColonPos()) {
         // 输出冒号位置
-        println("funcDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "funcDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -6657,10 +6703,10 @@ main() {
 
     // 创建 FuncParam 实例
     let funcParam = FuncParam(
-        defaultValue, 
-        kind, 
-        name, 
-        typeAnnotation, 
+        defaultValue,
+        kind,
+        name,
+        typeAnnotation,
         isNamed: isNamed
     )
 
@@ -6803,7 +6849,8 @@ main(): Unit {
     let pos = funcParam.getTypeAnnotationColonPos()
 
     // 输出冒号位置
-    println("funcParam.getTypeAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "funcParam.getTypeAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -6931,8 +6978,8 @@ main() {
 
     // 创建 FuncType 实例
     let funcType = FuncType(
-        paramTypes, 
-        labels, 
+        paramTypes,
+        labels,
         retType
     )
 
@@ -7017,7 +7064,8 @@ main(): Unit {
 
     // 输出冒号位置
     for (i in 0..posArr.size) {
-        println("funcType.getColonsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "funcType.getColonsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -7060,7 +7108,8 @@ main(): Unit {
 
     // 输出逗号位置
     for (i in 0..posArr.size) {
-        println("funcType.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "funcType.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -7103,7 +7152,8 @@ main(): Unit {
 
     // 输出标签位置
     for (i in 0..posArr.size) {
-        println("funcType.getLabelsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "funcType.getLabelsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -7268,7 +7318,7 @@ main() {
 
     // 创建 GenericConstraint 实例
     let genericConstraint = GenericConstraint(
-        typeArgument, 
+        typeArgument,
         upperBounds
     )
 
@@ -7309,7 +7359,8 @@ main(): Unit {
 
     // 遍历输出&位置
     for (i in 0..posArr.size) {
-        println("genericConstraint.getBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "genericConstraint.getBitAndsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -7408,14 +7459,12 @@ import stdx.syntax.*
 main() {
     // 创建 constraints
     let constraints = [
-        GenericConstraint(CompositeType("I1", [], []), [CompositeType("T", [], [])]), 
+        GenericConstraint(CompositeType("I1", [], []), [CompositeType("T", [], [])]),
         GenericConstraint(CompositeType("I2", [], []), [CompositeType("T", [], []), CompositeType("U", [], [])])
     ]
 
     // 创建 GenericConstraints 实例
-    let genericConstraints = GenericConstraints(
-        constraints
-    )
+    let genericConstraints = GenericConstraints(constraints)
 
     println("genericConstraints: ${genericConstraints}")
 }
@@ -7456,7 +7505,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("genericConstraints.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "genericConstraints.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -7487,14 +7537,13 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 GenericConstraints 实例
-    let constraints = [
-        GenericConstraint(CompositeType("I1", [], []), [CompositeType("T", [], [])])
-    ]
+    let constraints = [GenericConstraint(CompositeType("I1", [], []), [CompositeType("T", [], [])])]
     let genericConstraints = GenericConstraints(constraints)
     let pos = genericConstraints.getWhereKeyWordPos()
 
     // 输出 where 关键字位置
-    println("genericConstraints.getWhereKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "genericConstraints.getWhereKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -7558,9 +7607,7 @@ main() {
     let name = "T"
 
     // 创建 GenericParam 实例
-    let genericParam = GenericParam(
-        name
-    )
+    let genericParam = GenericParam(name)
 
     println("genericParam: ${genericParam}")
 }
@@ -7656,9 +7703,7 @@ import stdx.syntax.*
 
 main() {
     // 创建 condition
-    let cond = [
-        ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))
-    ]
+    let cond = [ConjunctionCondition(AtomicCondition.Expression(SymbolRef("x", [])))]
 
     // 创建 DisjunctionCondition 实例
     let condition = DisjunctionCondition(cond)
@@ -7671,9 +7716,9 @@ main() {
 
     // 创建 IfExpr 实例
     let ifExpr = IfExpr(
-        condition, 
-        elseBlock, 
-        None, 
+        condition,
+        elseBlock,
+        None,
         ifBlock
     )
 
@@ -7926,8 +7971,8 @@ main() {
 
     // 创建 ImportAlias 实例
     let importAlias = ImportAlias(
-        prefixes, 
-        identifier, 
+        prefixes,
+        identifier,
         alias
     )
 
@@ -8081,9 +8126,7 @@ main() {
     let prefixes = ["pkg"]
 
     // 创建 ImportAll 实例
-    let importAll = ImportAll(
-        prefixes
-    )
+    let importAll = ImportAll(prefixes)
 
     println("importAll: ${importAll}")
 }
@@ -8176,7 +8219,8 @@ main(): Unit {
 
     // 输出点号位置
     for (i in 0..posArr.size) {
-        println("importSingle.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "importSingle.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -8213,7 +8257,8 @@ main(): Unit {
 
     // 输出前缀包名位置
     for (i in 0..posArr.size) {
-        println("importSingle.getPrefixesPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "importSingle.getPrefixesPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -8304,7 +8349,7 @@ main() {
 
     // 创建 ImportList 实例
     let importList = ImportList(
-        contents, 
+        contents,
         modifier
     )
 
@@ -8410,7 +8455,7 @@ main() {
 
     // 创建 ImportMulti 实例
     let importMulti = ImportMulti(
-        prefixes, 
+        prefixes,
         contents
     )
 
@@ -8450,7 +8495,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("importMulti.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "importMulti.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -8588,7 +8634,7 @@ main() {
 
     // 创建 ImportSingle 实例
     let importSingle = ImportSingle(
-        prefixes, 
+        prefixes,
         identifier
     )
 
@@ -8699,7 +8745,7 @@ main() {
 
     // 创建 IncOrDecExpr 实例
     let incOrDecExpr = IncOrDecExpr(
-        kind, 
+        kind,
         operand
     )
 
@@ -8857,7 +8903,8 @@ main() {
     let body = Body([])
 
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
 
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
@@ -8870,10 +8917,10 @@ main() {
 
     // 创建 InterfaceDecl 实例
     let interfaceDecl = InterfaceDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
         superTyAnnotations
     )
 
@@ -8917,7 +8964,8 @@ main(): Unit {
 
     // 输出逗号位置
     for (i in 0..commaPoses.size) {
-        println("interfaceDecl.getGenericParamsCommasPos()[${i}]: ${commaPoses[i].beginLine}:${commaPoses[i].beginColumn}-${commaPoses[i].endLine}:${commaPoses[i].endColumn}")
+        println(
+            "interfaceDecl.getGenericParamsCommasPos()[${i}]: ${commaPoses[i].beginLine}:${commaPoses[i].beginColumn}-${commaPoses[i].endLine}:${commaPoses[i].endColumn}")
     }
 }
 ```
@@ -8955,7 +9003,8 @@ main(): Unit {
 
     if (let Some(pos) <- interfaceDecl.getGenericParamsLAnglePos()) {
         // 输出左尖括号位置
-        println("interfaceDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "interfaceDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -8992,7 +9041,8 @@ main(): Unit {
 
     if (let Some(pos) <- interfaceDecl.getGenericParamsRAnglePos()) {
         // 输出右尖括号位置
-        println("interfaceDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "interfaceDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -9067,7 +9117,8 @@ main(): Unit {
     let pos = interfaceDecl.getInterfaceKeyWordPos()
 
     // 输出 interface 关键字位置
-    println("interfaceDecl.getInterfaceKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "interfaceDecl.getInterfaceKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -9106,7 +9157,8 @@ main(): Unit {
 
     // 输出 & 位置
     for (i in 0..bitAndsPoses.size) {
-        println("interfaceDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${bitAndsPoses[i].beginLine}:${bitAndsPoses[i].beginColumn}-${bitAndsPoses[i].endLine}:${bitAndsPoses[i].endColumn}")
+        println(
+            "interfaceDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${bitAndsPoses[i].beginLine}:${bitAndsPoses[i].beginColumn}-${bitAndsPoses[i].endLine}:${bitAndsPoses[i].endColumn}")
     }
 }
 ```
@@ -9219,7 +9271,7 @@ main() {
 
     // 创建 IsExpr 实例
     let isExpr = IsExpr(
-        srcVal, 
+        srcVal,
         targetTypeAnnotation
     )
 
@@ -9331,14 +9383,15 @@ import stdx.syntax.*
 
 main() {
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 params
-    let params = ParameterList(LambdaParam("x", None), hasParen:false)
+    let params = ParameterList(LambdaParam("x", None), hasParen: false)
 
     // 创建 Lambda 实例
     let lambda = Lambda(
-        body, 
+        body,
         params
     )
 
@@ -9372,7 +9425,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 Lambda 实例
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
     let params = ParameterList(LambdaParam("x", None), hasParen: false)
     let lambda = Lambda(body, params)
 
@@ -9409,7 +9463,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 Lambda 实例
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
     let params = ParameterList(LambdaParam("x", None), hasParen: false)
     let lambda = Lambda(body, params)
     let pos = lambda.getLCurlPos()
@@ -9445,7 +9500,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 Lambda 实例
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
     let params = ParameterList(LambdaParam("x", None), hasParen: false)
     let lambda = Lambda(body, params)
     let pos = lambda.getRCurlPos()
@@ -9530,7 +9586,7 @@ main() {
 
     // 创建 LambdaParam 实例
     let lambdaParam = LambdaParam(
-        name, 
+        name,
         typeAnnotation
     )
 
@@ -9602,7 +9658,8 @@ main(): Unit {
 
     if (let Some(pos) <- lambdaParam.getTypeAnnotationColonPos()) {
         // 输出冒号位置
-        println("lambdaParam.getTypeAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "lambdaParam.getTypeAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -9682,7 +9739,7 @@ main() {
 
     // 创建 LetPattern 实例
     let letPattern = LetPattern(
-        expr, 
+        expr,
         patterns
     )
 
@@ -9771,7 +9828,8 @@ main(): Unit {
 
     // 遍历输出竖线位置
     for (i in 0..posArr.size) {
-        println("letPattern.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "letPattern.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -9896,7 +9954,7 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        kind, 
+        kind,
         rawValue
     )
 
@@ -9977,8 +10035,8 @@ main() {
 
     // 创建 LitConstRuneExpr 实例
     let litConstRuneExpr = LitConstRuneExpr(
-        kind, 
-        rawValue, 
+        kind,
+        rawValue,
         isSingleQuote
     )
 
@@ -10098,11 +10156,11 @@ main() {
 
     // 创建 LitConstStrExpr 实例
     let litConstStrExpr = LitConstStrExpr(
-        kind, 
-        rawValue, 
-        delimiterNum, 
-        isSingleQuote, 
-        strKind, 
+        kind,
+        rawValue,
+        delimiterNum,
+        isSingleQuote,
+        strKind,
         strPartExprs
     )
 
@@ -10251,9 +10309,9 @@ main() {
 
     // 创建 MacroDecl 实例
     let macroDecl = MacroDecl(
-        body, 
-        name, 
-        params, 
+        body,
+        name,
+        params,
         retTyAnnotation
     )
 
@@ -10367,7 +10425,8 @@ main(): Unit {
 
     if (let Some(pos) <- macroDecl.getRetTyAnnotationColonPos()) {
         // 输出冒号位置
-        println("macroDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "macroDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -11580,8 +11639,8 @@ main() {
 
     // 创建 MainDecl 实例
     let mainDecl = MainDecl(
-        body, 
-        params, 
+        body,
+        params,
         retTyAnnotation
     )
 
@@ -11660,7 +11719,8 @@ main(): Unit {
 
     if (let Some(pos) <- mainDecl.getRetTyAnnotationColonPos()) {
         // 输出冒号位置
-        println("mainDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "mainDecl.getRetTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -11758,16 +11818,18 @@ main() {
     let patterns: Array<Pattern> = [VarPattern("x"), VarPattern("y")]
 
     // 创建 patternGuardCond
-    let patternGuardCond = BinaryExpr(SymbolRef("x", []),BinaryOpKind.Lt, LitConstExpr(LitConstKind.IntergerLiteral, "5"))
+    let patternGuardCond = BinaryExpr(SymbolRef("x", []), BinaryOpKind.Lt,
+        LitConstExpr(LitConstKind.IntergerLiteral, "5"))
 
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 MatchCase 实例
     let matchCase = MatchCase(
-        patterns, 
-        patternGuardCond, 
-        None, 
+        patterns,
+        patternGuardCond,
+        None,
         body
     )
 
@@ -11804,7 +11866,8 @@ main(): Unit {
     let patterns: Array<Pattern> = [VarPattern("x"), VarPattern("y"), VarPattern("z")]
 
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 MatchCase 实例
     let matchCase = MatchCase(patterns, None, None, body)
@@ -11812,7 +11875,8 @@ main(): Unit {
 
     // 遍历输出竖线位置
     for (i in 0..posArr.size) {
-        println("matchCase.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "matchCase.getBitOrsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -11847,7 +11911,8 @@ main(): Unit {
     let patterns: Array<Pattern> = [VarPattern("x")]
 
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 MatchCase 实例
     let matchCase = MatchCase(patterns, None, None, body)
@@ -11887,7 +11952,8 @@ main(): Unit {
     let patterns: Array<Pattern> = [VarPattern("x")]
 
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 MatchCase 实例
     let matchCase = MatchCase(patterns, None, None, body)
@@ -11927,10 +11993,12 @@ main(): Unit {
     let patterns: Array<Pattern> = [VarPattern("x")]
 
     // 创建 patternGuardCond
-    let patternGuardCond = BinaryExpr(SymbolRef("x", []), BinaryOpKind.Lt, LitConstExpr(LitConstKind.IntergerLiteral, "5"))
+    let patternGuardCond = BinaryExpr(SymbolRef("x", []), BinaryOpKind.Lt,
+        LitConstExpr(LitConstKind.IntergerLiteral, "5"))
 
     // 创建 body
-    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
+    let body: Array<SyntaxTreeNode> = [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add,
+        LitConstExpr(LitConstKind.IntergerLiteral, "1"))]
 
     // 创建 MatchCase 实例
     let matchCase = MatchCase(patterns, patternGuardCond, None, body)
@@ -12006,14 +12074,15 @@ import stdx.syntax.*
 
 main() {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x"), VarPattern("y")], None, None, [BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x"), VarPattern("y")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 selector
     let selector = SymbolRef("x", [])
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(
-        matchCases, 
+        matchCases,
         selector
     )
 
@@ -12049,7 +12118,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x")], None, None, [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(matchCases, SymbolRef("x", []))
@@ -12086,7 +12156,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x")], None, None, [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(matchCases, SymbolRef("x", []))
@@ -12123,7 +12194,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x")], None, None, [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(matchCases, SymbolRef("x", []))
@@ -12160,7 +12232,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x")], None, None, [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(matchCases, SymbolRef("x", []))
@@ -12198,7 +12271,8 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 matchCases
-    let matchCases = [MatchCase([VarPattern("x")], None, None, [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
+    let matchCases = [MatchCase([VarPattern("x")], None, None,
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])]
 
     // 创建 MatchExpr 实例
     let matchExpr = MatchExpr(matchCases, SymbolRef("x", []))
@@ -12285,7 +12359,7 @@ main() {
 
     // 创建 MemberAccess 实例
     let memberAccess = MemberAccess(
-        base, 
+        base,
         field
     )
 
@@ -12389,9 +12463,7 @@ main() {
     let kind = ModifierKind.Public
 
     // 创建 Modifier 实例
-    let modifier = Modifier(
-        kind
-    )
+    let modifier = Modifier(kind)
 
     println("modifier: ${modifier}")
 }
@@ -12489,9 +12561,9 @@ main() {
 
     // 创建 OptionalExpr 实例
     let optionalExpr = OptionalExpr(symbolRef)
-    
+
     let pos = optionalExpr.getQuestionPos()
-    
+
     // 输出 ? 位置
     println("optionalExpr.getQuestionPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -12576,7 +12648,7 @@ main() {
 
     // 创建 ImportList 实例
     let importList = ImportList(
-        contents, 
+        contents,
         None
     )
 
@@ -12586,8 +12658,8 @@ main() {
 
     // 创建 MainDecl 实例
     let mainDecl = MainDecl(
-        body, 
-        params, 
+        body,
+        params,
         retTyAnnotation
     )
 
@@ -12650,7 +12722,7 @@ main() {
 
     // 创建 ImportList 实例
     let importList = ImportList(
-        contents, 
+        contents,
         None
     )
 
@@ -12660,8 +12732,8 @@ main() {
 
     // 创建 MainDecl 实例
     let mainDecl = MainDecl(
-        body, 
-        params, 
+        body,
+        params,
         retTyAnnotation
     )
 
@@ -12724,7 +12796,7 @@ main() {
 
     // 创建 ImportList 实例
     let importList = ImportList(
-        contents, 
+        contents,
         None
     )
 
@@ -12734,8 +12806,8 @@ main() {
 
     // 创建 MainDecl 实例
     let mainDecl = MainDecl(
-        body, 
-        params, 
+        body,
+        params,
         retTyAnnotation
     )
 
@@ -12857,8 +12929,8 @@ main() {
 
     // 创建 PackageHeader 实例
     let packageHeader = PackageHeader(
-        accessModifier, 
-        isMacroPkg, 
+        accessModifier,
+        isMacroPkg,
         packageNameIdentifiers
     )
 
@@ -12898,7 +12970,8 @@ main(): Unit {
 
     // 遍历输出点位置
     for (i in 0..posArr.size) {
-        println("packageHeader.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "packageHeader.getDotsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -12932,7 +13005,8 @@ main(): Unit {
 
     if (let Some(pos) <- packageHeader.getMacroKeyWordPos()) {
         // 输出 macro 关键字位置
-        println("packageHeader.getMacroKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "packageHeader.getMacroKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -12969,7 +13043,8 @@ main(): Unit {
 
     // 遍历输出包标识符位置
     for (i in 0..posArr.size) {
-        println("packageHeader.getPackageIdentifiersPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "packageHeader.getPackageIdentifiersPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -13148,11 +13223,11 @@ main() {
 
     // 创建 LambdaParam 实例
     let lambdaParam0 = LambdaParam(
-        name0, 
+        name0,
         typeAnnotation0
     )
     let lambdaParam1 = LambdaParam(
-        name1, 
+        name1,
         typeAnnotation1
     )
 
@@ -13198,11 +13273,11 @@ main() {
 
     // 创建 LambdaParam 实例
     let lambdaParam0 = LambdaParam(
-        name0, 
+        name0,
         typeAnnotation0
     )
     let lambdaParam1 = LambdaParam(
-        name1, 
+        name1,
         typeAnnotation1
     )
 
@@ -13213,10 +13288,11 @@ main() {
     )
 
     let commasPos = parameterList.getParamsCommasPos()
-    
+
     // 输出参数间逗号位置
     for (i in 0..commasPos.size) {
-        println("parameterList.getParamsCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
+        println(
+            "parameterList.getParamsCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
     }
 }
 ```
@@ -13253,11 +13329,11 @@ main() {
 
     // 创建 LambdaParam 实例
     let lambdaParam0 = LambdaParam(
-        name0, 
+        name0,
         typeAnnotation0
     )
     let lambdaParam1 = LambdaParam(
-        name1, 
+        name1,
         typeAnnotation1
     )
 
@@ -13269,7 +13345,8 @@ main() {
 
     if (let Some(pos) <- parameterList.getParamsLParenPos()) {
         // 输出 ( 位置
-        println("parameterList.getParamsLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "parameterList.getParamsLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -13306,11 +13383,11 @@ main() {
 
     // 创建 LambdaParam 实例
     let lambdaParam0 = LambdaParam(
-        name0, 
+        name0,
         typeAnnotation0
     )
     let lambdaParam1 = LambdaParam(
-        name1, 
+        name1,
         typeAnnotation1
     )
 
@@ -13322,7 +13399,8 @@ main() {
 
     if (let Some(pos) <- parameterList.getParamsRParenPos()) {
         // 输出 ) 位置
-        println("parameterList.getParamsRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "parameterList.getParamsRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -13390,9 +13468,7 @@ main() {
     let cond1 = ConjunctionCondition(AtomicCondition.Expression(binaryExpr1))
 
     // 创建 DisjunctionCondition 实例
-    let disjunctionCondition = DisjunctionCondition(
-        [cond0, cond1]
-    )
+    let disjunctionCondition = DisjunctionCondition([cond0, cond1])
 
     // 创建 ParenCondition 实例
     let parenCondition = ParenCondition(disjunctionCondition)
@@ -13439,13 +13515,11 @@ main() {
     let cond1 = ConjunctionCondition(AtomicCondition.Expression(binaryExpr1))
 
     // 创建 DisjunctionCondition 实例
-    let disjunctionCondition = DisjunctionCondition(
-        [cond0, cond1]
-    )
+    let disjunctionCondition = DisjunctionCondition([cond0, cond1])
 
     // 创建 ParenCondition 实例
     let parenCondition = ParenCondition(disjunctionCondition)
-    
+
     let pos = parenCondition.getLParenPos()
     // 输出 ( 位置
     println("parenCondition.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13490,13 +13564,11 @@ main() {
     let cond1 = ConjunctionCondition(AtomicCondition.Expression(binaryExpr1))
 
     // 创建 DisjunctionCondition 实例
-    let disjunctionCondition = DisjunctionCondition(
-        [cond0, cond1]
-    )
+    let disjunctionCondition = DisjunctionCondition([cond0, cond1])
 
     // 创建 ParenCondition 实例
     let parenCondition = ParenCondition(disjunctionCondition)
-    
+
     let pos = parenCondition.getRParenPos()
     // 输出 ) 位置
     println("parenCondition.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13558,7 +13630,7 @@ main() {
 
     // 创建 AsExpr 实例
     let asExpr = AsExpr(
-        srcVal, 
+        srcVal,
         targetTypeAnnotation
     )
 
@@ -13599,13 +13671,13 @@ main() {
 
     // 创建 AsExpr 实例
     let asExpr = AsExpr(
-        srcVal, 
+        srcVal,
         targetTypeAnnotation
     )
 
     // 创建 ParenExpr 实例
     let parenExpr = ParenExpr(asExpr)
-    
+
     let pos = parenExpr.getLParenPos()
     // 输出 ( 位置
     println("parenExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13642,13 +13714,13 @@ main() {
 
     // 创建 AsExpr 实例
     let asExpr = AsExpr(
-        srcVal, 
+        srcVal,
         targetTypeAnnotation
     )
 
     // 创建 ParenExpr 实例
     let parenExpr = ParenExpr(asExpr)
-    
+
     let pos = parenExpr.getRParenPos()
     // 输出 ) 位置
     println("parenExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13707,7 +13779,6 @@ public init(subType: TypeAnnotation, comments!: Array<Comment> = [])
 import stdx.syntax.*
 
 main() {
-    
     let subType = AtomicType(AtomicTypeKind.Int64Type)
 
     // 创建 ParenType 实例
@@ -13746,7 +13817,7 @@ main() {
 
     // 创建 ParenType 实例
     let parenType = ParenType(subType)
-    
+
     let pos = parenType.getLParenPos()
     // 输出 ( 位置
     println("parenType.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13782,7 +13853,7 @@ main() {
 
     // 创建 ParenType 实例
     let parenType = ParenType(subType)
-    
+
     let pos = parenType.getRParenPos()
     // 输出 ) 位置
     println("parenType.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -13941,7 +14012,7 @@ main() {
         base,
         prefixOp
     )
-    
+
     let pos = prefixType.getOperatorPos()
     // 输出前缀操作符位置
     println("prefixType.getOperatorPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -14067,9 +14138,9 @@ main() {
 
     // 创建 PropDecl 实例
     let propDecl = PropDecl(
-        getter, 
-        name, 
-        setter, 
+        getter,
+        name,
+        setter,
         tyAnnotation
     )
 
@@ -14344,17 +14415,15 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propSetter = PropGetterOrSetter(
@@ -14400,22 +14469,20 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propGetter = PropGetterOrSetter(
         block,
-        None, 
+        None,
         true
     )
 
@@ -14457,17 +14524,15 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propSetter = PropGetterOrSetter(
@@ -14514,17 +14579,15 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propSetter = PropGetterOrSetter(
@@ -14570,17 +14633,15 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propSetter = PropGetterOrSetter(
@@ -14626,17 +14687,15 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
     let nodes: Array<SyntaxTreeNode> = [assignExpr]
 
     // 创建 Block 实例
-    let block = Block(
-        nodes
-    )
+    let block = Block(nodes)
 
     // 创建 PropGetterOrSetter 实例
     let propSetter = PropGetterOrSetter(
@@ -14708,9 +14767,7 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 QuoteExpr 实例
-    let quoteExpr = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
+    let quoteExpr = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
 
     println("quoteExpr: ${quoteExpr}")
 }
@@ -14745,10 +14802,8 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 QuoteExpr 实例
-    let quoteExpr = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
-    
+    let quoteExpr = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
+
     let pos = quoteExpr.getLParenPos()
     // 输出 ( 位置
     println("quoteExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -14784,10 +14839,8 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 QuoteExpr 实例
-    let quoteExpr = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
-    
+    let quoteExpr = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
+
     let pos = quoteExpr.getQuoteKeyWordPos()
     // 输出 quote 关键字位置
     println("quoteExpr.getQuoteKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -14823,10 +14876,8 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 QuoteExpr 实例
-    let quoteExpr = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
-    
+    let quoteExpr = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
+
     let pos = quoteExpr.getRParenPos()
     // 输出 ) 位置
     println("quoteExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -14928,10 +14979,11 @@ main() {
         symbolRef,
         hasParen: false
     )
-    
+
     let pos = quoteInterpolationExpr.getDollarPos()
     // 输出 $ 位置
-    println("quoteInterpolationExpr.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "quoteInterpolationExpr.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -14967,10 +15019,11 @@ main() {
         symbolRef,
         hasParen: true
     )
-    
+
     if (let Some(pos) <- quoteInterpolationExpr.getLParenPos()) {
         // 输出 ( 位置
-        println("quoteInterpolationExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "quoteInterpolationExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -15007,10 +15060,11 @@ main() {
         symbolRef,
         hasParen: true
     )
-    
+
     if (let Some(pos) <- quoteInterpolationExpr.getRParenPos()) {
         // 输出 ) 位置
-        println("quoteInterpolationExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "quoteInterpolationExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -15070,7 +15124,7 @@ import stdx.syntax.*
 
 main() {
     let tokens = quote(hello world)
-    
+
     // 创建 QuoteToken 实例
     let quoteToken = QuoteToken(tokens)
 
@@ -15170,15 +15224,15 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr0 = LitConstExpr(
-        kind, 
+        kind,
         rawValue0
     )
     let litConstExpr1 = LitConstExpr(
-        kind, 
+        kind,
         rawValue1
     )
     let litConstExpr2 = LitConstExpr(
-        kind, 
+        kind,
         rawValue2
     )
 
@@ -15228,15 +15282,15 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr0 = LitConstExpr(
-        kind, 
+        kind,
         rawValue0
     )
     let litConstExpr1 = LitConstExpr(
-        kind, 
+        kind,
         rawValue1
     )
     let litConstExpr2 = LitConstExpr(
-        kind, 
+        kind,
         rawValue2
     )
 
@@ -15289,15 +15343,15 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr0 = LitConstExpr(
-        kind, 
+        kind,
         rawValue0
     )
     let litConstExpr1 = LitConstExpr(
-        kind, 
+        kind,
         rawValue1
     )
     let litConstExpr2 = LitConstExpr(
-        kind, 
+        kind,
         rawValue2
     )
 
@@ -15374,14 +15428,12 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        kind, 
+        kind,
         rawValue
     )
 
     // 创建 ReturnExpr 实例
-    let returnExpr = ReturnExpr(
-        Some(litConstExpr)
-    )
+    let returnExpr = ReturnExpr(Some(litConstExpr))
 
     println("returnExpr: ${returnExpr}")
 }
@@ -15417,15 +15469,13 @@ main() {
 
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        kind, 
+        kind,
         rawValue
     )
 
     // 创建 ReturnExpr 实例
-    let returnExpr = ReturnExpr(
-        Some(litConstExpr)
-    )
-    
+    let returnExpr = ReturnExpr(Some(litConstExpr))
+
     let pos = returnExpr.getReturnKeyWordPos()
     // 输出 return 关键字位置
     println("returnExpr.getReturnKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -15549,7 +15599,7 @@ main() {
 
     // 创建 ImportList 实例
     let importList = ImportList(
-        contents, 
+        contents,
         None
     )
 
@@ -15558,7 +15608,7 @@ main() {
 
     // 创建 PackageHeader 实例
     let packageHeader = PackageHeader(
-        None, 
+        None,
         isMacroPkg,
         packageNameIdentifiers
     )
@@ -15569,8 +15619,8 @@ main() {
 
     // 创建 MainDecl 实例
     let mainDecl = MainDecl(
-        body, 
-        params, 
+        body,
+        params,
         retTyAnnotation
     )
 
@@ -15660,7 +15710,7 @@ import stdx.syntax.*
 main() {
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        LitConstKind.FloatLiteral, 
+        LitConstKind.FloatLiteral,
         "3.14"
     )
 
@@ -15709,7 +15759,7 @@ import stdx.syntax.*
 main() {
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        LitConstKind.FloatLiteral, 
+        LitConstKind.FloatLiteral,
         "3.14"
     )
 
@@ -15726,7 +15776,7 @@ main() {
         Some(symbolRef),
         lambda
     )
-    
+
     let pos = spawnExpr.getSpawnKeyWordPos()
     // 输出 spawn 关键字位置
     println("spawnExpr.getSpawnKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -15760,7 +15810,7 @@ import stdx.syntax.*
 main() {
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        LitConstKind.FloatLiteral, 
+        LitConstKind.FloatLiteral,
         "3.14"
     )
 
@@ -15777,10 +15827,11 @@ main() {
         Some(symbolRef),
         lambda
     )
-    
+
     if (let Some(pos) <- spawnExpr.getThreadContextLParenPos()) {
         // 输出线程上下文参数 ( 位置
-        println("spawnExpr.getThreadContextLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "spawnExpr.getThreadContextLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -15812,7 +15863,7 @@ import stdx.syntax.*
 main() {
     // 创建 LitConstExpr 实例
     let litConstExpr = LitConstExpr(
-        LitConstKind.FloatLiteral, 
+        LitConstKind.FloatLiteral,
         "3.14"
     )
 
@@ -15829,10 +15880,11 @@ main() {
         Some(symbolRef),
         lambda
     )
-    
+
     if (let Some(pos) <- spawnExpr.getThreadContextRParenPos()) {
         // 输出线程上下文参数 ) 位置
-        println("spawnExpr.getThreadContextRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "spawnExpr.getThreadContextRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -15893,8 +15945,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -15941,8 +15993,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -15951,7 +16003,7 @@ main() {
 
     // 创建 StaticInit 实例
     let staticInit = StaticInit(block)
-    
+
     let pos = staticInit.getInitKeyWordPos()
     // 输出 init 关键字位置
     println("staticInit.getInitKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -15989,8 +16041,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -15999,7 +16051,7 @@ main() {
 
     // 创建 StaticInit 实例
     let staticInit = StaticInit(block)
-    
+
     let pos = staticInit.getParamsLParenPos()
     // 输出 ( 位置
     println("staticInit.getParamsLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -16037,8 +16089,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -16047,7 +16099,7 @@ main() {
 
     // 创建 StaticInit 实例
     let staticInit = StaticInit(block)
-    
+
     let pos = staticInit.getParamsRParenPos()
     // 输出 ) 位置
     println("staticInit.getParamsRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -16085,8 +16137,8 @@ main() {
 
     // 创建 AssignExpr 实例
     let assignExpr = AssignExpr(
-        assignOpKind, 
-        lhs, 
+        assignOpKind,
+        lhs,
         rhs
     )
 
@@ -16095,7 +16147,7 @@ main() {
 
     // 创建 StaticInit 实例
     let staticInit = StaticInit(block)
-    
+
     let pos = staticInit.getStaticKeyWordPos()
     // 输出 static 关键字位置
     println("staticInit.getStaticKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -16197,7 +16249,8 @@ main(): Unit {
     let pos = strInterpolationContent.getDollarPos()
 
     // 输出 $ 关键字位置
-    println("strInterpolationContent.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "strInterpolationContent.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -16309,33 +16362,35 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
@@ -16372,40 +16427,43 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T"), GenericParam("U")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
     let pos = structDecl.getGenericParamsCommasPos()
     // 遍历输出泛型参数中逗号位置
     for (i in 0..pos.size) {
-        println("structDecl.getGenericParamsCommasPos()[${i}]: ${pos[i].beginLine}:${pos[i].beginColumn}-${pos[i].endLine}:${pos[i].endColumn}")
+        println(
+            "structDecl.getGenericParamsCommasPos()[${i}]: ${pos[i].beginLine}:${pos[i].beginColumn}-${pos[i].endLine}:${pos[i].endColumn}")
     }
 }
 ```
@@ -16437,39 +16495,42 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
     if (let Some(pos) <- structDecl.getGenericParamsLAnglePos()) {
         // 输出泛型参数 < 位置
-        println("structDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "structDecl.getGenericParamsLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -16501,39 +16562,42 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
     if (let Some(pos) <- structDecl.getGenericParamsRAnglePos()) {
         // 输出泛型参数 > 位置
-        println("structDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "structDecl.getGenericParamsRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -16565,33 +16629,35 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
@@ -16628,33 +16694,35 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
@@ -16691,40 +16759,43 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], []), CompositeType("I2", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
     let bitAndsPos = structDecl.getSuperTyAnnotationsBitAndsPos()
     // 遍历输出父类型 & 位置
     for (i in 0..bitAndsPos.size) {
-        println("structDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${bitAndsPos[i].beginLine}:${bitAndsPos[i].beginColumn}-${bitAndsPos[i].endLine}:${bitAndsPos[i].endColumn}")
+        println(
+            "structDecl.getSuperTyAnnotationsBitAndsPos()[${i}]: ${bitAndsPos[i].beginLine}:${bitAndsPos[i].beginColumn}-${bitAndsPos[i].endLine}:${bitAndsPos[i].endColumn}")
     }
 }
 ```
@@ -16756,33 +16827,35 @@ import stdx.syntax.*
 main() {
     // 创建 body
     let body = Body([])
-    
+
     // 创建 genericConstraints
-    let genericConstraints = GenericConstraints([GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
-    
+    let genericConstraints = GenericConstraints(
+        [GenericConstraint(CompositeType("T", [], []), [CompositeType("I1", [], [])])])
+
     // 创建 genericParams
     let genericParams = [GenericParam("T")]
-    
+
     // 创建 name
     let name = "A"
-    
+
     // 创建 superTyAnnotations
     let superTyAnnotations: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
-    
+
     // 创建 annotations
-    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno", AtOpKind.At)]
-    
+    let annotations = [Annotation([Argument(None, false, LitConstExpr(LitConstKind.IntergerLiteral, "123"))], "MyAnno",
+        AtOpKind.At)]
+
     // 创建 modifiers
     let modifiers = [Modifier(ModifierKind.Public)]
-    
+
     // 创建 StructDecl 实例
     let structDecl = StructDecl(
-        body, 
-        genericConstraints, 
-        genericParams, 
-        name, 
-        superTyAnnotations, 
-        annotations: annotations, 
+        body,
+        genericConstraints,
+        genericParams,
+        name,
+        superTyAnnotations,
+        annotations: annotations,
         modifiers: modifiers
     )
 
@@ -16871,7 +16944,7 @@ main() {
 
     // 创建 SubscriptExpr 实例
     let subscriptExpr = SubscriptExpr(
-        base, 
+        base,
         indexs
     )
 
@@ -16920,7 +16993,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("subscriptExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "subscriptExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -17075,11 +17149,11 @@ main() {
     let name = "x"
 
     // 创建 typeArguments
-    let typeArguments : Array<TypeAnnotation> = [CompositeType("I1", [], [])]
+    let typeArguments: Array<TypeAnnotation> = [CompositeType("I1", [], [])]
 
     // 创建 SymbolRef 实例
     let symbolRef = SymbolRef(
-        name, 
+        name,
         typeArguments
     )
 
@@ -17125,7 +17199,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("symbolRef.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "symbolRef.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -17304,9 +17379,7 @@ main() {
     )
 
     // 创建 Block 实例
-    let block = Block(
-        [callExpr]
-    )
+    let block = Block([callExpr])
 
     let mutex = SymbolRef("mtx", [])
 
@@ -17315,7 +17388,7 @@ main() {
         block,
         mutex
     )
-    
+
     println("synchronizedExpr: ${synchronizedExpr}")
 }
 ```
@@ -17356,9 +17429,7 @@ main() {
     )
 
     // 创建 Block 实例
-    let block = Block(
-        [callExpr]
-    )
+    let block = Block([callExpr])
 
     let mutex = SymbolRef("mtx", [])
 
@@ -17367,7 +17438,7 @@ main() {
         block,
         mutex
     )
-    
+
     let pos = synchronizedExpr.getLParenPos()
     // 输出 ( 位置
     println("synchronizedExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -17408,9 +17479,7 @@ main() {
     )
 
     // 创建 Block 实例
-    let block = Block(
-        [callExpr]
-    )
+    let block = Block([callExpr])
 
     let mutex = SymbolRef("mtx", [])
 
@@ -17419,7 +17488,7 @@ main() {
         block,
         mutex
     )
-    
+
     let pos = synchronizedExpr.getRParenPos()
     // 输出 ) 位置
     println("synchronizedExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -17460,9 +17529,7 @@ main() {
     )
 
     // 创建 Block 实例
-    let block = Block(
-        [callExpr]
-    )
+    let block = Block([callExpr])
 
     let mutex = SymbolRef("mtx", [])
 
@@ -17471,10 +17538,11 @@ main() {
         block,
         mutex
     )
-    
+
     let pos = synchronizedExpr.getSynchronizedKeyWordPos()
     // 输出 synchronized 关键字位置
-    println("synchronizedExpr.getSynchronizedKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+    println(
+        "synchronizedExpr.getSynchronizedKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
 ```
 
@@ -17560,9 +17628,7 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 SyntaxTreeNode 子类实例
-    let node = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
+    let node = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
     // 输出哈希值
     println("node.hashCode(): ${node.hashCode()}")
 }
@@ -17600,9 +17666,7 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 SyntaxTreeNode 子类实例
-    let node = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
+    let node = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
 
     println("node.toString(): ${node.toString()}")
 }
@@ -17640,9 +17704,7 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 SyntaxTreeNode 子类实例
-    let node = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
+    let node = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
 
     // 转化为 Tokens 并输出
     println("node.toTokens(): ${node.toTokens()}")
@@ -17681,12 +17743,8 @@ main() {
     let quoteToken = QuoteToken(quote(hello world))
 
     // 创建 SyntaxTreeNode 子类实例
-    let node0 = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
-    let node1 = QuoteExpr(
-        QuoteExprContent.TokenPart(quoteToken)
-    )
+    let node0 = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
+    let node1 = QuoteExpr(QuoteExprContent.TokenPart(quoteToken))
 
     // 输出判等结果
     println("node0 == node0: ${node0 == node0}")
@@ -17757,10 +17815,8 @@ main() {
     )
 
     // 创建 ThrowExpr 实例
-    let throwExpr = ThrowExpr(
-        callExpr
-    )
-    
+    let throwExpr = ThrowExpr(callExpr)
+
     println("throwExpr: ${throwExpr}")
 }
 ```
@@ -17799,10 +17855,8 @@ main() {
     )
 
     // 创建 ThrowExpr 实例
-    let throwExpr = ThrowExpr(
-        callExpr
-    )
-    
+    let throwExpr = ThrowExpr(callExpr)
+
     let pos = throwExpr.getThrowKeyWordPos()
     // 输出 throw 关键字位置
     println("throwExpr.getThrowKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -17889,22 +17943,24 @@ main() {
     let callee = SymbolRef("foo", [])
 
     // 创建 arguments
-    let arguments = [Argument(
-        "a1", 
-        false, 
-        LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    )]
+    let arguments = [
+        Argument(
+            "a1",
+            false,
+            LitConstExpr(LitConstKind.IntergerLiteral, "123")
+        )
+    ]
 
     // 创建 trailingLambdaExpr
     let trailingLambdaExpr = Lambda(
-        [BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))], 
-        ParameterList(LambdaParam("x", None), hasParen:false)
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
+        ParameterList(LambdaParam("x", None), hasParen: false)
     )
 
     // 创建 TrailingClosureExpr 实例
     let trailingClosureExpr = TrailingClosureExpr(
-        callee, 
-        arguments, 
+        callee,
+        arguments,
         trailingLambdaExpr
     )
 
@@ -17950,7 +18006,7 @@ main(): Unit {
     // 创建 trailingLambdaExpr
     let trailingLambdaExpr = Lambda(
         [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
-        ParameterList(LambdaParam("x", None), hasParen:false)
+        ParameterList(LambdaParam("x", None), hasParen: false)
     )
 
     // 创建 TrailingClosureExpr 实例
@@ -17959,7 +18015,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("trailingClosureExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "trailingClosureExpr.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -17999,7 +18056,7 @@ main(): Unit {
     // 创建 trailingLambdaExpr
     let trailingLambdaExpr = Lambda(
         [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
-        ParameterList(LambdaParam("x", None), hasParen:false)
+        ParameterList(LambdaParam("x", None), hasParen: false)
     )
 
     // 创建 TrailingClosureExpr 实例
@@ -18007,7 +18064,8 @@ main(): Unit {
 
     if (let Some(pos) <- trailingClosureExpr.getLParenPos()) {
         // 输出左括号位置
-        println("trailingClosureExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "trailingClosureExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -18046,7 +18104,7 @@ main(): Unit {
     // 创建 trailingLambdaExpr
     let trailingLambdaExpr = Lambda(
         [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))],
-        ParameterList(LambdaParam("x", None), hasParen:false)
+        ParameterList(LambdaParam("x", None), hasParen: false)
     )
 
     // 创建 TrailingClosureExpr 实例
@@ -18054,7 +18112,8 @@ main(): Unit {
 
     if (let Some(pos) <- trailingClosureExpr.getRParenPos()) {
         // 输出右括号位置
-        println("trailingClosureExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "trailingClosureExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -18161,26 +18220,30 @@ import stdx.syntax.*
 
 main() {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
@@ -18220,33 +18283,38 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 catch 关键字位置
     let posArr = tryCatch.getCatchKeyWordsPos()
     for (i in 0..posArr.size) {
-        println("tryCatch.getCatchKeyWordsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "tryCatch.getCatchKeyWordsPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -18277,33 +18345,38 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 catch 语句中 ( 的位置
     let catchLParensPos = tryCatch.getCatchLParensPos()
     for (i in 0..catchLParensPos.size) {
-        println("tryCatch.getCatchLParensPos()[${i}]: ${catchLParensPos[i].beginLine}:${catchLParensPos[i].beginColumn}-${catchLParensPos[i].endLine}:${catchLParensPos[i].endColumn}")
+        println(
+            "tryCatch.getCatchLParensPos()[${i}]: ${catchLParensPos[i].beginLine}:${catchLParensPos[i].beginColumn}-${catchLParensPos[i].endLine}:${catchLParensPos[i].endColumn}")
     }
 }
 ```
@@ -18334,33 +18407,38 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 catch 语句中 ) 的位置
     let catchRParensPos = tryCatch.getCatchRParensPos()
     for (i in 0..catchRParensPos.size) {
-        println("tryCatch.getCatchRParensPos()[${i}]: ${catchRParensPos[i].beginLine}:${catchRParensPos[i].beginColumn}-${catchRParensPos[i].endLine}:${catchRParensPos[i].endColumn}")
+        println(
+            "tryCatch.getCatchRParensPos()[${i}]: ${catchRParensPos[i].beginLine}:${catchRParensPos[i].beginColumn}-${catchRParensPos[i].endLine}:${catchRParensPos[i].endColumn}")
     }
 }
 ```
@@ -18391,33 +18469,38 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 finally 关键字位置
     let finallyKeyWordPos = tryCatch.getFinallyKeyWordPos()
     match (finallyKeyWordPos) {
-        case Some(pos) => println("tryCatch.getFinallyKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case Some(pos) => println(
+            "tryCatch.getFinallyKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
         case None => println("tryCatch.getFinallyKeyWordPos(): None")
     }
 }
@@ -18449,36 +18532,43 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec (包含多个资源，用于测试逗号位置)
     let resourceSpec = [
-        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type)),
-        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "2"), VarKind.Var, "y", VarPattern("y"), AtomicType(AtomicTypeKind.Int64Type))
+        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"),
+            AtomicType(AtomicTypeKind.Int64Type)),
+        VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "2"), VarKind.Var, "y", VarPattern("y"),
+            AtomicType(AtomicTypeKind.Int64Type))
     ]
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 resource 语句中逗号的位置
     let resourceSpecCommasPos = tryCatch.getResourceSpecCommasPos()
     for (i in 0..resourceSpecCommasPos.size) {
-        println("tryCatch.getResourceSpecCommasPos()[${i}]: ${resourceSpecCommasPos[i].beginLine}:${resourceSpecCommasPos[i].beginColumn}-${resourceSpecCommasPos[i].endLine}:${resourceSpecCommasPos[i].endColumn}")
+        println(
+            "tryCatch.getResourceSpecCommasPos()[${i}]: ${resourceSpecCommasPos[i].beginLine}:${resourceSpecCommasPos[i].beginColumn}-${resourceSpecCommasPos[i].endLine}:${resourceSpecCommasPos[i].endColumn}")
     }
 }
 ```
@@ -18509,33 +18599,39 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
-    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))]
+    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"),
+        AtomicType(AtomicTypeKind.Int64Type))]
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 resource 语句中 ( 的位置
     let resourceSpecLParenPos = tryCatch.getResourceSpecLParenPos()
     match (resourceSpecLParenPos) {
-        case Some(pos) => println("tryCatch.getResourceSpecLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case Some(pos) => println(
+            "tryCatch.getResourceSpecLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
         case None => println("tryCatch.getResourceSpecLParenPos(): None")
     }
 }
@@ -18567,33 +18663,39 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
-    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"), AtomicType(AtomicTypeKind.Int64Type))]
+    let resourceSpec = [VarDecl(LitConstExpr(LitConstKind.IntergerLiteral, "1"), VarKind.Var, "x", VarPattern("x"),
+        AtomicType(AtomicTypeKind.Int64Type))]
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 resource 语句中 ) 的位置
     let resourceSpecRParenPos = tryCatch.getResourceSpecRParenPos()
     match (resourceSpecRParenPos) {
-        case Some(pos) => println("tryCatch.getResourceSpecRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        case Some(pos) => println(
+            "tryCatch.getResourceSpecRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
         case None => println("tryCatch.getResourceSpecRParenPos(): None")
     }
 }
@@ -18625,32 +18727,37 @@ import stdx.syntax.*
 
 main(): Unit {
     // 创建 catchBlocks
-    let catchBlocks = [Block(BinaryExpr(SymbolRef("y", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
+    let catchBlocks = [Block(
+        BinaryExpr(SymbolRef("y", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))]
 
     // 创建 catchPatterns
-    let catchPatterns = [CatchPattern(VarPattern("e1"), [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
+    let catchPatterns = [CatchPattern(VarPattern("e1"),
+        [CompositeType("AException", [], []), CompositeType("BException", [], [])])]
 
     // 创建 finallyBlock
-    let finallyBlock = Block(BinaryExpr(SymbolRef("z", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
+    let finallyBlock = Block(
+        BinaryExpr(SymbolRef("z", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1")))
 
     // 创建 resourceSpec
     let resourceSpec: Array<VarDecl> = []
 
     // 创建 tryBlock
-    let tryBlock = Block([BinaryExpr(SymbolRef("x", []),BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
+    let tryBlock = Block(
+        [BinaryExpr(SymbolRef("x", []), BinaryOpKind.Add, LitConstExpr(LitConstKind.IntergerLiteral, "1"))])
 
     // 创建 TryCatch 实例
     let tryCatch = TryCatch(
-        catchBlocks, 
-        catchPatterns, 
-        finallyBlock, 
-        resourceSpec, 
+        catchBlocks,
+        catchPatterns,
+        finallyBlock,
+        resourceSpec,
         tryBlock
     )
 
     // 获取 try 关键字位置
     let tryKeyWordPos = tryCatch.getTryKeyWordPos()
-    println("tryCatch.getTryKeyWordPos(): ${tryKeyWordPos.beginLine}:${tryKeyWordPos.beginColumn}-${tryKeyWordPos.endLine}:${tryKeyWordPos.endColumn}")
+    println(
+        "tryCatch.getTryKeyWordPos(): ${tryKeyWordPos.beginLine}:${tryKeyWordPos.beginColumn}-${tryKeyWordPos.endLine}:${tryKeyWordPos.endColumn}")
 }
 ```
 
@@ -18721,10 +18828,8 @@ main() {
     )
 
     // 创建 TupleLiteral 实例
-    let tupleLiteral = TupleLiteral(
-        [litConstExpr0, litConstExpr1, litConstExpr2]
-    )
-    
+    let tupleLiteral = TupleLiteral([litConstExpr0, litConstExpr1, litConstExpr2])
+
     println("tupleLiteral: ${tupleLiteral}")
 }
 ```
@@ -18769,14 +18874,13 @@ main() {
     )
 
     // 创建 TupleLiteral 实例
-    let tupleLiteral = TupleLiteral(
-        [litConstExpr0, litConstExpr1, litConstExpr2]
-    )
-    
+    let tupleLiteral = TupleLiteral([litConstExpr0, litConstExpr1, litConstExpr2])
+
     let commasPos = tupleLiteral.getCommasPos()
     // 遍历输出逗号位置
     for (i in 0..commasPos.size) {
-        println("tupleLiteral.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
+        println(
+            "tupleLiteral.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
     }
 }
 ```
@@ -18822,10 +18926,8 @@ main() {
     )
 
     // 创建 TupleLiteral 实例
-    let tupleLiteral = TupleLiteral(
-        [litConstExpr0, litConstExpr1, litConstExpr2]
-    )
-    
+    let tupleLiteral = TupleLiteral([litConstExpr0, litConstExpr1, litConstExpr2])
+
     let pos = tupleLiteral.getLParenPos()
     // 输出 ( 位置
     println("tupleLiteral.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -18872,10 +18974,8 @@ main() {
     )
 
     // 创建 TupleLiteral 实例
-    let tupleLiteral = TupleLiteral(
-        [litConstExpr0, litConstExpr1, litConstExpr2]
-    )
-    
+    let tupleLiteral = TupleLiteral([litConstExpr0, litConstExpr1, litConstExpr2])
+
     let pos = tupleLiteral.getRParenPos()
     // 输出 ) 位置
     println("tupleLiteral.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -18942,9 +19042,7 @@ main() {
     let subPatterns: Array<Pattern> = [VarPattern("x"), VarPattern("y")]
 
     // 创建 TuplePattern 实例
-    let tuplePattern = TuplePattern(
-        subPatterns
-    )
+    let tuplePattern = TuplePattern(subPatterns)
 
     println("tuplePattern: ${tuplePattern}")
 }
@@ -18988,7 +19086,8 @@ main(): Unit {
 
     // 遍历输出逗号位置
     for (i in 0..posArr.size) {
-        println("tuplePattern.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
+        println(
+            "tuplePattern.getCommasPos()[${i}]: ${posArr[i].beginLine}:${posArr[i].beginColumn}-${posArr[i].endLine}:${posArr[i].endColumn}")
     }
 }
 ```
@@ -19145,7 +19244,7 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     println("tupleType: ${tupleType}")
 }
 ```
@@ -19185,11 +19284,12 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     let colonsPos = tupleType.getColonsPos()
     // 遍历输出冒号位置
     for (i in 0..colonsPos.size) {
-        println("tupleType.getColonsPos()[${i}]: ${colonsPos[i].beginLine}:${colonsPos[i].beginColumn}-${colonsPos[i].endLine}:${colonsPos[i].endColumn}")
+        println(
+            "tupleType.getColonsPos()[${i}]: ${colonsPos[i].beginLine}:${colonsPos[i].beginColumn}-${colonsPos[i].endLine}:${colonsPos[i].endColumn}")
     }
 }
 ```
@@ -19231,11 +19331,12 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     let commasPos = tupleType.getCommasPos()
     // 遍历输出逗号位置
     for (i in 0..commasPos.size) {
-        println("tupleType.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
+        println(
+            "tupleType.getCommasPos()[${i}]: ${commasPos[i].beginLine}:${commasPos[i].beginColumn}-${commasPos[i].endLine}:${commasPos[i].endColumn}")
     }
 }
 ```
@@ -19276,11 +19377,12 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     let labelsPos = tupleType.getLabelsPos()
     // 遍历输出标签位置
     for (i in 0..labelsPos.size) {
-        println("tupleType.getLabelsPos()[${i}]: ${labelsPos[i].beginLine}:${labelsPos[i].beginColumn}-${labelsPos[i].endLine}:${labelsPos[i].endColumn}")
+        println(
+            "tupleType.getLabelsPos()[${i}]: ${labelsPos[i].beginLine}:${labelsPos[i].beginColumn}-${labelsPos[i].endLine}:${labelsPos[i].endColumn}")
     }
 }
 ```
@@ -19322,7 +19424,7 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     let pos = tupleType.getLParenPos()
     // 输出 ( 位置
     println("tupleType.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19364,7 +19466,7 @@ main() {
         ["a", "b", "c"],
         [atomicType0, atomicType1, atomicType2]
     )
-    
+
     let pos = tupleType.getRParenPos()
     // 输出 ) 位置
     println("tupleType.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19454,11 +19556,11 @@ import stdx.syntax.*
 main() {
     // 创建 CompositeType 实例
     let compositeType = CompositeType(
-        "A", 
-        ["p0"], 
+        "A",
+        ["p0"],
         [CompositeType("T", [], [])]
     )
-    
+
     // 创建 TypeAlias 实例
     let typeAlias = TypeAlias(
         "MyType",
@@ -19497,18 +19599,18 @@ import stdx.syntax.*
 main() {
     // 创建 CompositeType 实例
     let compositeType = CompositeType(
-        "A", 
-        ["p0"], 
+        "A",
+        ["p0"],
         [CompositeType("T", [], [])]
     )
-    
+
     // 创建 TypeAlias 实例
     let typeAlias = TypeAlias(
         "MyType",
         compositeType,
         [GenericParam("T")]
     )
-    
+
     let pos = typeAlias.getAssignPos()
     // 输出 = 位置
     println("typeAlias.getAssignPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19542,18 +19644,18 @@ import stdx.syntax.*
 main() {
     // 创建 CompositeType 实例
     let compositeType = CompositeType(
-        "A", 
-        ["p0"], 
+        "A",
+        ["p0"],
         [CompositeType("T", [], [])]
     )
-    
+
     // 创建 TypeAlias 实例
     let typeAlias = TypeAlias(
         "MyType",
         compositeType,
         [GenericParam("T")]
     )
-    
+
     let pos = typeAlias.getIdentifierPos()
     // 输出标识符位置
     println("typeAlias.getIdentifierPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19587,18 +19689,18 @@ import stdx.syntax.*
 main() {
     // 创建 CompositeType 实例
     let compositeType = CompositeType(
-        "A", 
-        ["p0"], 
+        "A",
+        ["p0"],
         [CompositeType("T", [], [])]
     )
-    
+
     // 创建 TypeAlias 实例
     let typeAlias = TypeAlias(
         "MyType",
         compositeType,
         [GenericParam("T")]
     )
-    
+
     let pos = typeAlias.getTypeAliasKeyWordPos()
     // 输出 type 关键字位置
     println("typeAlias.getTypeAliasKeyWordPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19738,7 +19840,7 @@ main() {
         srcVal,
         targetType
     )
-    
+
     let pos = typeConvExpr.getLParenPos()
     // 输出 ( 位置
     println("typeConvExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19784,7 +19886,7 @@ main() {
         srcVal,
         targetType
     )
-    
+
     let pos = typeConvExpr.getRParenPos()
     // 输出 ) 位置
     println("typeConvExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -19866,7 +19968,7 @@ main() {
 
     // 创建 TypePattern 实例
     let typePattern = TypePattern(
-        subPattern, 
+        subPattern,
         patternType
     )
 
@@ -19979,16 +20081,16 @@ import stdx.syntax.*
 main() {
     // 创建操作数（使用一个字面量表达式作为操作数）
     let operand = LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    
+
     // 创建操作符类型（使用负号操作符）
     let opKind = UnaryOpKind.Sub
-    
+
     // 创建 UnaryExpr 实例
     let unaryExpr = UnaryExpr(
         opKind,
         operand
     )
-    
+
     println("unaryExpr: ${unaryExpr}")
 }
 ```
@@ -20020,19 +20122,19 @@ import stdx.syntax.*
 main(): Unit {
     // 创建操作数（使用一个字面量表达式作为操作数）
     let operand = LitConstExpr(LitConstKind.IntergerLiteral, "123")
-    
+
     // 创建操作符类型（使用负号操作符）
     let opKind = UnaryOpKind.Sub
-    
+
     // 创建 UnaryExpr 实例
     let unaryExpr = UnaryExpr(
         opKind,
         operand
     )
-    
+
     // 获取操作符位置
     let pos = unaryExpr.getOperatorPos()
-    
+
     // 输出操作符位置
     println("unaryExpr.getOperatorPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
 }
@@ -20146,7 +20248,7 @@ main() {
 
     // 创建 UnsafeExpr 实例
     let unsafeExpr = UnsafeExpr(block)
-    
+
     let pos = unsafeExpr.getUnsafePos()
     // 输出 unsafe 关键字位置
     println("unsafeExpr.getUnsafePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20276,10 +20378,10 @@ main() {
 
     // 创建 VarDecl 实例
     let varDecl = VarDecl(
-        initializer, 
-        kind, 
-        name, 
-        pattern, 
+        initializer,
+        kind,
+        name,
+        pattern,
         tyAnnotation
     )
 
@@ -20396,7 +20498,8 @@ main(): Unit {
 
     if (let Some(pos) <- varDecl.getTyAnnotationColonPos()) {
         // 输出类型注解冒号位置
-        println("varDecl.getTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
+        println(
+            "varDecl.getTyAnnotationColonPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
     }
 }
 ```
@@ -20498,9 +20601,7 @@ main() {
     let identifier = "A"
 
     // 创建 VarOrEnumPattern 实例
-    let varOrEnumPattern = VarOrEnumPattern(
-        identifier
-    )
+    let varOrEnumPattern = VarOrEnumPattern(identifier)
 
     println("varOrEnumPattern: ${varOrEnumPattern}")
 }
@@ -20637,18 +20738,18 @@ import stdx.syntax.*
 
 main() {
     let symbolRef = SymbolRef("i", [])
-    let params = ParameterList(LambdaParam("i", None), hasParen:false)
+    let params = ParameterList(LambdaParam("i", None), hasParen: false)
 
     // 创建 Lambda 实例
     let lambda = Lambda(
-        [symbolRef], 
+        [symbolRef],
         params
     )
 
     // 创建 Argument 实例
     let argument = Argument(
-        None, 
-        false, 
+        None,
+        false,
         lambda
     )
 
@@ -20692,18 +20793,18 @@ import stdx.syntax.*
 
 main() {
     let symbolRef = SymbolRef("i", [])
-    let params = ParameterList([LambdaParam("i", None)], hasParen:false)
+    let params = ParameterList([LambdaParam("i", None)], hasParen: false)
 
     // 创建 Lambda 实例
     let lambda = Lambda(
-        [symbolRef], 
+        [symbolRef],
         params
     )
 
     // 创建 Argument 实例
     let argument = Argument(
-        None, 
-        false, 
+        None,
+        false,
         lambda
     )
 
@@ -20716,7 +20817,7 @@ main() {
         argument,
         vArrayType
     )
-    
+
     let pos = vArrayExpr.getLParenPos()
     // 输出 ( 位置
     println("vArrayExpr.getLParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20749,18 +20850,18 @@ import stdx.syntax.*
 
 main() {
     let symbolRef = SymbolRef("i", [])
-    let params = ParameterList([LambdaParam("i", None)], hasParen:false)
+    let params = ParameterList([LambdaParam("i", None)], hasParen: false)
 
     // 创建 Lambda 实例
     let lambda = Lambda(
-        [symbolRef], 
+        [symbolRef],
         params
     )
 
     // 创建 Argument 实例
     let argument = Argument(
-        None, 
-        false, 
+        None,
+        false,
         lambda
     )
 
@@ -20773,7 +20874,7 @@ main() {
         argument,
         vArrayType
     )
-    
+
     let pos = vArrayExpr.getRParenPos()
     // 输出 ) 位置
     println("vArrayExpr.getRParenPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20885,7 +20986,7 @@ main() {
 
     // 创建 VArrayType 实例
     let vArrayType = VArrayType(elementType, 10)
-    
+
     let pos = vArrayType.getCommaPos()
     // 输出逗号位置
     println("vArrayType.getCommaPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20921,7 +21022,7 @@ main() {
 
     // 创建 VArrayType 实例
     let vArrayType = VArrayType(elementType, 10)
-    
+
     let pos = vArrayType.getDollarPos()
     // 输出 $ 位置
     println("vArrayType.getDollarPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20957,7 +21058,7 @@ main() {
 
     // 创建 VArrayType 实例
     let vArrayType = VArrayType(elementType, 10)
-    
+
     let pos = vArrayType.getLAnglePos()
     // 输出 < 位置
     println("vArrayType.getLAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -20993,7 +21094,7 @@ main() {
 
     // 创建 VArrayType 实例
     let vArrayType = VArrayType(elementType, 10)
-    
+
     let pos = vArrayType.getRAnglePos()
     // 输出 > 位置
     println("vArrayType.getRAnglePos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")
@@ -21029,7 +21130,7 @@ main() {
 
     // 创建 VArrayType 实例
     let vArrayType = VArrayType(elementType, 10)
-    
+
     let pos = vArrayType.getVArrayPos()
     // 输出 VArray 关键字位置
     println("vArrayType.getVArrayPos(): ${pos.beginLine}:${pos.beginColumn}-${pos.endLine}:${pos.endColumn}")

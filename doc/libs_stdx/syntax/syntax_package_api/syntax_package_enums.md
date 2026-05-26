@@ -714,10 +714,10 @@ PrimaryConstructor
 
 ```cangjie
 public enum ImportKind {
-    | Alias 
-    | All 
-    | Multi 
-    | Single 
+    | Alias
+    | All
+    | Multi
+    | Single
     | ...
 }
 ```
@@ -1205,8 +1205,7 @@ Stop
 
 ```cangjie
 public enum PrefixTypeOpKind {
-    | Quest
-    | ...
+    | Quest | ...
 }
 ```
 
@@ -1223,7 +1222,7 @@ Quest
 ## enum QuoteExprContent
 
 ```cangjie
-public enum QuoteExprContent{
+public enum QuoteExprContent {
     | TokenPart(QuoteToken)
     | QuoteInterpolation(QuoteInterpolationExpr)
     | ...

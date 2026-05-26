@@ -159,7 +159,7 @@ main() {
     let tokens = quote(
         class A      {let x=10}
     )
-    
+
     // 解析 Tokens 获得一个语法树节点，示例中为 ClassDecl 类型节点
     // 默认刷新位置信息
     if (let Some(node) <- parseTokens(tokens).node) {

@@ -8,9 +8,9 @@
 ```cangjie
 package a
 
-main(){
-  var expr = 1 + 2
-  println(expr)
+main() {
+    var expr = 1 + 2
+    println(expr)
 }
 ```
 
