@@ -119,7 +119,7 @@ The following platform and architecture combinations are currently supported:
 
 ## Constraints
 
-Support for building `stdx` in Ubuntu/macOS (x86_64, aarch64), Cangjie SDK 1.0.0 and above versions, please refer to the [Build Dependency Tools](https://gitcode.com/Cangjie/cangjie_build/blob/dev/docs/env_zh.md).
+Support for building `stdx` in Ubuntu/macOS (x86_64, aarch64), Cangjie SDK 1.0.0 and above versions, please refer to the [Build Dependency Tools](https://gitcode.com/Cangjie/cangjie_build/blob/dev/doc_en/env.md).
 
 Note: Future versions of this extension library may contain incompatible changes, and cross-version backward compatibility is not guaranteed. Please fully assess the version adaptation risks before use.
 
