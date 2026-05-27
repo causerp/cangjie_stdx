@@ -1,11 +1,11 @@
-# 仓颉编程语言扩展库API写作指导
+# 仓颉编程语言扩展库 API 写作指导
 
-## 扩展库API文档说明
+## 扩展库 API 文档说明
 
 文档层级：
 
 ```text
-libs_stdx // 扩展库API文档
+libs_stdx // 扩展库 API 文档
   ├── xxx // 扩展库包名
     ├── figures // 如果有图片，包目录下新建 figures 文件夹
     ├── xxx_package_api // 此包内各类型 API 文档
@@ -18,4 +18,4 @@ libs_stdx // 扩展库API文档
 └── summary_xxx.md // 文档目录，所有文档需在该文件中“注册”才会最终呈现在构建包中
 ```
 
-扩展库API文档写作规范与模板详见[仓颉标准库API文档写作指导](https://gitcode.com/Cangjie/cangjie_runtime/blob/dev/stdlib/doc/contribute/template/overview.md)。
+扩展库 API 文档写作规范与模板详见[仓颉标准库 API 文档写作指导](https://gitcode.com/Cangjie/cangjie_runtime/blob/main/stdlib/doc/contribute/template/overview.md)。

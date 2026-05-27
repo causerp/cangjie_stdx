@@ -39,7 +39,7 @@ This requires `curl` and `unzip`. Please ensure these tools are installed in you
 Execute directly in your command line (note the arguments at the end, modify as needed):
 
 ```shell
-bash -c "$(curl -fsSL https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.sh)" -- 1.0.0.1
+bash -c "$(curl -fsSL https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/main/downloader.sh)" -- 1.0.0.1
 ```
 
 ### Windows
@@ -55,7 +55,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 Then, run the script in a regular PowerShell window (note the arguments at the end, modify as needed):
 
 ```powershell
-irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile "$env:TEMP\downloader.ps1"; & "$env:TEMP\downloader.ps1" 1.0.0.1
+irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/main/downloader.ps1 -OutFile "$env:TEMP\downloader.ps1"; & "$env:TEMP\downloader.ps1" 1.0.0.1
 ```
 
 ### Parameters
@@ -68,12 +68,12 @@ irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile
 
 ```shell
 # On Linux/macOS, download the ohos-aarch64 version of v1.0.0.1 and extract it to the ./cangjie_libs directory
-bash -c "$(curl -fsSL https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.sh)" -- 1.0.0.1 -p ohos-aarch64 -d ./cangjie_libs
+bash -c "$(curl -fsSL https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/main/downloader.sh)" -- 1.0.0.1 -p ohos-aarch64 -d ./cangjie_libs
 ```
 
 ```powershell
 # On Windows, download the windows-x64 version of v1.0.0.1 and extract it to the C:\cangjie_libs directory
-irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/dev/downloader.ps1 -OutFile "$env:TEMP\downloader.ps1"; & "$env:TEMP\downloader.ps1" 1.0.0.1 -p windows-x64 -d C:\cangjie_libs
+irm https://raw.gitcode.com/Cangjie/cangjie_stdx/raw/main/downloader.ps1 -OutFile "$env:TEMP\downloader.ps1"; & "$env:TEMP\downloader.ps1" 1.0.0.1 -p windows-x64 -d C:\cangjie_libs
 ```
 
 ### Supported \<platform-arch>
@@ -119,7 +119,7 @@ The following platform and architecture combinations are currently supported:
 
 ## Constraints
 
-Support for building `stdx` in Ubuntu/macOS (x86_64, aarch64), Cangjie SDK 1.0.0 and above versions, please refer to the [Build Dependency Tools](https://gitcode.com/Cangjie/cangjie_build/blob/dev/doc_en/env.md).
+Support for building `stdx` in Ubuntu/macOS (x86_64, aarch64), Cangjie SDK 1.0.0 and above versions, please refer to the [Build Dependency Tools](https://gitcode.com/Cangjie/cangjie_build/blob/main/doc_en/env.md).
 
 Note: Future versions of this extension library may contain incompatible changes, and cross-version backward compatibility is not guaranteed. Please fully assess the version adaptation risks before use.
 
@@ -175,7 +175,7 @@ For more information, please take a look at the [build.py](build.py) or use `--h
 
 ##### Method 2
 
-Currently, stdx (dev branch) also supports building via cjpm, and the build command is as follows:
+Currently, stdx (main branch) also supports building via cjpm, and the build command is as follows:
 
 ```shell
 cjpm build
@@ -189,7 +189,7 @@ Currently, the stdx binary packages built via cjpm do not include aspectCJ and s
 
 ### Integration Build Guide
 
-For integration building, please refer to the [Cangjie SDK Integration Build Guide](https://gitcode.com/Cangjie/cangjie_build/blob/dev/README_zh.md).
+For integration building, please refer to the [Cangjie SDK Integration Build Guide](https://gitcode.com/Cangjie/cangjie_build/blob/main/README_zh.md).
 
 ## Instructions for use
 
