@@ -10,7 +10,7 @@ In project's `cjpm.toml` file, add the following source code dependency configur
 
 ```toml
 [dependencies]
-  stdx = { git = "https://gitcode.com/Cangjie/cangjie_stdx.git", branch = "dev", output-type = "dynamic" }
+  stdx = { git = "https://gitcode.com/Cangjie/cangjie_stdx.git", branch = "main", output-type = "dynamic" }
 ```
 
 In the directory where project's cjpm.toml file is located, execute the `cjpm update` command to synchronously update the source code of this repository.
@@ -52,7 +52,7 @@ Currently, the integrated stdx for source code dependencies does not include asp
 
 ## Cross-compiling OpenHarmony
 
-Cross-compiling OpenHarmony on Linux and macOS platforms requires configuring environment variables for the cross-compilation toolchain (non DevEco Studio projects). [Please refer to compiling ohos-x86_64 and ohos-aarch64 toolchains](https://gitcode.com/Cangjie/cangjie_build/blob/dev/docs/linux_ohos_toolchain.md)
+Cross-compiling OpenHarmony on Linux and macOS platforms requires configuring environment variables for the cross-compilation toolchain (non DevEco Studio projects). [Please refer to compiling ohos-x86_64 and ohos-aarch64 toolchains](https://gitcode.com/Cangjie/cangjie_build/blob/main/docs/linux_ohos_toolchain.md)
 
 1. OHOS_TOOLCHAIN_PATH (Binary directory of Clang/LLVM compiler in the compilation toolchain, e.g., /opt/buildtools/ohos_root/prebuilts/clang/ohos/linux-x86_64/llvm/bin)
 
