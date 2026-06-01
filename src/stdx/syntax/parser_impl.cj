@@ -197,15 +197,11 @@ private class NodeLoader {
         return NodeFormat_Node(flatBuf[HEADER_SIZE..], 0)
     }
 
-    private unsafe func getParseResultPointers(resPtr: CPointer<ParseRes>,
-        unsupportedNodeMessage: String): (CPointer<UInt8>, CPointer<UInt8>) {
+    private unsafe func getParseResultPointers(resPtr: CPointer<ParseRes>): (CPointer<UInt8>, CPointer<UInt8>) {
         if (resPtr.isNull()) {
             throw Exception("the parsing result is empty.")
         }
         let res = resPtr.read()
-        if (res.node.isNull() && res.errMsg.isNull()) {
-            throw Exception(unsupportedNodeMessage)
-        }
         return (res.node, res.errMsg)
     }
 
@@ -220,7 +216,10 @@ private class NodeLoader {
                 throw Exception("mallocCString failed for file path.")
             }
             resPtr = CJ_ParseFile(pathPtr)
-            (nodePtr, diagPtr) = getParseResultPointers(resPtr, "unsupported node type in parseFile function.")
+            (nodePtr, diagPtr) = getParseResultPointers(resPtr)
+            if (nodePtr.isNull() && diagPtr.isNull()) {
+                throw Exception("unsupported node type in parseFile function.")
+            }
             if (!diagPtr.isNull()) {
                 getDiags(diagPtr)
             }
@@ -248,7 +247,10 @@ private class NodeLoader {
                 throw Exception("mallocCString failed for text.")
             }
             resPtr = CJ_ParseText(textPtr)
-            (nodePtr, diagPtr) = getParseResultPointers(resPtr, "unsupported node type in parseText function.")
+            (nodePtr, diagPtr) = getParseResultPointers(resPtr)
+            if (nodePtr.isNull() && diagPtr.isNull()) {
+                throw Exception("unsupported node type in parseText function.")
+            }
             if (!diagPtr.isNull()) {
                 getDiags(diagPtr)
             }
@@ -1500,20 +1502,19 @@ private class FlatbufferNodeTranslator {
         return (ret, innerCmts, trailCmts)
     }
 
-    private func finishVarDecl(ret: ArrayList<SyntaxNodeImpl>, initializer: Option<NodeFormat_Expr>,
-        assignPos: NodeFormat_Position, trailCmts: Array<Option<NodeFormat_CommentGroup>>,
-        innerCmts: Array<Option<NodeFormat_CommentGroup>>, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
-        resetGlobalVariables(ret, innerCmts)
+    private func appendVarDeclInitializer(initializer: Option<NodeFormat_Expr>, assignPos: NodeFormat_Position) {
         if (let Some(initializerExpr) <- initializer) {
             transBasicTerminal(assignPos, SyntaxNodeKind.AssignToken)
             transNoTerminalExpr(initializerExpr)
         }
+    }
+
+    private func appendTrailingComments(ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>, trailCmts: Array<Option<NodeFormat_CommentGroup>>) {
         if (trailCmts.size > 0) {
             addChild(ret, transCommentGroupList(trailCmts))
             resetGlobalVariables(ret, innerCmts)
         }
-        innerComments = Array<Option<NodeFormat_CommentGroup>>()
-        builder.buildNonTerminal(SyntaxNodeKind.VarDecl, ret.toArray(), preChildren: preChildren)
     }
 
     private func transDeclIdentifierAndTypeParams(db: NodeFormat_DeclBase, ret: ArrayList<SyntaxNodeImpl>,
@@ -1596,7 +1597,11 @@ private class FlatbufferNodeTranslator {
                 curChildren = ret
             }
         }
-        finishVarDecl(ret, varDecl.GetInitializer(), varDecl.GetAssignPos(), trailCmts, innerCmts, preChildren)
+        resetGlobalVariables(ret, innerCmts)
+        appendVarDeclInitializer(varDecl.GetInitializer(), varDecl.GetAssignPos())
+        appendTrailingComments(ret, innerCmts, trailCmts)
+        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        builder.buildNonTerminal(SyntaxNodeKind.VarDecl, ret.toArray(), preChildren: preChildren)
     }
 
     private func transVarWithPatternDecl(varDecl: NodeFormat_VarWithPatternDecl, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
@@ -1620,7 +1625,11 @@ private class FlatbufferNodeTranslator {
                 resetGlobalVariables(ret, innerCmts)
             }
         }
-        finishVarDecl(ret, varDecl.GetInitializer(), varDecl.GetAssignPos(), trailCmts, innerCmts, preChildren)
+        resetGlobalVariables(ret, innerCmts)
+        appendVarDeclInitializer(varDecl.GetInitializer(), varDecl.GetAssignPos())
+        appendTrailingComments(ret, innerCmts, trailCmts)
+        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        builder.buildNonTerminal(SyntaxNodeKind.VarDecl, ret.toArray(), preChildren: preChildren)
     }
 
     private func transMainDecl(mainDecl: NodeFormat_MainDecl, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
@@ -3582,9 +3591,9 @@ private class FlatbufferNodeTranslator {
         return (ret, innerCmts, trailCmts)
     }
 
-    private func finishMatchCase(base: Option<NodeFormat_NodeBase>, arrowPos: NodeFormat_Position,
+    private func appendMatchCaseArrowAndBody(base: Option<NodeFormat_NodeBase>, arrowPos: NodeFormat_Position,
         body: Option<NodeFormat_Block>, ret: ArrayList<SyntaxNodeImpl>,
-        innerCmts: Array<Option<NodeFormat_CommentGroup>>, trailCmts: Array<Option<NodeFormat_CommentGroup>>): ?SyntaxNodeImpl {
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
         if (let Some(_) <- base) {
             resetGlobalVariables(ret, innerCmts)
             transBasicTerminal(arrowPos, SyntaxNodeKind.DoubleArrowToken)
@@ -3592,12 +3601,6 @@ private class FlatbufferNodeTranslator {
                 addChild(ret, transMatchCaseBody(block))
             }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
-        innerComments = Array<Option<NodeFormat_CommentGroup>>()
-        builder.buildNonTerminal(SyntaxNodeKind.MatchCase, ret.toArray())
     }
 
     private func transMatchCase(matchCase: NodeFormat_MatchCase): ?SyntaxNodeImpl {
@@ -3622,7 +3625,10 @@ private class FlatbufferNodeTranslator {
                 addChild(ret, transExpr(patGuard))
             }
         }
-        finishMatchCase(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts, trailCmts)
+        appendMatchCaseArrowAndBody(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts)
+        appendTrailingComments(ret, innerCmts, trailCmts)
+        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        builder.buildNonTerminal(SyntaxNodeKind.MatchCase, ret.toArray())
     }
 
     private func transMatchCaseOther(matchCase: NodeFormat_MatchCaseOther): ?SyntaxNodeImpl {
@@ -3634,7 +3640,10 @@ private class FlatbufferNodeTranslator {
                 addChild(ret, transExpr(caseExpr))
             }
         }
-        finishMatchCase(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts, trailCmts)
+        appendMatchCaseArrowAndBody(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts)
+        appendTrailingComments(ret, innerCmts, trailCmts)
+        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        builder.buildNonTerminal(SyntaxNodeKind.MatchCase, ret.toArray())
     }
 
     private func transRefExpr(refExpr: NodeFormat_RefExpr, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {

@@ -179,15 +179,18 @@ class SyntaxNodeImplCreator {
         ret.add(builder.buildBasicTerminal(rightToken))
     }
 
-    private static func addMacroExpandDeclOrParamPrefix(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
-        comments: Array<Comment>, annotations: Array<Annotation>, calleeMacro: Expr, macroAttrs: Tokens) {
+    private static func addMacroExpandAnnotations(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        comments: Array<Comment>, annotations: Array<Annotation>) {
         addCommentToNode(ret, comments)
 
         if (annotations.size != 0) {
             ret.add(createAnnotationList(annotations))
             ret.add(builder.buildNewline(1))
         }
+    }
 
+    private static func addMacroCalleeAndAttrs(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        calleeMacro: Expr, macroAttrs: Tokens) {
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.AtToken))
         ret.add(calleeMacro.nodeImpl)
 
@@ -734,7 +737,8 @@ class SyntaxNodeImplCreator {
 
         let builder = SyntaxNodeBuilder()
         let ret = ArrayList<SyntaxNodeImpl>()
-        addMacroExpandDeclOrParamPrefix(builder, ret, comments, annotations, calleeMacro, macroAttrs)
+        addMacroExpandAnnotations(builder, ret, comments, annotations)
+        addMacroCalleeAndAttrs(builder, ret, calleeMacro, macroAttrs)
 
         match (macroInputs) {
             case MacroExpandInput.WithoutParens(decl) =>
@@ -984,7 +988,8 @@ class SyntaxNodeImplCreator {
 
         let builder = SyntaxNodeBuilder()
         let ret = ArrayList<SyntaxNodeImpl>()
-        addMacroExpandDeclOrParamPrefix(builder, ret, comments, annotations, calleeMacro, macroAttrs)
+        addMacroExpandAnnotations(builder, ret, comments, annotations)
+        addMacroCalleeAndAttrs(builder, ret, calleeMacro, macroAttrs)
 
         match (macroInputs) {
             case MacroExpandInput.WithoutParens(decl) =>
