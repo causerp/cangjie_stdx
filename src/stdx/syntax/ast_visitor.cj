@@ -142,25 +142,16 @@ public open class ASTVisitor {
         }
     }
 
-    private func visitNominalDeclChildren(annotations: Array<Annotation>, modifiers: Array<Modifier>,
-        genericParams: Array<GenericParam>, superTyAnnotations: Array<TypeAnnotation>,
-        genericConstraints: Option<GenericConstraints>, body: Body) {
-        for (a in annotations) {
-            walk(a)
+    private func walkAll<T>(nodes: Array<T>) where T <: SyntaxTreeNode {
+        for (node in nodes) {
+            walk(node)
         }
-        for (m in modifiers) {
-            walk(m)
+    }
+
+    private func walkOptional<T>(node: Option<T>) where T <: SyntaxTreeNode {
+        if (let Some(v) <- node) {
+            walk(v)
         }
-        for (param in genericParams) {
-            walk(param)
-        }
-        for (superTy in superTyAnnotations) {
-            walk(superTy)
-        }
-        if (let Some(constraints) <- genericConstraints) {
-            walk(constraints)
-        }
-        walk(body)
     }
 
     private func visitMacroOrMainDeclChildren(annotations: Array<Annotation>, modifiers: Array<Modifier>,
@@ -283,8 +274,12 @@ public open class ASTVisitor {
     }
 
     private func visitClassDecl(node: ClassDecl) {
-        visitNominalDeclChildren(node.annotations, node.modifiers, node.genericParams, node.superTyAnnotations,
-            node.genericConstraints, node.body)
+        walkAll(node.annotations)
+        walkAll(node.modifiers)
+        walkAll(node.genericParams)
+        walkAll(node.superTyAnnotations)
+        walkOptional(node.genericConstraints)
+        walk(node.body)
     }
 
     private func visitCompositeType(node: CompositeType) {
@@ -336,8 +331,12 @@ public open class ASTVisitor {
     }
 
     private func visitEnumDecl(node: EnumDecl) {
-        visitNominalDeclChildren(node.annotations, node.modifiers, node.genericParams, node.superTyAnnotations,
-            node.genericConstraints, node.body)
+        walkAll(node.annotations)
+        walkAll(node.modifiers)
+        walkAll(node.genericParams)
+        walkAll(node.superTyAnnotations)
+        walkOptional(node.genericConstraints)
+        walk(node.body)
     }
 
     private func visitEnumPattern(node: EnumPattern) {
@@ -488,8 +487,12 @@ public open class ASTVisitor {
     }
 
     private func visitInterfaceDecl(node: InterfaceDecl) {
-        visitNominalDeclChildren(node.annotations, node.modifiers, node.genericParams, node.superTyAnnotations,
-            node.genericConstraints, node.body)
+        walkAll(node.annotations)
+        walkAll(node.modifiers)
+        walkAll(node.genericParams)
+        walkAll(node.superTyAnnotations)
+        walkOptional(node.genericConstraints)
+        walk(node.body)
     }
 
     private func visitIsExpr(node: IsExpr) {
@@ -740,8 +743,12 @@ public open class ASTVisitor {
     }
 
     private func visitStructDecl(node: StructDecl) {
-        visitNominalDeclChildren(node.annotations, node.modifiers, node.genericParams, node.superTyAnnotations,
-            node.genericConstraints, node.body)
+        walkAll(node.annotations)
+        walkAll(node.modifiers)
+        walkAll(node.genericParams)
+        walkAll(node.superTyAnnotations)
+        walkOptional(node.genericConstraints)
+        walk(node.body)
     }
 
     private func visitSubscriptExpr(node: SubscriptExpr) {
