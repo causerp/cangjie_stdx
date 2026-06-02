@@ -197,6 +197,14 @@ private class NodeLoader {
         return NodeFormat_Node(flatBuf[HEADER_SIZE..], 0)
     }
 
+    private unsafe func getParseResultPointers(resPtr: CPointer<ParseRes>): (CPointer<UInt8>, CPointer<UInt8>) {
+        if (resPtr.isNull()) {
+            throw Exception("the parsing result is empty.")
+        }
+        let res = resPtr.read()
+        return (res.node, res.errMsg)
+    }
+
     private unsafe func loadNodeFromFile(): ?NodeFormat_Node {
         var pathPtr: CString = CString(CPointer<UInt8>())
         var nodePtr = CPointer<UInt8>()
@@ -208,22 +216,16 @@ private class NodeLoader {
                 throw Exception("mallocCString failed for file path.")
             }
             resPtr = CJ_ParseFile(pathPtr)
-            if (resPtr.isNull()) {
-                throw Exception("the parsing result is empty.")
-                return None
+            (nodePtr, diagPtr) = getParseResultPointers(resPtr)
+            if (nodePtr.isNull() && diagPtr.isNull()) {
+                throw Exception("unsupported node type in parseFile function.")
             }
-            let res = resPtr.read()
-            if (!res.errMsg.isNull()) {
-                diagPtr = res.errMsg
+            if (!diagPtr.isNull()) {
                 getDiags(diagPtr)
             }
-            if (res.node.isNull()) {
-                if (res.errMsg.isNull()) {
-                    throw Exception("unsupported node type in parseFile function.")
-                }
+            if (nodePtr.isNull()) {
                 return None
             }
-            nodePtr = res.node
             return getNode(nodePtr)
         } finally {
             // free memory allocated in C.
@@ -245,22 +247,16 @@ private class NodeLoader {
                 throw Exception("mallocCString failed for text.")
             }
             resPtr = CJ_ParseText(textPtr)
-            if (resPtr.isNull()) {
-                throw Exception("the parsing result is empty.")
-                return None
+            (nodePtr, diagPtr) = getParseResultPointers(resPtr)
+            if (nodePtr.isNull() && diagPtr.isNull()) {
+                throw Exception("unsupported node type in parseText function.")
             }
-            let res = resPtr.read()
-            if (!res.errMsg.isNull()) {
-                diagPtr = res.errMsg
+            if (!diagPtr.isNull()) {
                 getDiags(diagPtr)
             }
-            if (res.node.isNull()) {
-                if (res.errMsg.isNull()) {
-                    throw Exception("unsupported node type in parseText function.")
-                }
+            if (nodePtr.isNull()) {
                 return None
             }
-            nodePtr = res.node
             return getNode(nodePtr)
         } finally {
             // free memory allocated in C.
@@ -772,44 +768,33 @@ private class FlatbufferNodeTranslator {
     }
 
     private func transPrimitiveTypeExpr(primitiveType: NodeFormat_PrimitiveTypeExpr): ?SyntaxNodeImpl {
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addLeadCommentNodesToRet(ret)
-        curChildren = ret
-
-        let nodeBase = primitiveType.GetBase()
-        let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
-        addLeadingComments(nodeBase, ret, leadCmts)
-        innerComments = innerCmts
-
-        let ty = getPrimitiveTypeKind(primitiveType.GetKind())
-        addChild(ret, builder.buildBasicTerminal(ty))
-        moveCursorColumn(col: Int32(ty.size))
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
-        innerComments = Array<Option<NodeFormat_CommentGroup>>()
-        builder.buildNonTerminal(SyntaxNodeKind.PrimitiveType, ret.toArray())
+        return transPrimitiveTypeNode(primitiveType.GetBase(), primitiveType.GetKind(), false)
     }
 
     private func transPrimitiveType(primitiveType: NodeFormat_PrimitiveType): ?SyntaxNodeImpl {
+        return transPrimitiveTypeNode(primitiveType.GetBase().getOrThrow().GetBase(), primitiveType.GetKind(), true)
+    }
+
+    private func transPrimitiveTypeNode(nodeBase: ?NodeFormat_NodeBase, primitiveKind: UInt16,
+        addPendingTrailComments: Bool): ?SyntaxNodeImpl {
         let ret = ArrayList<SyntaxNodeImpl>()
         addLeadCommentNodesToRet(ret)
         curChildren = ret
 
-        let nodeBase = primitiveType.GetBase().getOrThrow().GetBase()
         let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
         addLeadingComments(nodeBase, ret, leadCmts)
         innerComments = innerCmts
 
-        let ty = getPrimitiveTypeKind(primitiveType.GetKind())
+        let ty = getPrimitiveTypeKind(primitiveKind)
         addChild(ret, builder.buildBasicTerminal(ty))
         moveCursorColumn(col: Int32(ty.size))
         if (trailCmts.size > 0) {
             addChild(ret, transCommentGroupList(trailCmts))
             resetGlobalVariables(ret, innerCmts)
         }
-        addTrailCommentNodesToRet(ret, innerCmts)
+        if (addPendingTrailComments) {
+            addTrailCommentNodesToRet(ret, innerCmts)
+        }
         innerComments = Array<Option<NodeFormat_CommentGroup>>()
         builder.buildNonTerminal(SyntaxNodeKind.PrimitiveType, ret.toArray())
     }
@@ -840,6 +825,21 @@ private class FlatbufferNodeTranslator {
         builder.buildNonTerminal(SyntaxNodeKind.RefType, ret.toArray())
     }
 
+    private func transTypeElementWithOptionalLabel(type_: NodeFormat_Type, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        if (let Some(db) <- type_.GetBase()) {
+            var startFromBegin = true
+            if (isValidPosition(db.GetColonPos()) && let Some(base) <- db.GetBase()) {
+                transIdentifier(base.GetBegin(), db.GetTypeParameterName())
+                transBasicTerminal(db.GetColonPos(), SyntaxNodeKind.ColonToken)
+                startFromBegin = false
+            }
+            transType(type_, startFromBegin: startFromBegin)
+            resetGlobalVariables(ret, innerCmts)
+            transBasicTerminal(db.GetCommaPos(), SyntaxNodeKind.CommaToken)
+        }
+    }
+
     private func transFuncType(ty: NodeFormat_FuncType): ?SyntaxNodeImpl {
         let ret = ArrayList<SyntaxNodeImpl>()
         addLeadCommentNodesToRet(ret)
@@ -853,16 +853,8 @@ private class FlatbufferNodeTranslator {
         transBasicTerminal(ty.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
         let types = ty.GetParamTypes()
         for (t in types) {
-            if (let Some(type_) <- t && let Some(db) <- type_.GetBase()) {
-                var startFromBegin = true
-                if (isValidPosition(db.GetColonPos()) && let Some(base) <- db.GetBase()) {
-                    transIdentifier(base.GetBegin(), db.GetTypeParameterName())
-                    transBasicTerminal(db.GetColonPos(), SyntaxNodeKind.ColonToken)
-                    startFromBegin = false
-                }
-                transType(type_, startFromBegin: startFromBegin)
-                resetGlobalVariables(ret, innerCmts)
-                transBasicTerminal(db.GetCommaPos(), SyntaxNodeKind.CommaToken)
+            if (let Some(type_) <- t) {
+                transTypeElementWithOptionalLabel(type_, ret, innerCmts)
             }
         }
         resetGlobalVariables(ret, innerCmts)
@@ -913,17 +905,8 @@ private class FlatbufferNodeTranslator {
         transBasicTerminal(ty.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
         let types = ty.GetFieldTypes()
         for (t in 0..types.size) {
-            if (let Some(type_) <- types[t] && let Some(db) <- type_.GetBase()) {
-                var startFromBegin = true
-                if (isValidPosition(db.GetColonPos()) && let Some(base) <- db.GetBase()) {
-                    transIdentifier(base.GetBegin(), db.GetTypeParameterName())
-                    transBasicTerminal(db.GetColonPos(), SyntaxNodeKind.ColonToken)
-                    startFromBegin = false
-                }
-                transType(type_, startFromBegin: startFromBegin)
-                resetGlobalVariables(ret, innerCmts)
-
-                transBasicTerminal(db.GetCommaPos(), SyntaxNodeKind.CommaToken)
+            if (let Some(type_) <- types[t]) {
+                transTypeElementWithOptionalLabel(type_, ret, innerCmts)
             }
         }
         resetGlobalVariables(ret, innerCmts)
@@ -1489,21 +1472,21 @@ private class FlatbufferNodeTranslator {
         builder.buildNonTerminal(SyntaxNodeKind.VarBindingPattern, ret.toArray())
     }
 
-    private func transVarDecl(varDecl: NodeFormat_VarDecl, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
-        var ret = ArrayList<SyntaxNodeImpl>()
+    private func prepareVarDeclPrefix(base: Option<NodeFormat_DeclBase>) {
+        let ret = ArrayList<SyntaxNodeImpl>()
 
-        let nodeBase = varDecl.GetBase().getOrThrow().GetBase()
+        let nodeBase = base.getOrThrow().GetBase()
         let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
         addLeadingComments(nodeBase, ret, leadCmts, isDecl: true)
         innerComments = innerCmts
 
-        if (let Some(db) <- varDecl.GetBase()) {
+        if (let Some(db) <- base) {
             // annotation
             let annos = db.GetAnnotations()
             if (annos.size != 0) {
                 addChild(ret, transAnnotations(db.GetAnnotations()))
             } else {
-                // The begin of VarDecl is not begin of annotations
+                // The begin of variable declaration is not begin of annotations.
                 addWhitespaceAndMoveCursorToBegin(db.GetBase())
             }
             resetGlobalVariables(ret, innerCmts)
@@ -1514,6 +1497,89 @@ private class FlatbufferNodeTranslator {
                 addChild(ret, transVarDeclModifiers(modifiers))
                 resetGlobalVariables(ret, innerCmts)
             }
+        }
+
+        return (ret, innerCmts, trailCmts)
+    }
+
+    private func appendVarDeclInitializer(initializer: Option<NodeFormat_Expr>, assignPos: NodeFormat_Position) {
+        if (let Some(initializerExpr) <- initializer) {
+            transBasicTerminal(assignPos, SyntaxNodeKind.AssignToken)
+            transNoTerminalExpr(initializerExpr)
+        }
+    }
+
+    private func appendTrailingComments(ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>, trailCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        if (trailCmts.size > 0) {
+            addChild(ret, transCommentGroupList(trailCmts))
+            resetGlobalVariables(ret, innerCmts)
+        }
+    }
+
+    private func transDeclIdentifierAndTypeParams(db: NodeFormat_DeclBase, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
+
+        if (let Some(generic) <- db.GetGeneric()) {
+            let typeParameters = generic.GetTypeParameters()
+            if (typeParameters.size != 0) {
+                addChild(ret, transTypeArguments(typeParameters, generic.GetLeftAnglePos(), generic.GetRightAnglePos()))
+            }
+        }
+        resetGlobalVariables(ret, innerCmts)
+    }
+
+    private func transDeclAnnotationsAndModifiers(db: NodeFormat_DeclBase, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        let annos = db.GetAnnotations()
+        if (annos.size != 0) {
+            addChild(ret, transAnnotations(annos))
+        } else {
+            addWhitespaceAndMoveCursorToBegin(db.GetBase())
+        }
+        resetGlobalVariables(ret, innerCmts)
+
+        let modifiers = db.GetModifiers()
+        if (modifiers.size != 0) {
+            addChild(ret, transModifiers(modifiers))
+            resetGlobalVariables(ret, innerCmts)
+        }
+    }
+
+    private func finishFuncBodyBlockAndComments(body: Option<NodeFormat_FuncBody>, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>, trailCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        if (let Some(funcBody) <- body) {
+            resetGlobalVariables(ret, innerCmts)
+            if (let Some(block) <- funcBody.GetBody()) {
+                addChild(ret, transBlock(block))
+            }
+        }
+        if (trailCmts.size > 0) {
+            addChild(ret, transCommentGroupList(trailCmts))
+            resetGlobalVariables(ret, innerCmts)
+        }
+        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+    }
+
+    private func transBitAndSeparatedTypes(types: Array<Option<NodeFormat_Type>>, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        for (i in 0..types.size) {
+            if (let Some(ty) <- types[i]) {
+                transType(ty)
+                resetGlobalVariables(ret, innerCmts)
+                if (i < types.size - 1 && let Some(base) <- ty.GetBase()) {
+                    transBasicTerminal(base.GetBitAndPos(), SyntaxNodeKind.BitAndToken)
+                }
+            }
+        }
+        resetGlobalVariables(ret, innerCmts)
+    }
+
+    private func transVarDecl(varDecl: NodeFormat_VarDecl, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
+        let (ret, innerCmts, trailCmts) = prepareVarDeclPrefix(varDecl.GetBase())
+
+        if (let Some(db) <- varDecl.GetBase()) {
             if (!varDecl.GetEmptyKeyword()) {
                 if (varDecl.GetIsVar()) {
                     transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.VarToken)
@@ -1530,44 +1596,18 @@ private class FlatbufferNodeTranslator {
                 transType(ty)
                 curChildren = ret
             }
-            resetGlobalVariables(ret, innerCmts)
-            if (let Some(initializer) <- varDecl.GetInitializer()) {
-                transBasicTerminal(varDecl.GetAssignPos(), SyntaxNodeKind.AssignToken)
-                transNoTerminalExpr(initializer)
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
+        resetGlobalVariables(ret, innerCmts)
+        appendVarDeclInitializer(varDecl.GetInitializer(), varDecl.GetAssignPos())
+        appendTrailingComments(ret, innerCmts, trailCmts)
         innerComments = Array<Option<NodeFormat_CommentGroup>>()
         builder.buildNonTerminal(SyntaxNodeKind.VarDecl, ret.toArray(), preChildren: preChildren)
     }
 
     private func transVarWithPatternDecl(varDecl: NodeFormat_VarWithPatternDecl, preChildren: Array<SyntaxNodeImpl>): ?SyntaxNodeImpl {
-        var ret = ArrayList<SyntaxNodeImpl>()
-
-        let nodeBase = varDecl.GetBase().getOrThrow().GetBase()
-        let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
-        addLeadingComments(nodeBase, ret, leadCmts, isDecl: true)
-        innerComments = innerCmts
+        let (ret, innerCmts, trailCmts) = prepareVarDeclPrefix(varDecl.GetBase())
 
         if (let Some(db) <- varDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                // The begin of VarWithPatternDecl is not begin of annotations
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transVarDeclModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
             if (varDecl.GetIsVar()) {
                 transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.VarToken)
             } else if (db.GetIsConst()) {
@@ -1584,15 +1624,10 @@ private class FlatbufferNodeTranslator {
                 transType(ty)
                 resetGlobalVariables(ret, innerCmts)
             }
-            if (let Some(initializer) <- varDecl.GetInitializer()) {
-                transBasicTerminal(varDecl.GetAssignPos(), SyntaxNodeKind.AssignToken)
-                transNoTerminalExpr(initializer)
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
+        resetGlobalVariables(ret, innerCmts)
+        appendVarDeclInitializer(varDecl.GetInitializer(), varDecl.GetAssignPos())
+        appendTrailingComments(ret, innerCmts, trailCmts)
         innerComments = Array<Option<NodeFormat_CommentGroup>>()
         builder.buildNonTerminal(SyntaxNodeKind.VarDecl, ret.toArray(), preChildren: preChildren)
     }
@@ -1663,16 +1698,7 @@ private class FlatbufferNodeTranslator {
             }
 
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.TypeToken)
-            transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
-
-            if (let Some(generic) <- db.GetGeneric()) {
-                let typeParameters = generic.GetTypeParameters()
-                if (typeParameters.size != 0) {
-                    addChild(ret,
-                        transTypeArguments(typeParameters, generic.GetLeftAnglePos(), generic.GetRightAnglePos()))
-                }
-            }
-            resetGlobalVariables(ret, innerCmts)
+            transDeclIdentifierAndTypeParams(db, ret, innerCmts)
         }
 
         transBasicTerminal(typeAlias.GetAssignPos(), SyntaxNodeKind.AssignToken)
@@ -1744,20 +1770,7 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- primaryCtorDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
 
             // identifier
             transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
@@ -1768,18 +1781,8 @@ private class FlatbufferNodeTranslator {
                 addChild(ret, transParamList(paramList))
                 moveCursorToEnd(paramList.GetBase())
             }
-            resetGlobalVariables(ret, innerCmts)
-
-            // block
-            if (let Some(block) <- body.GetBody()) {
-                addChild(ret, transBlock(block))
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
-        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        finishFuncBodyBlockAndComments(primaryCtorDecl.GetFuncBody(), ret, innerCmts, trailCmts)
         builder.buildNonTerminal(SyntaxNodeKind.FuncDecl, ret.toArray(), preChildren: preChildren)
     }
 
@@ -1821,16 +1824,7 @@ private class FlatbufferNodeTranslator {
         transBasicTerminal(classDecl.GetUpperBoundPos(), SyntaxNodeKind.UpperBoundToken)
 
         let superTypes = classDecl.GetSuperTypes()
-        for (i in 0..superTypes.size) {
-            if (let Some(anno) <- superTypes[i]) {
-                transType(anno)
-                resetGlobalVariables(ret, innerCmts)
-                if (i < superTypes.size - 1 && let Some(base) <- anno.GetBase()) {
-                    transBasicTerminal(base.GetBitAndPos(), SyntaxNodeKind.BitAndToken)
-                }
-            }
-        }
-        resetGlobalVariables(ret, innerCmts)
+        transBitAndSeparatedTypes(superTypes, ret, innerCmts)
 
         if (let Some(db) <- classDecl.GetBase() && let Some(generic) <- db.GetGeneric() &&
             generic.GetGenericConstraints().size != 0) {
@@ -1889,16 +1883,7 @@ private class FlatbufferNodeTranslator {
         transBasicTerminal(structDecl.GetUpperBoundPos(), SyntaxNodeKind.UpperBoundToken)
 
         let superTypes = structDecl.GetSuperTypes()
-        for (i in 0..superTypes.size) {
-            if (let Some(anno) <- superTypes[i]) {
-                transType(anno)
-                resetGlobalVariables(ret, innerCmts)
-                if (i < superTypes.size - 1 && let Some(base) <- anno.GetBase()) {
-                    transBasicTerminal(base.GetBitAndPos(), SyntaxNodeKind.BitAndToken)
-                }
-            }
-        }
-        resetGlobalVariables(ret, innerCmts)
+        transBitAndSeparatedTypes(superTypes, ret, innerCmts)
 
         if (let Some(db) <- structDecl.GetBase() && let Some(generic) <- db.GetGeneric() &&
             generic.GetGenericConstraints().size > 0) {
@@ -1927,34 +1912,10 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- interfaceDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
             // func
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.InterfaceToken)
-
-            // identifier
-            transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
-
-            if (let Some(generic) <- db.GetGeneric()) {
-                let typeParameters = generic.GetTypeParameters()
-                if (typeParameters.size != 0) {
-                    addChild(ret,
-                        transTypeArguments(typeParameters, generic.GetLeftAnglePos(), generic.GetRightAnglePos()))
-                }
-            }
-            resetGlobalVariables(ret, innerCmts)
+            transDeclIdentifierAndTypeParams(db, ret, innerCmts)
         }
 
         transBasicTerminal(interfaceDecl.GetUpperBoundPos(), SyntaxNodeKind.UpperBoundToken)
@@ -2002,20 +1963,7 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- extendDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
             // extend
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.ExtendToken)
 
@@ -2133,34 +2081,10 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- enumDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
             // func
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.EnumToken)
-
-            // identifier
-            transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
-
-            if (let Some(generic) <- db.GetGeneric()) {
-                let typeParameters = generic.GetTypeParameters()
-                if (typeParameters.size != 0) {
-                    addChild(ret,
-                        transTypeArguments(typeParameters, generic.GetLeftAnglePos(), generic.GetRightAnglePos()))
-                }
-            }
-            resetGlobalVariables(ret, innerCmts)
+            transDeclIdentifierAndTypeParams(db, ret, innerCmts)
         }
 
         transBasicTerminal(enumDecl.GetUpperBoundPos(), SyntaxNodeKind.UpperBoundToken)
@@ -2215,20 +2139,7 @@ private class FlatbufferNodeTranslator {
                 isEnumConstructor: true)
         }
         if (let Some(db) <- enumConstructor.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
 
             // identifier
             transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
@@ -2290,21 +2201,7 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(varDecl) <- propDecl.GetBase() && let Some(db) <- varDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                // The begin of FuncDecl is not begin of annotations
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
             // prop
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.PropToken)
             // identifier
@@ -2350,20 +2247,7 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- macroDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
             transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.MacroToken)
             // identifier
             transIdentifier(db.GetIdentifierPos(), db.GetIdentifier())
@@ -2382,17 +2266,8 @@ private class FlatbufferNodeTranslator {
                 // type
                 transType(ty)
             }
-            resetGlobalVariables(ret, innerCmts)
-            // block
-            if (let Some(block) <- body.GetBody()) {
-                addChild(ret, transBlock(block))
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
-        innerComments = Array<Option<NodeFormat_CommentGroup>>()
+        finishFuncBodyBlockAndComments(macroDecl.GetFuncBody(), ret, innerCmts, trailCmts)
         builder.buildNonTerminal(SyntaxNodeKind.MacroDecl, ret.toArray(), preChildren: preChildren)
     }
 
@@ -2416,6 +2291,29 @@ private class FlatbufferNodeTranslator {
         transIdentifier(invocation.GetIdentifierPos(), invocation.GetFullName())
 
         builder.buildNonTerminal(SyntaxNodeKind.RefExpr, ret.toArray())
+    }
+
+    private func transMacroInvocationCalleeAttrsAndParenArgs(invocation: NodeFormat_MacroInvocation,
+        ret: ArrayList<SyntaxNodeImpl>, innerCmts: Array<Option<NodeFormat_CommentGroup>>): Bool {
+        addChild(ret, transSymbolRef4Invocation(invocation))
+        resetGlobalVariables(ret, innerCmts)
+
+        transBasicTerminal(invocation.GetLeftSquarePos(), SyntaxNodeKind.LSquareToken)
+
+        addChild(ret, transTokenList(invocation.GetAttrs()))
+        resetGlobalVariables(ret, innerCmts)
+        transBasicTerminal(invocation.GetRightSquarePos(), SyntaxNodeKind.RSquareToken)
+
+        if (invocation.GetHasParenthesis()) {
+            transBasicTerminal(invocation.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
+
+            addChild(ret, transTokenList(invocation.GetArgs()))
+            resetGlobalVariables(ret, innerCmts)
+
+            transBasicTerminal(invocation.GetRightParenPos(), SyntaxNodeKind.RParenToken)
+            return true
+        }
+        return false
     }
 
     private func createArgumentTokens(invocation: NodeFormat_MacroInvocation) {
@@ -2547,48 +2445,22 @@ private class FlatbufferNodeTranslator {
         innerComments = innerCmts
 
         if (let Some(db) <- macroExpandDecl.GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
         }
 
         if (let Some(invocation) <- macroExpandDecl.GetInvocation()) {
             transBasicTerminal(invocation.GetAtPos(), SyntaxNodeKind.AtToken)
 
-            addChild(ret, transSymbolRef4Invocation(invocation))
-            resetGlobalVariables(ret, innerCmts)
-
-            transBasicTerminal(invocation.GetLeftSquarePos(), SyntaxNodeKind.LSquareToken)
-
-            addChild(ret, transTokenList(invocation.GetAttrs()))
-            resetGlobalVariables(ret, innerCmts)
-            transBasicTerminal(invocation.GetRightSquarePos(), SyntaxNodeKind.RSquareToken)
-
-            if (invocation.GetHasParenthesis()) {
-                transBasicTerminal(invocation.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
-
-                addChild(ret, transTokenList(invocation.GetArgs()))
-                resetGlobalVariables(ret, innerCmts)
-
-                transBasicTerminal(invocation.GetRightParenPos(), SyntaxNodeKind.RParenToken)
-            } else if (let Some(dl) <- invocation.GetDecl()) {
-                if (isEnumConstructor) {
-                    addChild(ret, transEnumConstructor(dl))
-                } else {
-                    addChild(ret, transDecl(dl))
+            let hasParenthesizedArgs = transMacroInvocationCalleeAttrsAndParenArgs(invocation, ret, innerCmts)
+            if (!hasParenthesizedArgs) {
+                if (let Some(dl) <- invocation.GetDecl()) {
+                    if (isEnumConstructor) {
+                        addChild(ret, transEnumConstructor(dl))
+                    } else {
+                        addChild(ret, transDecl(dl))
+                    }
+                    resetGlobalVariables(ret, innerCmts)
                 }
-                resetGlobalVariables(ret, innerCmts)
             }
         }
         if (trailCmts.size > 0) {
@@ -2618,44 +2490,15 @@ private class FlatbufferNodeTranslator {
 
         if (let Some(funcParam) <- macroExpandParam.GetBase() && let Some(varDecl) <- funcParam.GetBase() && let Some(db) <- varDecl
             .GetBase()) {
-            // annotation
-            let annos = db.GetAnnotations()
-            if (annos.size != 0) {
-                addChild(ret, transAnnotations(db.GetAnnotations()))
-            } else {
-                addWhitespaceAndMoveCursorToBegin(db.GetBase())
-            }
-            resetGlobalVariables(ret, innerCmts)
-            // modifier
-            let modifiers = db.GetModifiers()
-            if (modifiers.size != 0) {
-                addChild(ret, transModifiers(modifiers))
-                resetGlobalVariables(ret, innerCmts)
-            }
+            transDeclAnnotationsAndModifiers(db, ret, innerCmts)
         }
 
         if (let Some(invocation) <- macroExpandParam.GetInvocation()) {
             transBasicTerminal(invocation.GetAtPos(), SyntaxNodeKind.AtToken)
             resetGlobalVariables(ret, innerCmts)
 
-            addChild(ret, transSymbolRef4Invocation(invocation))
-            resetGlobalVariables(ret, innerCmts)
-
-            transBasicTerminal(invocation.GetLeftSquarePos(), SyntaxNodeKind.LSquareToken)
-
-            addChild(ret, transTokenList(invocation.GetAttrs()))
-            resetGlobalVariables(ret, innerCmts)
-
-            transBasicTerminal(invocation.GetRightSquarePos(), SyntaxNodeKind.RSquareToken)
-
-            if (invocation.GetHasParenthesis()) {
-                transBasicTerminal(invocation.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
-
-                addChild(ret, transTokenList(invocation.GetArgs()))
-                resetGlobalVariables(ret, innerCmts)
-
-                transBasicTerminal(invocation.GetRightParenPos(), SyntaxNodeKind.RParenToken)
-            } else {
+            let hasParenthesizedArgs = transMacroInvocationCalleeAttrsAndParenArgs(invocation, ret, innerCmts)
+            if (!hasParenthesizedArgs) {
                 if (let Some(decl) <- invocation.GetDecl() && let Some(param) <- decl.GetDeclAsFuncParam()) {
                     addChild(ret, transFuncParam(param))
                     resetGlobalVariables(ret, innerCmts)
@@ -2684,26 +2527,12 @@ private class FlatbufferNodeTranslator {
             transBasicTerminal(invocation.GetAtPos(), SyntaxNodeKind.AtToken)
             resetGlobalVariables(ret, innerCmts)
 
-            addChild(ret, transSymbolRef4Invocation(invocation))
-            resetGlobalVariables(ret, innerCmts)
-
-            transBasicTerminal(invocation.GetLeftSquarePos(), SyntaxNodeKind.LSquareToken)
-
-            addChild(ret, transTokenList(invocation.GetAttrs()))
-            resetGlobalVariables(ret, innerCmts)
-
-            transBasicTerminal(invocation.GetRightSquarePos(), SyntaxNodeKind.RSquareToken)
-
-            if (invocation.GetHasParenthesis()) {
-                transBasicTerminal(invocation.GetLeftParenPos(), SyntaxNodeKind.LParenToken)
-
-                addChild(ret, transTokenList(invocation.GetArgs()))
-                resetGlobalVariables(ret, innerCmts)
-
-                transBasicTerminal(invocation.GetRightParenPos(), SyntaxNodeKind.RParenToken)
-            } else if (let Some(dl) <- invocation.GetDecl()) {
-                addChild(ret, transDecl(dl))
-                resetGlobalVariables(ret, innerCmts)
+            let hasParenthesizedArgs = transMacroInvocationCalleeAttrsAndParenArgs(invocation, ret, innerCmts)
+            if (!hasParenthesizedArgs) {
+                if (let Some(dl) <- invocation.GetDecl()) {
+                    addChild(ret, transDecl(dl))
+                    resetGlobalVariables(ret, innerCmts)
+                }
             }
         }
         if (trailCmts.size > 0) {
@@ -3079,21 +2908,7 @@ private class FlatbufferNodeTranslator {
 
         if (let Some(vb) <- param.GetBase()) {
             if (let Some(db) <- vb.GetBase()) {
-                // annotation
-                let annos = db.GetAnnotations()
-                if (annos.size != 0) {
-                    addChild(ret, transAnnotations(db.GetAnnotations()))
-                } else {
-                    // The begin of FuncDecl is not begin of annotations
-                    addWhitespaceAndMoveCursorToBegin(db.GetBase())
-                }
-                resetGlobalVariables(ret, innerCmts)
-                // modifier
-                let modifiers = db.GetModifiers()
-                if (modifiers.size != 0) {
-                    addChild(ret, transModifiers(modifiers))
-                    resetGlobalVariables(ret, innerCmts)
-                }
+                transDeclAnnotationsAndModifiers(db, ret, innerCmts)
                 if (param.GetHasLetOrVar() && vb.GetIsVar()) {
                     transBasicTerminal(db.GetKeywordPos(), SyntaxNodeKind.VarToken)
                 } else if (param.GetHasLetOrVar()) {
@@ -3759,21 +3574,40 @@ private class FlatbufferNodeTranslator {
         builder.buildNonTerminal(SyntaxNodeKind.MatchCaseBody, ret.toArray())
     }
 
-    private func transMatchCase(matchCase: NodeFormat_MatchCase): ?SyntaxNodeImpl {
-        // CASE NL* pattern (NL* BITOR NL* pattern)* NL* (WHERE NL* expression)? NL* DOUBLE_ARROW NL* expressionOrDeclaration (end+ expressionOrDeclaration?)*
-        addWhitespaceAndMoveCursorToBegin(matchCase.GetBase())
+    private func prepareMatchCasePrefix(base: Option<NodeFormat_NodeBase>) {
+        addWhitespaceAndMoveCursorToBegin(base)
         let ret = ArrayList<SyntaxNodeImpl>()
         addLeadCommentNodesToRet(ret)
         curChildren = ret
 
-        let nodeBase = matchCase.GetBase()
+        let nodeBase = base
         let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
         addLeadingComments(nodeBase, ret, leadCmts)
         innerComments = innerCmts
 
-        if (let Some(db) <- matchCase.GetBase()) {
-            // case
+        if (let Some(db) <- base) {
             transBasicTerminal(db.GetBegin(), SyntaxNodeKind.CaseToken)
+        }
+        return (ret, innerCmts, trailCmts)
+    }
+
+    private func appendMatchCaseArrowAndBody(base: Option<NodeFormat_NodeBase>, arrowPos: NodeFormat_Position,
+        body: Option<NodeFormat_Block>, ret: ArrayList<SyntaxNodeImpl>,
+        innerCmts: Array<Option<NodeFormat_CommentGroup>>) {
+        if (let Some(_) <- base) {
+            resetGlobalVariables(ret, innerCmts)
+            transBasicTerminal(arrowPos, SyntaxNodeKind.DoubleArrowToken)
+            if (let Some(block) <- body) {
+                addChild(ret, transMatchCaseBody(block))
+            }
+        }
+    }
+
+    private func transMatchCase(matchCase: NodeFormat_MatchCase): ?SyntaxNodeImpl {
+        // CASE NL* pattern (NL* BITOR NL* pattern)* NL* (WHERE NL* expression)? NL* DOUBLE_ARROW NL* expressionOrDeclaration (end+ expressionOrDeclaration?)*
+        let (ret, innerCmts, trailCmts) = prepareMatchCasePrefix(matchCase.GetBase())
+
+        if (let Some(db) <- matchCase.GetBase()) {
             let bitOrPos = matchCase.GetBitOrPosVec()
             let patterns = matchCase.GetPatterns()
             for (i in 0..patterns.size) {
@@ -3790,51 +3624,24 @@ private class FlatbufferNodeTranslator {
                 transBasicTerminal(matchCase.GetIfPos(), SyntaxNodeKind.WhereToken)
                 addChild(ret, transExpr(patGuard))
             }
-            resetGlobalVariables(ret, innerCmts)
-            // =>
-            transBasicTerminal(matchCase.GetArrowPos(), SyntaxNodeKind.DoubleArrowToken)
-            // body
-            if (let Some(block) <- matchCase.GetExprOrDecls()) {
-                addChild(ret, transMatchCaseBody(block))
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
+        appendMatchCaseArrowAndBody(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts)
+        appendTrailingComments(ret, innerCmts, trailCmts)
         innerComments = Array<Option<NodeFormat_CommentGroup>>()
         builder.buildNonTerminal(SyntaxNodeKind.MatchCase, ret.toArray())
     }
 
     private func transMatchCaseOther(matchCase: NodeFormat_MatchCaseOther): ?SyntaxNodeImpl {
         // CASE NL* expression NL* DOUBLE_ARROW NL* expressionOrDeclaration (end+ expressionOrDeclaration?)*
-        addWhitespaceAndMoveCursorToBegin(matchCase.GetBase())
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addLeadCommentNodesToRet(ret)
-        curChildren = ret
-        let nodeBase = matchCase.GetBase()
-        let (leadCmts, innerCmts, trailCmts) = getCommentGroups(nodeBase)
-        addLeadingComments(nodeBase, ret, leadCmts)
-        innerComments = innerCmts
+        let (ret, innerCmts, trailCmts) = prepareMatchCasePrefix(matchCase.GetBase())
 
         if (let Some(db) <- matchCase.GetBase()) {
-            // case
-            transBasicTerminal(db.GetBegin(), SyntaxNodeKind.CaseToken)
             if (let Some(caseExpr) <- matchCase.GetMatchExpr()) {
                 addChild(ret, transExpr(caseExpr))
             }
-            resetGlobalVariables(ret, innerCmts)
-            // =>
-            transBasicTerminal(matchCase.GetArrowPos(), SyntaxNodeKind.DoubleArrowToken)
-            // body
-            if (let Some(block) <- matchCase.GetExprOrDecls()) {
-                addChild(ret, transMatchCaseBody(block))
-            }
         }
-        if (trailCmts.size > 0) {
-            addChild(ret, transCommentGroupList(trailCmts))
-            resetGlobalVariables(ret, innerCmts)
-        }
+        appendMatchCaseArrowAndBody(matchCase.GetBase(), matchCase.GetArrowPos(), matchCase.GetExprOrDecls(), ret, innerCmts)
+        appendTrailingComments(ret, innerCmts, trailCmts)
         innerComments = Array<Option<NodeFormat_CommentGroup>>()
         builder.buildNonTerminal(SyntaxNodeKind.MatchCase, ret.toArray())
     }

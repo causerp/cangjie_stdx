@@ -105,6 +105,100 @@ class SyntaxNodeImplCreator {
         builder.buildNonTerminal(SyntaxNodeKind.ModifierList, ret.toArray())
     }
 
+    private static func createDeclLikePrefix(annotations: Array<Annotation>, modifiers: Array<Modifier>,
+        comments: Array<Comment>) {
+        let builder = SyntaxNodeBuilder()
+        let ret = ArrayList<SyntaxNodeImpl>()
+        addCommentToNode(ret, comments)
+
+        if (annotations.size != 0) {
+            ret.add(createAnnotationList(annotations))
+            ret.add(builder.buildNewline(1))
+        }
+
+        if (modifiers.size != 0) {
+            ret.add(createModifierList(modifiers))
+            ret.add(builder.buildSpace(1))
+        }
+
+        return (builder, ret)
+    }
+
+    private static func addNamedGenericDeclHead(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        name: String, genericParams: Array<GenericParam>) {
+        ret.add(builder.buildSpace(1))
+        ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
+
+        if (genericParams.size > 0) {
+            ret.add(createTyepArguments(genericParams))
+        }
+    }
+
+    private static func addSuperTyAnnotations(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        superTyAnnotations: Array<TypeAnnotation>) {
+        if (superTyAnnotations.size > 0) {
+            ret.add(builder.buildSpace(1))
+            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
+            ret.add(builder.buildSpace(1))
+            for (i in 0..superTyAnnotations.size) {
+                ret.add(superTyAnnotations[i].nodeImpl)
+                if (i < superTyAnnotations.size - 1) {
+                    ret.add(builder.buildSpace(1))
+                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
+                    ret.add(builder.buildSpace(1))
+                }
+            }
+        }
+    }
+
+    private static func addGenericConstraints(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        genericConstraints: Option<GenericConstraints>) {
+        if (let Some(constraints) <- genericConstraints) {
+            ret.add(builder.buildSpace(1))
+            ret.add(constraints.nodeImpl)
+        }
+    }
+
+    private static func addDeclBody(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>, body: Body) {
+        ret.add(builder.buildSpace(1))
+        ret.add(body.nodeImpl)
+    }
+
+    private static func addDelimitedTokenList(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>, tks: Tokens,
+        leftToken: SyntaxNodeKind, rightToken: SyntaxNodeKind) {
+        ret.add(builder.buildBasicTerminal(leftToken))
+        var tokBytes: CPointer<UInt8> = unsafePointerCastFromUint8Array((tks).toBytes())
+        var spaceFlag: CPointer<Bool> = unsafe { LibC.malloc<Bool>(count: tks.size) }
+        if (spaceFlag.isNull()) {
+            unsafe { LibC.free(tokBytes) }
+            throw IllegalMemoryException("malloc failed!")
+        }
+        unsafe { CJ_CheckAddSpaces(tokBytes, spaceFlag) }
+        let attrArray = unsafe { tokensToImplArray(tks, tokBytes, spaceFlag) }
+        ret.add(builder.buildNonTerminal(SyntaxNodeKind.TokenList, attrArray))
+        ret.add(builder.buildBasicTerminal(rightToken))
+    }
+
+    private static func addMacroExpandAnnotations(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        comments: Array<Comment>, annotations: Array<Annotation>) {
+        addCommentToNode(ret, comments)
+
+        if (annotations.size != 0) {
+            ret.add(createAnnotationList(annotations))
+            ret.add(builder.buildNewline(1))
+        }
+    }
+
+    private static func addMacroCalleeAndAttrs(builder: SyntaxNodeBuilder, ret: ArrayList<SyntaxNodeImpl>,
+        calleeMacro: Expr, macroAttrs: Tokens) {
+        ret.add(builder.buildBasicTerminal(SyntaxNodeKind.AtToken))
+        ret.add(calleeMacro.nodeImpl)
+
+        if (macroAttrs.size != 0) {
+            addDelimitedTokenList(builder, ret, macroAttrs, SyntaxNodeKind.LSquareToken, SyntaxNodeKind.RSquareToken)
+        }
+    }
+
     static func createAnnotationImpl(
         arguments: Array<Argument>,
         identifier: String,
@@ -324,50 +418,16 @@ class SyntaxNodeImplCreator {
         checkGenericParamAndGenericConstraints(genericConstraints, genericParams)
         checkClassOrStructDeclBody(body, "ClassDecl")
         unsafe { checkIdentifier(name, "name", "ClassDecl") }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.ClassToken))
-        ret.add(builder.buildSpace(1))
+        addNamedGenericDeclHead(builder, ret, name, genericParams)
 
-        ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
+        addSuperTyAnnotations(builder, ret, superTyAnnotations)
 
-        if (genericParams.size > 0) {
-            ret.add(createTyepArguments(genericParams))
-        }
+        addGenericConstraints(builder, ret, genericConstraints)
 
-        if (superTyAnnotations.size > 0) {
-            ret.add(builder.buildSpace(1))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
-            ret.add(builder.buildSpace(1))
-            for (i in 0..superTyAnnotations.size) {
-                ret.add(superTyAnnotations[i].nodeImpl)
-                if (i < superTyAnnotations.size - 1) {
-                    ret.add(builder.buildSpace(1))
-                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
-                    ret.add(builder.buildSpace(1))
-                }
-            }
-        }
-
-        if (let Some(constraints) <- genericConstraints) {
-            ret.add(builder.buildSpace(1))
-            ret.add(constraints.nodeImpl)
-        }
-
-        ret.add(builder.buildSpace(1))
-        ret.add(body.nodeImpl)
+        addDeclBody(builder, ret, body)
 
         builder.buildNonTerminal(SyntaxNodeKind.ClassDecl, ret.toArray())
     }
@@ -497,50 +557,16 @@ class SyntaxNodeImplCreator {
         checkGenericParamAndGenericConstraints(genericConstraints, genericParams)
         checkClassOrStructDeclBody(body, "StructDecl")
         unsafe { checkIdentifier(name, "name", "StructDecl") }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.StructToken))
-        ret.add(builder.buildSpace(1))
+        addNamedGenericDeclHead(builder, ret, name, genericParams)
 
-        ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
+        addSuperTyAnnotations(builder, ret, superTyAnnotations)
 
-        if (genericParams.size > 0) {
-            ret.add(createTyepArguments(genericParams))
-        }
+        addGenericConstraints(builder, ret, genericConstraints)
 
-        if (superTyAnnotations.size > 0) {
-            ret.add(builder.buildSpace(1))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
-            ret.add(builder.buildSpace(1))
-            for (i in 0..superTyAnnotations.size) {
-                ret.add(superTyAnnotations[i].nodeImpl)
-                if (i < superTyAnnotations.size - 1) {
-                    ret.add(builder.buildSpace(1))
-                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
-                    ret.add(builder.buildSpace(1))
-                }
-            }
-        }
-
-        if (let Some(constraints) <- genericConstraints) {
-            ret.add(builder.buildSpace(1))
-            ret.add(constraints.nodeImpl)
-        }
-
-        ret.add(builder.buildSpace(1))
-        ret.add(body.nodeImpl)
+        addDeclBody(builder, ret, body)
 
         builder.buildNonTerminal(SyntaxNodeKind.StructDecl, ret.toArray())
     }
@@ -556,50 +582,16 @@ class SyntaxNodeImplCreator {
             }
         }
 
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.InterfaceToken))
-        ret.add(builder.buildSpace(1))
+        addNamedGenericDeclHead(builder, ret, name, genericParams)
 
-        ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
+        addSuperTyAnnotations(builder, ret, superTyAnnotations)
 
-        if (genericParams.size > 0) {
-            ret.add(createTyepArguments(genericParams))
-        }
+        addGenericConstraints(builder, ret, genericConstraints)
 
-        if (superTyAnnotations.size > 0) {
-            ret.add(builder.buildSpace(1))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
-            ret.add(builder.buildSpace(1))
-            for (i in 0..superTyAnnotations.size) {
-                ret.add(superTyAnnotations[i].nodeImpl)
-                if (i < superTyAnnotations.size - 1) {
-                    ret.add(builder.buildSpace(1))
-                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
-                    ret.add(builder.buildSpace(1))
-                }
-            }
-        }
-
-        if (let Some(constraints) <- genericConstraints) {
-            ret.add(builder.buildSpace(1))
-            ret.add(constraints.nodeImpl)
-        }
-
-        ret.add(builder.buildSpace(1))
-        ret.add(body.nodeImpl)
+        addDeclBody(builder, ret, body)
 
         builder.buildNonTerminal(SyntaxNodeKind.InterfaceDecl, ret.toArray())
     }
@@ -647,47 +639,14 @@ class SyntaxNodeImplCreator {
         if (constructors.size == 0) {
             throw Exception("InitException: The input 'constructors' cannot be empty for 'EnumDecl' init.")
         }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.EnumToken))
-        ret.add(builder.buildSpace(1))
+        addNamedGenericDeclHead(builder, ret, name, genericParams)
 
-        ret.add(builder.buildValuedTerminal(SyntaxNodeKind.IdentToken, name))
+        addSuperTyAnnotations(builder, ret, superTyAnnotations)
 
-        if (genericParams.size > 0) {
-            ret.add(createTyepArguments(genericParams))
-        }
-
-        if (superTyAnnotations.size > 0) {
-            ret.add(builder.buildSpace(1))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
-            ret.add(builder.buildSpace(1))
-            for (i in 0..superTyAnnotations.size) {
-                ret.add(superTyAnnotations[i].nodeImpl)
-                if (i < superTyAnnotations.size - 1) {
-                    ret.add(builder.buildSpace(1))
-                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
-                    ret.add(builder.buildSpace(1))
-                }
-            }
-        }
-
-        if (let Some(constraints) <- genericConstraints) {
-            ret.add(builder.buildSpace(1))
-            ret.add(constraints.nodeImpl)
-        }
+        addGenericConstraints(builder, ret, genericConstraints)
 
         ret.add(builder.buildSpace(1))
         ret.add(createEnumBody(body, constructors, isNonExhaustive))
@@ -703,19 +662,7 @@ class SyntaxNodeImplCreator {
             throw Exception(
                 "InitException: The input 'getter' cannot be None if input 'setter' exists during 'PropDecl' init.")
         }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.PropToken))
         ret.add(builder.buildSpace(1))
@@ -772,27 +719,11 @@ class SyntaxNodeImplCreator {
         ret.add(builder.buildSpace(1))
         ret.add(extendedTyAnnotation.nodeImpl)
 
-        if (superTyAnnotations.size > 0) {
-            ret.add(builder.buildSpace(1))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.UpperBoundToken))
-            ret.add(builder.buildSpace(1))
-            for (i in 0..superTyAnnotations.size) {
-                ret.add(superTyAnnotations[i].nodeImpl)
-                if (i < superTyAnnotations.size - 1) {
-                    ret.add(builder.buildSpace(1))
-                    ret.add(builder.buildBasicTerminal(SyntaxNodeKind.BitAndToken))
-                    ret.add(builder.buildSpace(1))
-                }
-            }
-        }
+        addSuperTyAnnotations(builder, ret, superTyAnnotations)
 
-        if (let Some(constraints) <- genericConstraints) {
-            ret.add(builder.buildSpace(1))
-            ret.add(constraints.nodeImpl)
-        }
+        addGenericConstraints(builder, ret, genericConstraints)
 
-        ret.add(builder.buildSpace(1))
-        ret.add(body.nodeImpl)
+        addDeclBody(builder, ret, body)
 
         builder.buildNonTerminal(SyntaxNodeKind.ExtendDecl, ret.toArray())
     }
@@ -806,46 +737,15 @@ class SyntaxNodeImplCreator {
 
         let builder = SyntaxNodeBuilder()
         let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        ret.add(builder.buildBasicTerminal(SyntaxNodeKind.AtToken))
-        ret.add(calleeMacro.nodeImpl)
-
-        if (macroAttrs.size != 0) {
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.LSquareToken))
-            var tokBytes: CPointer<UInt8> = unsafePointerCastFromUint8Array((macroAttrs).toBytes())
-            var spaceFlag: CPointer<Bool> = unsafe { LibC.malloc<Bool>(count: macroAttrs.size) }
-            if (spaceFlag.isNull()) {
-                unsafe { LibC.free(tokBytes) }
-                throw IllegalMemoryException("malloc failed!")
-            }
-            unsafe { CJ_CheckAddSpaces(tokBytes, spaceFlag) }
-            let attrArray = unsafe { tokensToImplArray(macroAttrs, tokBytes, spaceFlag) }
-            ret.add(builder.buildNonTerminal(SyntaxNodeKind.TokenList, attrArray))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.RSquareToken))
-        }
+        addMacroExpandAnnotations(builder, ret, comments, annotations)
+        addMacroCalleeAndAttrs(builder, ret, calleeMacro, macroAttrs)
 
         match (macroInputs) {
             case MacroExpandInput.WithoutParens(decl) =>
                 ret.add(builder.buildNewline(1))
                 ret.add(decl.nodeImpl)
             case MacroExpandInput.WithParens(toks) =>
-                ret.add(builder.buildBasicTerminal(SyntaxNodeKind.LParenToken))
-                var tokBytes: CPointer<UInt8> = unsafePointerCastFromUint8Array((toks).toBytes())
-                var spaceFlag: CPointer<Bool> = unsafe { LibC.malloc<Bool>(count: toks.size) }
-                if (spaceFlag.isNull()) {
-                    unsafe { LibC.free(tokBytes) }
-                    throw IllegalMemoryException("malloc failed!")
-                }
-                unsafe { CJ_CheckAddSpaces(tokBytes, spaceFlag) }
-                let attrArray = unsafe { tokensToImplArray(toks, tokBytes, spaceFlag) }
-                ret.add(builder.buildNonTerminal(SyntaxNodeKind.TokenList, attrArray))
-                ret.add(builder.buildBasicTerminal(SyntaxNodeKind.RParenToken))
+                addDelimitedTokenList(builder, ret, toks, SyntaxNodeKind.LParenToken, SyntaxNodeKind.RParenToken)
             case _ => throw Exception("InitException: Invalid input 'macroInputs' for 'MacroExpandDecl' init.")
         }
 
@@ -885,19 +785,7 @@ class SyntaxNodeImplCreator {
         retTyAnnotation: Option<TypeAnnotation>, annotations!: Array<Annotation> = [], modifiers!: Array<Modifier> = [],
         comments!: Array<Comment> = []) {
         unsafe { checkIdentifier(name, "name", "MacroDecl") }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         ret.add(builder.buildBasicTerminal(SyntaxNodeKind.MacroToken))
         ret.add(builder.buildSpace(1))
@@ -1008,19 +896,7 @@ class SyntaxNodeImplCreator {
             throw Exception("InitException: The input 'modifiers' cannot have 'Const' for 'VarDecl' init.")
         }
 
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         match (kind) {
             case VarKind.Var => ret.add(builder.buildBasicTerminal(SyntaxNodeKind.VarToken))
@@ -1057,19 +933,7 @@ class SyntaxNodeImplCreator {
             throw Exception(
                 "InitException: The input 'modifiers' is only supported when input 'kind' exists for 'FuncParam' init.")
         }
-        let builder = SyntaxNodeBuilder()
-        let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        if (modifiers.size != 0) {
-            ret.add(createModifierList(modifiers))
-            ret.add(builder.buildSpace(1))
-        }
+        let (builder, ret) = createDeclLikePrefix(annotations, modifiers, comments)
 
         if (let Some(varKind) <- kind) {
             match (varKind) {
@@ -1124,46 +988,15 @@ class SyntaxNodeImplCreator {
 
         let builder = SyntaxNodeBuilder()
         let ret = ArrayList<SyntaxNodeImpl>()
-        addCommentToNode(ret, comments)
-
-        if (annotations.size != 0) {
-            ret.add(createAnnotationList(annotations))
-            ret.add(builder.buildNewline(1))
-        }
-
-        ret.add(builder.buildBasicTerminal(SyntaxNodeKind.AtToken))
-        ret.add(calleeMacro.nodeImpl)
-
-        if (macroAttrs.size != 0) {
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.LSquareToken))
-            var tokBytes: CPointer<UInt8> = unsafePointerCastFromUint8Array((macroAttrs).toBytes())
-            var spaceFlag: CPointer<Bool> = unsafe { LibC.malloc<Bool>(count: macroAttrs.size) }
-            if (spaceFlag.isNull()) {
-                unsafe { LibC.free(tokBytes) }
-                throw IllegalMemoryException("malloc failed!")
-            }
-            unsafe { CJ_CheckAddSpaces(tokBytes, spaceFlag) }
-            let attrArray = unsafe { tokensToImplArray(macroAttrs, tokBytes, spaceFlag) }
-            ret.add(builder.buildNonTerminal(SyntaxNodeKind.TokenList, attrArray))
-            ret.add(builder.buildBasicTerminal(SyntaxNodeKind.RSquareToken))
-        }
+        addMacroExpandAnnotations(builder, ret, comments, annotations)
+        addMacroCalleeAndAttrs(builder, ret, calleeMacro, macroAttrs)
 
         match (macroInputs) {
             case MacroExpandInput.WithoutParens(decl) =>
                 ret.add(builder.buildSpace(1))
                 ret.add(decl.nodeImpl)
             case MacroExpandInput.WithParens(toks) =>
-                ret.add(builder.buildBasicTerminal(SyntaxNodeKind.LParenToken))
-                var tokBytes: CPointer<UInt8> = unsafePointerCastFromUint8Array((toks).toBytes())
-                var spaceFlag: CPointer<Bool> = unsafe { LibC.malloc<Bool>(count: toks.size) }
-                if (spaceFlag.isNull()) {
-                    unsafe { LibC.free(tokBytes) }
-                    throw IllegalMemoryException("malloc failed!")
-                }
-                unsafe { CJ_CheckAddSpaces(tokBytes, spaceFlag) }
-                let attrArray = unsafe { tokensToImplArray(toks, tokBytes, spaceFlag) }
-                ret.add(builder.buildNonTerminal(SyntaxNodeKind.TokenList, attrArray))
-                ret.add(builder.buildBasicTerminal(SyntaxNodeKind.RParenToken))
+                addDelimitedTokenList(builder, ret, toks, SyntaxNodeKind.LParenToken, SyntaxNodeKind.RParenToken)
             case _ => throw Exception("InitException: Invalid input 'macroInputs' for 'MacroExpandParam' init.")
         }
 
@@ -1184,9 +1017,7 @@ class SyntaxNodeImplCreator {
                 builder.buildValuedTerminal(SyntaxNodeKind.IntegerLiteralToken, value))
             case LitConstKind.UnitLiteral =>
                 ret.add(builder.buildBasicTerminal(SyntaxNodeKind.LParenToken))
-                // size of (LParenToken + RParenToken)
-                let unitLiteralSize = 2
-                ret.add(builder.buildSpace(value.size - unitLiteralSize))
+                ret.add(builder.buildSpace(value.size - SyntaxNodeKind.LParenToken.size - SyntaxNodeKind.RParenToken.size))
                 ret.add(builder.buildBasicTerminal(SyntaxNodeKind.RParenToken))
                 return builder.buildNonTerminal(SyntaxNodeKind.UnitLiteral, ret.toArray())
             case _ => throw Exception("InitException: Invalid input 'kind' for 'LitConstExpr' init.")

@@ -10,6 +10,77 @@ package stdx.syntax
 
 import std.collection.ArrayList
 
+private func createPositionRange(pos: CodePosition, size: Int64): CodePositionRange {
+    return CodePositionRange(pos, pos + size)
+}
+
+private func createOptionalTokenRange(pos: Option<CodePosition>, size: Int64): Option<CodePositionRange> {
+    if (let Some(v) <- pos) {
+        return createPositionRange(v, size)
+    }
+    return None
+}
+
+private func createTokenRanges(positions: Array<CodePosition>, size: Int64): Array<CodePositionRange> {
+    let ret = ArrayList<CodePositionRange>()
+    for (pos in positions) {
+        ret.add(createPositionRange(pos, size))
+    }
+    return ret.toArray()
+}
+
+private func translateChild<T>(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
+    propInfo: PropInfo): T where T <: SyntaxTreeNode {
+    let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
+    return cast<T>(SyntaxNodeImplTranslator.translate(curNode, startPos + propInfo.offset, parentNode)).getOrThrow()
+}
+
+private func translateOptionalChild<T>(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
+    propInfo: Option<PropInfo>): Option<T> where T <: SyntaxTreeNode {
+    if (let Some(v) <- propInfo) {
+        return translateChild<T>(nodeImpl, startPos, parentNode, v)
+    }
+    return None
+}
+
+private func translateChildList<T>(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
+    propInfos: Array<PropInfo>): Array<T> where T <: SyntaxTreeNode {
+    let nodes = ArrayList<T>()
+    for (propInfo in propInfos) {
+        nodes.add(translateChild<T>(nodeImpl, startPos, parentNode, propInfo))
+    }
+    return nodes.toArray()
+}
+
+private func translateGenericParams(node: SyntaxNodeImpl, startPos: CodePosition,
+    parentNode: ?SyntaxTreeNode): ArrayList<GenericParam> {
+    // BNF :LT GenericParam (Comma GenericParam)* GT
+    let lp = LocalParser(((node as NonTerminal).getOrThrow()).children)
+    let typeArguments = ArrayList<GenericParam>()
+    lp.offset.move(lp.consume().getOrThrow().offset)
+    while (!lp.look(SyntaxNodeKind.GtToken)) {
+        var impl = lp.consume()
+        typeArguments.add(
+            cast<GenericParam>(SyntaxNodeImplTranslator.translate(impl.getOrThrow(), startPos + lp.offset, parentNode))
+                .getOrThrow())
+        lp.offset.move(impl.getOrThrow().offset)
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.CommaToken)) {
+            lp.offset.move(v.offset)
+        }
+    }
+    return typeArguments
+}
+
+private func translateOptionalGenericParams(nodeImpl: SyntaxNodeImpl, startPos: CodePosition,
+    parentNode: ?SyntaxTreeNode, propInfo: Option<PropInfo>): Array<GenericParam> {
+    let typeArguments = ArrayList<GenericParam>()
+    if (let Some(v) <- propInfo) {
+        let curNode = (nodeImpl as NonTerminal).getOrThrow().children[v.index]
+        return translateGenericParams(curNode, startPos + v.offset, parentNode).toArray()
+    }
+    return typeArguments.toArray()
+}
+
 /**
  * @brief Represents a declaration in the abstract syntax tree (AST).
  *
@@ -17,24 +88,6 @@ import std.collection.ArrayList
  * declarations in the syntax tree.
  */
 sealed abstract class Decl <: SyntaxTreeNode {
-    func transGenericParams(node: SyntaxNodeImpl, startPos: CodePosition) {
-        // BNF :LT GenericParam (Comma GenericParam)* GT
-        let lp = LocalParser(((node as NonTerminal).getOrThrow()).children)
-        let typeArguments = ArrayList<GenericParam>()
-        lp.offset.move(lp.consume().getOrThrow().offset)
-        while (!lp.look(SyntaxNodeKind.GtToken)) {
-            var impl = lp.consume()
-            typeArguments.add(
-                cast<GenericParam>(SyntaxNodeImplTranslator.translate(impl.getOrThrow(), startPos + lp.offset, this))
-                    .getOrThrow())
-            lp.offset.move(impl.getOrThrow().offset)
-            if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.CommaToken)) {
-                lp.offset.move(v.offset)
-            }
-        }
-        typeArguments
-    }
-
     init(nodePos: CodePositionRange, nodeImpl: SyntaxNodeImpl, parentNode: ?SyntaxTreeNode,
         commentsPropInfo: Array<PropInfo>) {
         super(nodePos, nodeImpl, parentNode, commentsPropInfo)
@@ -158,45 +211,22 @@ public class ClassDecl <: Decl {
         CodePositionRange(posInfos.classKeyWordPos, endPos)
     }
     public func getIdentifierPos(): CodePositionRange {
-        let endPos = posInfos.identifierPos + name.size
-        return CodePositionRange(posInfos.identifierPos, endPos)
+        return createPositionRange(posInfos.identifierPos, name.size)
     }
     public func getGenericParamsLAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsLAnglePos) {
-            let endPos = v + SyntaxNodeKind.LtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsLAnglePos, SyntaxNodeKind.LtToken.size)
     }
     public func getGenericParamsCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.genericParamsCommasPos.size) {
-            let endPos = posInfos.genericParamsCommasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.genericParamsCommasPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.genericParamsCommasPos, SyntaxNodeKind.CommaToken.size)
     }
     public func getGenericParamsRAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsRAnglePos) {
-            let endPos = v + SyntaxNodeKind.GtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsRAnglePos, SyntaxNodeKind.GtToken.size)
     }
     public func getUpperBoundPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.upperBoundPos) {
-            let endPos = v + SyntaxNodeKind.UpperBoundToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.upperBoundPos, SyntaxNodeKind.UpperBoundToken.size)
     }
     public func getSuperTyAnnotationsBitAndsPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.superTyAnnotationsBitAndsPos.size) {
-            let endPos = posInfos.superTyAnnotationsBitAndsPos[i] + SyntaxNodeKind.BitAndToken.size
-            ret.add(CodePositionRange(posInfos.superTyAnnotationsBitAndsPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.superTyAnnotationsBitAndsPos, SyntaxNodeKind.BitAndToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, name_: String,
@@ -235,9 +265,7 @@ public class ClassDecl <: Decl {
      */
     public prop body: Body {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Body>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Body>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -249,14 +277,8 @@ public class ClassDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -268,13 +290,7 @@ public class ClassDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -297,15 +313,7 @@ public class ClassDecl <: Decl {
      */
     public prop superTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.superTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.superTyAnnotationsPropInfo)
         }
     }
 }
@@ -439,15 +447,7 @@ public class EnumConstructor <: Decl {
      */
     public prop paramTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.paramTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.paramTyAnnotationsPropInfo)
         }
     }
 }
@@ -533,65 +533,42 @@ public class EnumDecl <: Decl {
      * @brief Get the position range of the identifier.
      */
     public func getIdentifierPos(): CodePositionRange {
-        let endPos = posInfos.identifierPos + name.size
-        return CodePositionRange(posInfos.identifierPos, endPos)
+        return createPositionRange(posInfos.identifierPos, name.size)
     }
 
     /**
      * @brief Get the position range of the left angle bracket for generic parameters if present.
      */
     public func getGenericParamsLAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsLAnglePos) {
-            let endPos = v + SyntaxNodeKind.LtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsLAnglePos, SyntaxNodeKind.LtToken.size)
     }
 
     /**
      * @brief Get the position ranges of commas in generic parameters.
      */
     public func getGenericParamsCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.genericParamsCommasPos.size) {
-            let endPos = posInfos.genericParamsCommasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.genericParamsCommasPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.genericParamsCommasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     /**
      * @brief Get the position range of the right angle bracket for generic parameters if present.
      */
     public func getGenericParamsRAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsRAnglePos) {
-            let endPos = v + SyntaxNodeKind.GtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsRAnglePos, SyntaxNodeKind.GtToken.size)
     }
 
     /**
      * @brief Get the position range of the upper bound token if present.
      */
     public func getUpperBoundPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.upperBoundPos) {
-            let endPos = v + SyntaxNodeKind.UpperBoundToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.upperBoundPos, SyntaxNodeKind.UpperBoundToken.size)
     }
 
     /**
      * @brief Get the position ranges of bit-and tokens in super type annotations.
      */
     public func getSuperTyAnnotationsBitAndsPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.superTyAnnotationsBitAndsPos.size) {
-            let endPos = posInfos.superTyAnnotationsBitAndsPos[i] + SyntaxNodeKind.BitAndToken.size
-            ret.add(CodePositionRange(posInfos.superTyAnnotationsBitAndsPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.superTyAnnotationsBitAndsPos, SyntaxNodeKind.BitAndToken.size)
     }
 
     /**
@@ -657,9 +634,7 @@ public class EnumDecl <: Decl {
      */
     public prop body: Body {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Body>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Body>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -671,14 +646,8 @@ public class EnumDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -690,13 +659,7 @@ public class EnumDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -731,15 +694,7 @@ public class EnumDecl <: Decl {
      */
     public prop superTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.superTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.superTyAnnotationsPropInfo)
         }
     }
 }
@@ -815,57 +770,35 @@ public class ExtendDecl <: Decl {
      * @brief Get the position range of the left angle bracket for generic parameters if present.
      */
     public func getGenericParamsLAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsLAnglePos) {
-            let endPos = v + SyntaxNodeKind.LtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsLAnglePos, SyntaxNodeKind.LtToken.size)
     }
 
     /**
      * @brief Get the position ranges of commas in generic parameters.
      */
     public func getGenericParamsCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.genericParamsCommasPos.size) {
-            let endPos = posInfos.genericParamsCommasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.genericParamsCommasPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.genericParamsCommasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     /**
      * @brief Get the position range of the right angle bracket for generic parameters if present.
      */
     public func getGenericParamsRAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsRAnglePos) {
-            let endPos = v + SyntaxNodeKind.GtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsRAnglePos, SyntaxNodeKind.GtToken.size)
     }
 
     /**
      * @brief Get the position range of the upper bound token if present.
      */
     public func getUpperBoundPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.upperBoundPos) {
-            let endPos = v + SyntaxNodeKind.UpperBoundToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.upperBoundPos, SyntaxNodeKind.UpperBoundToken.size)
     }
 
     /**
      * @brief Get the position ranges of bit-and tokens in super type annotations.
      */
     public func getSuperTyAnnotationsBitAndsPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.superTyAnnotationsBitAndsPos.size) {
-            let endPos = posInfos.superTyAnnotationsBitAndsPos[i] + SyntaxNodeKind.BitAndToken.size
-            ret.add(CodePositionRange(posInfos.superTyAnnotationsBitAndsPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.superTyAnnotationsBitAndsPos, SyntaxNodeKind.BitAndToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: ExtendDeclPosInfos,
@@ -902,9 +835,7 @@ public class ExtendDecl <: Decl {
      */
     public prop body: Body {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Body>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Body>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -930,14 +861,8 @@ public class ExtendDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -949,13 +874,7 @@ public class ExtendDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -967,15 +886,7 @@ public class ExtendDecl <: Decl {
      */
     public prop superTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.superTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.superTyAnnotationsPropInfo)
         }
     }
 }
@@ -1211,14 +1122,8 @@ public class FuncDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -1230,13 +1135,7 @@ public class FuncDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -1272,9 +1171,7 @@ public class FuncDecl <: Decl {
      */
     public prop params: ParameterList {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.paramsPropInfo.index]
-            let offset = propInfos.paramsPropInfo.offset
-            cast<ParameterList>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<ParameterList>(nodeImpl, startPos, this, propInfos.paramsPropInfo)
         }
     }
 
@@ -1286,13 +1183,7 @@ public class FuncDecl <: Decl {
      */
     public prop retTyAnnotation: Option<TypeAnnotation> {
         get() {
-            if (let Some(propInfo) <- propInfos.retTyAnnotationPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<TypeAnnotation>(nodeImpl, startPos, this, propInfos.retTyAnnotationPropInfo)
         }
     }
 }
@@ -1717,65 +1608,42 @@ public class InterfaceDecl <: Decl {
      * @brief Get the position range of the identifier.
      */
     public func getIdentifierPos(): CodePositionRange {
-        let endPos = posInfos.identifierPos + name.size
-        return CodePositionRange(posInfos.identifierPos, endPos)
+        return createPositionRange(posInfos.identifierPos, name.size)
     }
 
     /**
      * @brief Get the position range of the left angle bracket for generic parameters if present.
      */
     public func getGenericParamsLAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsLAnglePos) {
-            let endPos = v + SyntaxNodeKind.LtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsLAnglePos, SyntaxNodeKind.LtToken.size)
     }
 
     /**
      * @brief Get the position ranges of commas in generic parameters.
      */
     public func getGenericParamsCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.genericParamsCommasPos.size) {
-            let endPos = posInfos.genericParamsCommasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.genericParamsCommasPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.genericParamsCommasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     /**
      * @brief Get the position range of the right angle bracket for generic parameters if present.
      */
     public func getGenericParamsRAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsRAnglePos) {
-            let endPos = v + SyntaxNodeKind.GtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsRAnglePos, SyntaxNodeKind.GtToken.size)
     }
 
     /**
      * @brief Get the position range of the upper bound token if present.
      */
     public func getUpperBoundPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.upperBoundPos) {
-            let endPos = v + SyntaxNodeKind.UpperBoundToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.upperBoundPos, SyntaxNodeKind.UpperBoundToken.size)
     }
 
     /**
      * @brief Get the position ranges of bit-and tokens in super type annotations.
      */
     public func getSuperTyAnnotationsBitAndsPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.superTyAnnotationsBitAndsPos.size) {
-            let endPos = posInfos.superTyAnnotationsBitAndsPos[i] + SyntaxNodeKind.BitAndToken.size
-            ret.add(CodePositionRange(posInfos.superTyAnnotationsBitAndsPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.superTyAnnotationsBitAndsPos, SyntaxNodeKind.BitAndToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, name_: String,
@@ -1814,9 +1682,7 @@ public class InterfaceDecl <: Decl {
      */
     public prop body: Body {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Body>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Body>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -1828,14 +1694,8 @@ public class InterfaceDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -1847,13 +1707,7 @@ public class InterfaceDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -1876,15 +1730,7 @@ public class InterfaceDecl <: Decl {
      */
     public prop superTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.superTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.superTyAnnotationsPropInfo)
         }
     }
 }
@@ -1990,9 +1836,7 @@ public class MacroDecl <: Decl {
      */
     public prop body: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Block>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -2016,9 +1860,7 @@ public class MacroDecl <: Decl {
      */
     public prop params: ParameterList {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.paramsPropInfo.index]
-            let offset = propInfos.paramsPropInfo.offset
-            cast<ParameterList>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<ParameterList>(nodeImpl, startPos, this, propInfos.paramsPropInfo)
         }
     }
 
@@ -2030,13 +1872,7 @@ public class MacroDecl <: Decl {
      */
     public prop retTyAnnotation: Option<TypeAnnotation> {
         get() {
-            if (let Some(propInfo) <- propInfos.retTyAnnotationPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<TypeAnnotation>(nodeImpl, startPos, this, propInfos.retTyAnnotationPropInfo)
         }
     }
 }
@@ -2127,9 +1963,7 @@ public class MainDecl <: Decl {
      */
     public prop body: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Block>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -2141,9 +1975,7 @@ public class MainDecl <: Decl {
      */
     public prop params: ParameterList {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.paramsPropInfo.index]
-            let offset = propInfos.paramsPropInfo.offset
-            cast<ParameterList>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<ParameterList>(nodeImpl, startPos, this, propInfos.paramsPropInfo)
         }
     }
 
@@ -2155,13 +1987,7 @@ public class MainDecl <: Decl {
      */
     public prop retTyAnnotation: Option<TypeAnnotation> {
         get() {
-            if (let Some(retTyAnnoPropInfo) <- propInfos.retTyAnnotationPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[retTyAnnoPropInfo.index]
-                let offset = retTyAnnoPropInfo.offset
-                cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<TypeAnnotation>(nodeImpl, startPos, this, propInfos.retTyAnnotationPropInfo)
         }
     }
 }
@@ -2505,9 +2331,7 @@ public class PropGetterOrSetter <: Decl {
      */
     public prop block: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.blockPropInfo.index]
-            let offset = propInfos.blockPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Block>(nodeImpl, startPos, this, propInfos.blockPropInfo)
         }
     }
 
@@ -2639,9 +2463,7 @@ public class StaticInit <: Decl {
      */
     public prop body: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Block>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 }
@@ -2719,65 +2541,42 @@ public class StructDecl <: Decl {
      * @brief Get the position range of the identifier.
      */
     public func getIdentifierPos(): CodePositionRange {
-        let endPos = posInfos.identifierPos + name.size
-        return CodePositionRange(posInfos.identifierPos, endPos)
+        return createPositionRange(posInfos.identifierPos, name.size)
     }
 
     /**
      * @brief Get the position range of the left angle bracket for generic parameters if present.
      */
     public func getGenericParamsLAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsLAnglePos) {
-            let endPos = v + SyntaxNodeKind.LtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsLAnglePos, SyntaxNodeKind.LtToken.size)
     }
 
     /**
      * @brief Get the position ranges of commas in generic parameters.
      */
     public func getGenericParamsCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.genericParamsCommasPos.size) {
-            let endPos = posInfos.genericParamsCommasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.genericParamsCommasPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.genericParamsCommasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     /**
      * @brief Get the position range of the right angle bracket for generic parameters if present.
      */
     public func getGenericParamsRAnglePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.genericParamsRAnglePos) {
-            let endPos = v + SyntaxNodeKind.GtToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.genericParamsRAnglePos, SyntaxNodeKind.GtToken.size)
     }
 
     /**
      * @brief Get the position range of the upper bound token if present.
      */
     public func getUpperBoundPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.upperBoundPos) {
-            let endPos = v + SyntaxNodeKind.UpperBoundToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createOptionalTokenRange(posInfos.upperBoundPos, SyntaxNodeKind.UpperBoundToken.size)
     }
 
     /**
      * @brief Get the position ranges of bit-and tokens in super type annotations.
      */
     public func getSuperTyAnnotationsBitAndsPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.superTyAnnotationsBitAndsPos.size) {
-            let endPos = posInfos.superTyAnnotationsBitAndsPos[i] + SyntaxNodeKind.BitAndToken.size
-            ret.add(CodePositionRange(posInfos.superTyAnnotationsBitAndsPos[i], endPos))
-        }
-        ret.toArray()
+        return createTokenRanges(posInfos.superTyAnnotationsBitAndsPos, SyntaxNodeKind.BitAndToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, name_: String,
@@ -2816,9 +2615,7 @@ public class StructDecl <: Decl {
      */
     public prop body: Body {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Body>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateChild<Body>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -2830,14 +2627,8 @@ public class StructDecl <: Decl {
      */
     public prop genericConstraints: Option<GenericConstraints> {
         get() {
-            if (let Some(propInfo) <- propInfos.genericConstraintsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                cast<GenericConstraints>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                    .getOrThrow()
-            } else {
-                None
-            }
+            return translateOptionalChild<GenericConstraints>(nodeImpl, startPos, this,
+                propInfos.genericConstraintsPropInfo)
         }
     }
 
@@ -2849,13 +2640,7 @@ public class StructDecl <: Decl {
      */
     public prop genericParams: Array<GenericParam> {
         get() {
-            var typeArguments = ArrayList<GenericParam>()
-            if (let Some(propInfo) <- propInfos.genericParamsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                typeArguments = transGenericParams(curNode, startPos + offset)
-            }
-            typeArguments.toArray()
+            return translateOptionalGenericParams(nodeImpl, startPos, this, propInfos.genericParamsPropInfo)
         }
     }
 
@@ -2878,15 +2663,7 @@ public class StructDecl <: Decl {
      */
     public prop superTyAnnotations: Array<TypeAnnotation> {
         get() {
-            let tyAnnos = ArrayList<TypeAnnotation>()
-            for (propInfo in propInfos.superTyAnnotationsPropInfo) {
-                let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
-                let offset = propInfo.offset
-                tyAnnos.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this))
-                        .getOrThrow())
-            }
-            tyAnnos.toArray()
+            return translateChildList<TypeAnnotation>(nodeImpl, startPos, this, propInfos.superTyAnnotationsPropInfo)
         }
     }
 }

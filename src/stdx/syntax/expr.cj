@@ -10,6 +10,24 @@ package stdx.syntax
 
 import std.collection.ArrayList
 
+private func translateExprChild<T>(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
+    propInfo: PropInfo): T where T <: SyntaxTreeNode {
+    let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
+    return cast<T>(SyntaxNodeImplTranslator.translate(curNode, startPos + propInfo.offset, parentNode)).getOrThrow()
+}
+
+private func createExprTokenRange(pos: CodePosition, size: Int64): CodePositionRange {
+    return CodePositionRange(pos, pos + size)
+}
+
+private func createExprTokenRanges(positions: Array<CodePosition>, size: Int64): Array<CodePositionRange> {
+    let ret = ArrayList<CodePositionRange>()
+    for (pos in positions) {
+        ret.add(createExprTokenRange(pos, size))
+    }
+    return ret.toArray()
+}
+
 sealed abstract class Expr <: SyntaxTreeNode {
     init(nodePos: CodePositionRange, nodeImpl: SyntaxNodeImpl, parentNode: ?SyntaxTreeNode,
         commentsPropInfo: Array<PropInfo>) {
@@ -59,8 +77,7 @@ public class ArrayLiteral <: Expr {
      * @return A CodePositionRange representing the position range of the left square bracket.
      */
     public func getLSquarePos(): CodePositionRange {
-        let endPos = posInfos.lSquarePos + SyntaxNodeKind.LSquareToken.size
-        return CodePositionRange(posInfos.lSquarePos, endPos)
+        return createExprTokenRange(posInfos.lSquarePos, SyntaxNodeKind.LSquareToken.size)
     }
 
     /**
@@ -69,8 +86,7 @@ public class ArrayLiteral <: Expr {
      * @return A CodePositionRange representing the position range of the right square bracket.
      */
     public func getRSquarePos(): CodePositionRange {
-        let endPos = posInfos.rSquarePos + SyntaxNodeKind.RSquareToken.size
-        return CodePositionRange(posInfos.rSquarePos, endPos)
+        return createExprTokenRange(posInfos.rSquarePos, SyntaxNodeKind.RSquareToken.size)
     }
 
     /**
@@ -79,12 +95,7 @@ public class ArrayLiteral <: Expr {
      * @return An ArrayList of CodePositionRange representing the position ranges of the commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.commasPos.size) {
-            let endPos = posInfos.commasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.commasPos[i], endPos))
-        }
-        ret.toArray()
+        return createExprTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: ArrayLiteralPosInfos,
@@ -204,9 +215,7 @@ public class AsExpr <: Expr {
      */
     public prop srcVal: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.srcValPropInfo.index]
-            let offset = propInfos.srcValPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.srcValPropInfo)
         }
     }
 
@@ -217,9 +226,8 @@ public class AsExpr <: Expr {
      */
     public prop targetTypeAnnotation: TypeAnnotation {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.targetTypeAnnotationPropInfo.index]
-            let offset = propInfos.targetTypeAnnotationPropInfo.offset
-            cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<TypeAnnotation>(nodeImpl, startPos, this,
+                propInfos.targetTypeAnnotationPropInfo)
         }
     }
 }
@@ -367,9 +375,7 @@ public class AssignExpr <: Expr {
      */
     public prop rhs: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.rhsPropInfo.index]
-            let offset = propInfos.rhsPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.rhsPropInfo)
         }
     }
 }
@@ -530,9 +536,7 @@ public class BinaryExpr <: Expr {
 
     public prop rhs: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.rhsPropInfo.index]
-            let offset = propInfos.rhsPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.rhsPropInfo)
         }
     }
 }
@@ -596,8 +600,7 @@ public class CallExpr <: Expr {
      * @return A CodePositionRange representing the position range of the left parenthesis.
      */
     public func getLParenPos(): CodePositionRange {
-        let endPos = posInfos.lParenPos + SyntaxNodeKind.LParenToken.size
-        return CodePositionRange(posInfos.lParenPos, endPos)
+        return createExprTokenRange(posInfos.lParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
@@ -606,8 +609,7 @@ public class CallExpr <: Expr {
      * @return A CodePositionRange representing the position range of the right parenthesis.
      */
     public func getRParenPos(): CodePositionRange {
-        let endPos = posInfos.rParenPos + SyntaxNodeKind.RParenToken.size
-        return CodePositionRange(posInfos.rParenPos, endPos)
+        return createExprTokenRange(posInfos.rParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     /**
@@ -616,12 +618,7 @@ public class CallExpr <: Expr {
      * @return An Array of PositionRange representing the position ranges of the commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.commasPos.size) {
-            let endPos = posInfos.commasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.commasPos[i], endPos))
-        }
-        ret.toArray()
+        return createExprTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: CallExprPosInfos,
@@ -1024,24 +1021,21 @@ public class DoWhileExpr <: Expr {
      * @brief Get the position range of the 'while' keyword.
      */
     public func getWhileKeyWordPos(): CodePositionRange {
-        let endPos = posInfos.whileKeyWordPos + SyntaxNodeKind.WhileToken.size
-        CodePositionRange(posInfos.whileKeyWordPos, endPos)
+        return createExprTokenRange(posInfos.whileKeyWordPos, SyntaxNodeKind.WhileToken.size)
     }
 
     /**
      * @brief Get the position range of the left parenthesis in the condition.
      */
     public func getCondLParenPos(): CodePositionRange {
-        let endPos = posInfos.condLParenPos + SyntaxNodeKind.LParenToken.size
-        CodePositionRange(posInfos.condLParenPos, endPos)
+        return createExprTokenRange(posInfos.condLParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
      * @brief Get the position range of the right parenthesis in the condition.
      */
     public func getCondRParenPos(): CodePositionRange {
-        let endPos = posInfos.condRParenPos + SyntaxNodeKind.RParenToken.size
-        CodePositionRange(posInfos.condRParenPos, endPos)
+        return createExprTokenRange(posInfos.condRParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: DoWhileExprPosInfos,
@@ -1071,9 +1065,7 @@ public class DoWhileExpr <: Expr {
      */
     public prop body: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Block>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 
@@ -1499,9 +1491,7 @@ public class IncOrDecExpr <: Expr {
      */
     public prop operand: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.operandPropInfo.index]
-            let offset = propInfos.operandPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.operandPropInfo)
         }
     }
 }
@@ -1577,9 +1567,7 @@ public class IsExpr <: Expr {
      */
     public prop srcVal: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.srcValPropInfo.index]
-            let offset = propInfos.srcValPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.srcValPropInfo)
         }
     }
 
@@ -1591,9 +1579,8 @@ public class IsExpr <: Expr {
      */
     public prop targetTypeAnnotation: TypeAnnotation {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.targetTypeAnnotationPropInfo.index]
-            let offset = propInfos.targetTypeAnnotationPropInfo.offset
-            cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<TypeAnnotation>(nodeImpl, startPos, this,
+                propInfos.targetTypeAnnotationPropInfo)
         }
     }
 }
@@ -2610,9 +2597,7 @@ public class OptionalExpr <: Expr {
      */
     public prop base: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.basePropInfo.index]
-            let offset = propInfos.basePropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.basePropInfo)
         }
     }
 }
@@ -3145,9 +3130,7 @@ public class SpawnExpr <: Expr {
      */
     public prop trailingLambdaExpr: Lambda {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.trailingLambdaExprPropInfo.index]
-            let offset = propInfos.trailingLambdaExprPropInfo.offset
-            cast<Lambda>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Lambda>(nodeImpl, startPos, this, propInfos.trailingLambdaExprPropInfo)
         }
     }
 }
@@ -3263,8 +3246,7 @@ public class SubscriptExpr <: Expr {
      * @return A CodePositionRange representing the position range of the left square bracket.
      */
     public func getLSquarePos(): CodePositionRange {
-        let endPos = posInfos.lSquarePos + SyntaxNodeKind.LSquareToken.size
-        return CodePositionRange(posInfos.lSquarePos, endPos)
+        return createExprTokenRange(posInfos.lSquarePos, SyntaxNodeKind.LSquareToken.size)
     }
 
     /**
@@ -3273,8 +3255,7 @@ public class SubscriptExpr <: Expr {
      * @return A CodePositionRange representing the position range of the right square bracket.
      */
     public func getRSquarePos(): CodePositionRange {
-        let endPos = posInfos.rSquarePos + SyntaxNodeKind.RSquareToken.size
-        return CodePositionRange(posInfos.rSquarePos, endPos)
+        return createExprTokenRange(posInfos.rSquarePos, SyntaxNodeKind.RSquareToken.size)
     }
 
     /**
@@ -3283,12 +3264,7 @@ public class SubscriptExpr <: Expr {
      * @return An Array of PositionRange representing the position ranges of the commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.commasPos.size) {
-            let endPos = posInfos.commasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.commasPos[i], endPos))
-        }
-        ret.toArray()
+        return createExprTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: SubscriptExprPosInfos,
@@ -3318,9 +3294,7 @@ public class SubscriptExpr <: Expr {
      */
     public prop base: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.basePropInfo.index]
-            let offset = propInfos.basePropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.basePropInfo)
         }
     }
 
@@ -3601,9 +3575,7 @@ public class SynchronizedExpr <: Expr {
      */
     public prop block: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.blockPropInfo.index]
-            let offset = propInfos.blockPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Block>(nodeImpl, startPos, this, propInfos.blockPropInfo)
         }
     }
 
@@ -3832,9 +3804,7 @@ public class TrailingClosureExpr <: Expr {
      */
     public prop trailingLambdaExpr: Lambda {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.trailingLambdaExprPropInfo.index]
-            let offset = propInfos.trailingLambdaExprPropInfo.offset
-            cast<Lambda>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Lambda>(nodeImpl, startPos, this, propInfos.trailingLambdaExprPropInfo)
         }
     }
 }
@@ -4150,8 +4120,7 @@ public class TupleLiteral <: Expr {
      * @return A CodePositionRange representing the position range of the left bracket.
      */
     public func getLParenPos(): CodePositionRange {
-        let endPos = posInfos.lParenPos + SyntaxNodeKind.LParenToken.size
-        return CodePositionRange(posInfos.lParenPos, endPos)
+        return createExprTokenRange(posInfos.lParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
@@ -4160,8 +4129,7 @@ public class TupleLiteral <: Expr {
      * @return A CodePositionRange representing the position range of the right bracket.
      */
     public func getRParenPos(): CodePositionRange {
-        let endPos = posInfos.rParenPos + SyntaxNodeKind.RParenToken.size
-        return CodePositionRange(posInfos.rParenPos, endPos)
+        return createExprTokenRange(posInfos.rParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     /**
@@ -4170,12 +4138,7 @@ public class TupleLiteral <: Expr {
      * @return An ArrayList of CodePositionRange representing the position ranges of the commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let ret = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.commasPos.size) {
-            let endPos = posInfos.commasPos[i] + SyntaxNodeKind.CommaToken.size
-            ret.add(CodePositionRange(posInfos.commasPos[i], endPos))
-        }
-        ret.toArray()
+        return createExprTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: TupleLiteralPosInfos,
@@ -4309,9 +4272,7 @@ public class TypeConvExpr <: Expr {
      */
     public prop srcVal: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.srcValPropInfo.index]
-            let offset = propInfos.srcValPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.srcValPropInfo)
         }
     }
 
@@ -4429,9 +4390,7 @@ public class UnaryExpr <: Expr {
      */
     public prop operand: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.operandPropInfo.index]
-            let offset = propInfos.operandPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Expr>(nodeImpl, startPos, this, propInfos.operandPropInfo)
         }
     }
 }
@@ -4645,24 +4604,21 @@ public class WhileExpr <: Expr {
      * @brief Get the position range of the 'while' keyword.
      */
     public func getWhileKeyWordPos(): CodePositionRange {
-        let endPos = posInfos.whileKeyWordPos + SyntaxNodeKind.WhileToken.size
-        CodePositionRange(posInfos.whileKeyWordPos, endPos)
+        return createExprTokenRange(posInfos.whileKeyWordPos, SyntaxNodeKind.WhileToken.size)
     }
 
     /**
      * @brief Get the position range of the left parenthesis in the condition.
      */
     public func getCondLParenPos(): CodePositionRange {
-        let endPos = posInfos.condLParenPos + SyntaxNodeKind.LParenToken.size
-        CodePositionRange(posInfos.condLParenPos, endPos)
+        return createExprTokenRange(posInfos.condLParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
      * @brief Get the position range of the right parenthesis in the condition.
      */
     public func getCondRParenPos(): CodePositionRange {
-        let endPos = posInfos.condRParenPos + SyntaxNodeKind.RParenToken.size
-        CodePositionRange(posInfos.condRParenPos, endPos)
+        return createExprTokenRange(posInfos.condRParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: WhileExprPosInfos,
@@ -4692,9 +4648,7 @@ public class WhileExpr <: Expr {
      */
     public prop body: Block {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.bodyPropInfo.index]
-            let offset = propInfos.bodyPropInfo.offset
-            cast<Block>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateExprChild<Block>(nodeImpl, startPos, this, propInfos.bodyPropInfo)
         }
     }
 

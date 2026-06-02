@@ -10,6 +10,36 @@ package stdx.syntax
 
 import std.collection.ArrayList
 
+private func createMacroOptionalTokenRange(pos: Option<CodePosition>, size: Int64): Option<CodePositionRange> {
+    if (let Some(v) <- pos) {
+        return CodePositionRange(v, v + size)
+    }
+    return None
+}
+
+private func translateMacroChild<T>(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
+    propInfo: PropInfo): T where T <: SyntaxTreeNode {
+    let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
+    return cast<T>(SyntaxNodeImplTranslator.translate(curNode, startPos + propInfo.offset, parentNode)).getOrThrow()
+}
+
+private func translateMacroTokenList(nodeImpl: SyntaxNodeImpl, parentNode: SyntaxTreeNode, propInfo: PropInfo): Tokens {
+    let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
+    return parentNode.transTokenList(curNode)
+}
+
+private func translateMacroInputs(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: SyntaxTreeNode,
+    propInfo: PropInfo, lParenPos: Option<CodePositionRange>): MacroExpandInput {
+    let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfo.index]
+    let offset = propInfo.offset
+
+    if (lParenPos.isSome()) {
+        return WithParens(parentNode.transTokenList(curNode))
+    }
+    return WithoutParens(
+        cast<Decl>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, parentNode)).getOrThrow())
+}
+
 class MacroExpandDeclPropInfos {
     let calleeMacroPropInfo: PropInfo
     let macroAttrsPropInfo: PropInfo
@@ -53,52 +83,35 @@ public class MacroExpandDecl <: Decl {
      * @brief Get the position range of the 'at' token.
      */
     public func getAtPos(): CodePositionRange {
-        let endPos = posInfos.atPos + SyntaxNodeKind.AtToken.size
-        CodePositionRange(posInfos.atPos, endPos)
+        return CodePositionRange(posInfos.atPos, posInfos.atPos + SyntaxNodeKind.AtToken.size)
     }
 
     /**
      * @brief Get the position range of the left square bracket if present.
      */
     public func getLSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lSquarePos) {
-            let endPos = v + SyntaxNodeKind.LSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lSquarePos, SyntaxNodeKind.LSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the right square bracket if present.
      */
     public func getRSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rSquarePos) {
-            let endPos = v + SyntaxNodeKind.RSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rSquarePos, SyntaxNodeKind.RSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the left parenthesis if present.
      */
     public func getLParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lParenPos) {
-            let endPos = v + SyntaxNodeKind.LParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
      * @brief Get the position range of the right parenthesis if present.
      */
     public func getRParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rParenPos) {
-            let endPos = v + SyntaxNodeKind.RParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
@@ -131,9 +144,7 @@ public class MacroExpandDecl <: Decl {
      */
     public prop calleeMacro: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.calleeMacroPropInfo.index]
-            let offset = propInfos.calleeMacroPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateMacroChild<Expr>(nodeImpl, startPos, this, propInfos.calleeMacroPropInfo)
         }
     }
 
@@ -142,8 +153,7 @@ public class MacroExpandDecl <: Decl {
      */
     public prop macroAttrs: Tokens {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroAttrsPropInfo.index]
-            transTokenList(curNode)
+            return translateMacroTokenList(nodeImpl, this, propInfos.macroAttrsPropInfo)
         }
     }
 
@@ -152,15 +162,7 @@ public class MacroExpandDecl <: Decl {
      */
     public prop macroInputs: MacroExpandInput {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroInputsPropInfo.index]
-            let offset = propInfos.macroInputsPropInfo.offset
-
-            if (let Some(pos) <- getLParenPos()) {
-                WithParens(transTokenList(curNode))
-            } else {
-                WithoutParens(
-                    cast<Decl>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow())
-            }
+            return translateMacroInputs(nodeImpl, startPos, this, propInfos.macroInputsPropInfo, getLParenPos())
         }
     }
 }
@@ -208,52 +210,35 @@ public class MacroExpandExpr <: Expr {
      * @brief Get the position range of the 'at' token.
      */
     public func getAtPos(): CodePositionRange {
-        let endPos = posInfos.atPos + SyntaxNodeKind.AtToken.size
-        CodePositionRange(posInfos.atPos, endPos)
+        return CodePositionRange(posInfos.atPos, posInfos.atPos + SyntaxNodeKind.AtToken.size)
     }
 
     /**
      * @brief Get the position range of the left square bracket if present.
      */
     public func getLSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lSquarePos) {
-            let endPos = v + SyntaxNodeKind.LSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lSquarePos, SyntaxNodeKind.LSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the right square bracket if present.
      */
     public func getRSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rSquarePos) {
-            let endPos = v + SyntaxNodeKind.RSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rSquarePos, SyntaxNodeKind.RSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the left parenthesis if present.
      */
     public func getLParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lParenPos) {
-            let endPos = v + SyntaxNodeKind.LParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
      * @brief Get the position range of the right parenthesis if present.
      */
     public func getRParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rParenPos) {
-            let endPos = v + SyntaxNodeKind.RParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
@@ -284,9 +269,7 @@ public class MacroExpandExpr <: Expr {
      */
     public prop calleeMacro: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.calleeMacroPropInfo.index]
-            let offset = propInfos.calleeMacroPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateMacroChild<Expr>(nodeImpl, startPos, this, propInfos.calleeMacroPropInfo)
         }
     }
 
@@ -295,8 +278,7 @@ public class MacroExpandExpr <: Expr {
      */
     public prop macroAttrs: Tokens {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroAttrsPropInfo.index]
-            transTokenList(curNode)
+            return translateMacroTokenList(nodeImpl, this, propInfos.macroAttrsPropInfo)
         }
     }
 
@@ -305,15 +287,7 @@ public class MacroExpandExpr <: Expr {
      */
     public prop macroInputs: MacroExpandInput {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroInputsPropInfo.index]
-            let offset = propInfos.macroInputsPropInfo.offset
-
-            if (let Some(pos) <- getLParenPos()) {
-                WithParens(transTokenList(curNode))
-            } else {
-                WithoutParens(
-                    cast<Decl>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow())
-            }
+            return translateMacroInputs(nodeImpl, startPos, this, propInfos.macroInputsPropInfo, getLParenPos())
         }
     }
 }
@@ -378,52 +352,35 @@ public class MacroExpandParam <: Parameter {
      * @brief Get the position range of the 'at' token.
      */
     public func getAtPos(): CodePositionRange {
-        let endPos = posInfos.atPos + SyntaxNodeKind.AtToken.size
-        CodePositionRange(posInfos.atPos, endPos)
+        return CodePositionRange(posInfos.atPos, posInfos.atPos + SyntaxNodeKind.AtToken.size)
     }
 
     /**
      * @brief Get the position range of the left square bracket if present.
      */
     public func getLSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lSquarePos) {
-            let endPos = v + SyntaxNodeKind.LSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lSquarePos, SyntaxNodeKind.LSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the right square bracket if present.
      */
     public func getRSquarePos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rSquarePos) {
-            let endPos = v + SyntaxNodeKind.RSquareToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rSquarePos, SyntaxNodeKind.RSquareToken.size)
     }
 
     /**
      * @brief Get the position range of the left parenthesis if present.
      */
     public func getLParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.lParenPos) {
-            let endPos = v + SyntaxNodeKind.LParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.lParenPos, SyntaxNodeKind.LParenToken.size)
     }
 
     /**
      * @brief Get the position range of the right parenthesis if present.
      */
     public func getRParenPos(): Option<CodePositionRange> {
-        if (let Some(v) <- posInfos.rParenPos) {
-            let endPos = v + SyntaxNodeKind.RParenToken.size
-            return CodePositionRange(v, endPos)
-        }
-        return None
+        return createMacroOptionalTokenRange(posInfos.rParenPos, SyntaxNodeKind.RParenToken.size)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode,
@@ -456,9 +413,7 @@ public class MacroExpandParam <: Parameter {
      */
     public prop calleeMacro: Expr {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.calleeMacroPropInfo.index]
-            let offset = propInfos.calleeMacroPropInfo.offset
-            cast<Expr>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow()
+            return translateMacroChild<Expr>(nodeImpl, startPos, this, propInfos.calleeMacroPropInfo)
         }
     }
 
@@ -467,8 +422,7 @@ public class MacroExpandParam <: Parameter {
      */
     public prop macroAttrs: Tokens {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroAttrsPropInfo.index]
-            transTokenList(curNode)
+            return translateMacroTokenList(nodeImpl, this, propInfos.macroAttrsPropInfo)
         }
     }
 
@@ -477,15 +431,7 @@ public class MacroExpandParam <: Parameter {
      */
     public prop macroInputs: MacroExpandInput {
         get() {
-            let curNode = (nodeImpl as NonTerminal).getOrThrow().children[propInfos.macroInputsPropInfo.index]
-            let offset = propInfos.macroInputsPropInfo.offset
-
-            if (let Some(pos) <- getLParenPos()) {
-                WithParens(transTokenList(curNode))
-            } else {
-                WithoutParens(
-                    cast<Decl>(SyntaxNodeImplTranslator.translate(curNode, startPos + offset, this)).getOrThrow())
-            }
+            return translateMacroInputs(nodeImpl, startPos, this, propInfos.macroInputsPropInfo, getLParenPos())
         }
     }
 }

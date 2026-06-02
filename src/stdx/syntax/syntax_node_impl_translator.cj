@@ -939,6 +939,195 @@ class SyntaxNodeImplTranslator {
         return (kind, funcKindKeyWordPos, operatorFlag)
     }
 
+    private func consumeParamsAndRetTyAnnotation(lp: LocalParser, startPos: CodePosition) {
+        var paramNode = lp.consume()
+        let paramsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        lp.offset.move(paramNode?.offset)
+
+        var retTyAnnotationPropInfo: Option<PropInfo> = None
+        var retTyAnnotationColonPos: Option<CodePosition> = None
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ColonToken)) {
+            retTyAnnotationColonPos = startPos + lp.offset
+            lp.offset.move(v.offset)
+
+            var tyAnnoNode = lp.consume()
+            retTyAnnotationPropInfo = PropInfo(lp.cur - 1, lp.offset)
+            lp.offset.move(tyAnnoNode?.offset)
+        }
+
+        return (paramsPropInfo, retTyAnnotationPropInfo, retTyAnnotationColonPos)
+    }
+
+    private func consumeNamedGenericDeclHead(lp: LocalParser, startPos: CodePosition) {
+        var (name, identifierPos) = ("", CodePosition())
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
+            name = getValue(v)
+            identifierPos = startPos + lp.offset
+            lp.offset.move(v.offset)
+        }
+
+        var genericParamsPropInfo: ?PropInfo = None
+        var genericParamsCommasPos = Array<CodePosition>()
+        var (genericParamsLAnglePos, genericParamsRAnglePos): (Option<CodePosition>, Option<CodePosition>) = (None, None)
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.TypeArguments)) {
+            genericParamsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+            (genericParamsLAnglePos, genericParamsCommasPos, genericParamsRAnglePos) = transGenericParams(v,
+                startPos + lp.offset)
+            lp.moveOffset(v)
+        }
+
+        return (name, identifierPos, genericParamsPropInfo, genericParamsLAnglePos, genericParamsCommasPos,
+            genericParamsRAnglePos)
+    }
+
+    private func consumeUpperBoundSuperTypes(lp: LocalParser, startPos: CodePosition) {
+        var upperBoundPos: Option<CodePosition> = None
+        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
+            upperBoundPos = startPos + lp.offset
+            lp.offset.move(v.offset)
+            let predictTypeAnnotation = {
+                kind: SyntaxNodeKind => kind.isTypeAnnotation()
+            }
+            while (lp.look(predictTypeAnnotation)) {
+                let tyAnnoNode = lp.consume()
+                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
+                lp.offset.move(tyAnnoNode?.offset)
+
+                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
+                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
+                    lp.moveOffset(v)
+                }
+            }
+        }
+
+        return (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos)
+    }
+
+    private func consumeGenericConstraintsPropInfo(lp: LocalParser): ?PropInfo {
+        var genericConstraintsPropInfo: ?PropInfo = None
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
+            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+            lp.offset.move(v.offset)
+        }
+        return genericConstraintsPropInfo
+    }
+
+    private func consumeBodyNodeAndPropInfo(lp: LocalParser) {
+        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
+        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        return (bodyNode, bodyPropInfo)
+    }
+
+    private func consumeMacroExpandCommon(lp: LocalParser, startPos: CodePosition) {
+        var (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo) = (PropInfo(), PropInfo(), PropInfo())
+        var (lSquarePos, rSquarePos): (?CodePosition, ?CodePosition) = (None, None)
+        var (lParenPos, rParenPos): (?CodePosition, ?CodePosition) = (None, None)
+
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.AnnotationList)) {
+            lp.offset.move(v.offset)
+        }
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ModifierList)) {
+            lp.offset.move(v.offset)
+        }
+        let atNode = lp.consume(kind: SyntaxNodeKind.AtToken)
+        let atPos = startPos + lp.offset
+        lp.moveOffset(atNode)
+
+        let calleeNode = lp.consume()
+        calleePropInfo = PropInfo(lp.cur - 1, lp.offset)
+        lp.moveOffset(calleeNode)
+
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LSquareToken)) {
+            lSquarePos = startPos + lp.offset
+            lp.moveOffset(v)
+        }
+        if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
+            macroAttrsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+            lp.moveOffset(v)
+        }
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RSquareToken)) {
+            rSquarePos = startPos + lp.offset
+            lp.moveOffset(v)
+        }
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LParenToken)) {
+            lParenPos = startPos + lp.offset
+            lp.moveOffset(v)
+            if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
+                macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+                lp.moveOffset(v)
+            }
+            let rParenNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
+            rParenPos = startPos + lp.offset
+            lp.moveOffset(rParenNode)
+        } else {
+            let inputNode = lp.consume()
+            macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+            lp.moveOffset(inputNode)
+        }
+
+        return (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo, atPos, lSquarePos, rSquarePos, lParenPos,
+            rParenPos)
+    }
+
+    private func consumeSeparatedElementsStartPropInfo(lp: LocalParser, startPos: CodePosition,
+        shouldConsumeElement: (SyntaxNodeKind) -> Bool, sep: SyntaxNodeKind) {
+        let commasPos = ArrayList<CodePosition>()
+        var findStart = false
+        var elementsPropInfo = PropInfo()
+        while (lp.look(shouldConsumeElement)) {
+            if (let Some(node) <- lp.consume()) {
+                if (!findStart) {
+                    findStart = true
+                    elementsPropInfo = PropInfo(lp.cur - 1, lp.offset)
+                }
+                lp.moveOffset(node)
+            }
+            if (lp.look(sep)) {
+                let curSep = lp.consume(kind: sep)
+                commasPos.add(startPos + lp.offset)
+                lp.moveOffset(curSep)
+            }
+        }
+        return (elementsPropInfo, commasPos)
+    }
+
+    private func consumeParenConditionPropInfo(lp: LocalParser, startPos: CodePosition) {
+        var curNode = lp.consume(kind: SyntaxNodeKind.LParenToken)
+        let lParenPos = startPos + lp.offset
+        lp.moveOffset(curNode)
+
+        curNode = lp.consume()
+        let conditionPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        lp.moveOffset(curNode)
+
+        curNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
+        let rParenPos = startPos + lp.offset
+        lp.moveOffset(curNode)
+
+        return (conditionPropInfo, lParenPos, rParenPos)
+    }
+
+    private func consumeCommaPos(lp: LocalParser, startPos: CodePosition) {
+        let curNode = lp.consume(kind: SyntaxNodeKind.CommaToken)
+        let pos = startPos + lp.offset
+        lp.moveOffset(curNode)
+        return pos
+    }
+
+    private func consumeOptionalTypeLabel(lp: LocalParser, startPos: CodePosition, labels: ArrayList<String>,
+        labelsPos: ArrayList<CodePosition>, colonPos: ArrayList<CodePosition>) {
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
+            labels.add(getValue(v))
+            labelsPos.add(startPos + lp.offset)
+            lp.moveOffset(v)
+
+            let curNode = lp.consume(kind: SyntaxNodeKind.ColonToken)
+            colonPos.add(startPos + lp.offset)
+            lp.moveOffset(curNode)
+        }
+    }
+
     private func transFuncDecl(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): FuncDecl {
         // BNF: anno? modifier? (FUNC？ IDENT | INIT | ~INIT)  typeParams? funcParams (COLON type)? genericConstraints? block?
         let lp = LocalParser(node.children)
@@ -1111,20 +1300,8 @@ class SyntaxNodeImplTranslator {
             lp.offset.move(v.offset)
         }
 
-        var paramNode = lp.consume()
-        let paramsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.offset.move(paramNode?.offset)
-
-        var retTyAnnotationPropInfo: Option<PropInfo> = None
-        var retTyAnnotationColonPos: Option<CodePosition> = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ColonToken)) {
-            retTyAnnotationColonPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-
-            var tyAnnoNode = lp.consume()
-            retTyAnnotationPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(tyAnnoNode?.offset)
-        }
+        let (paramsPropInfo, retTyAnnotationPropInfo, retTyAnnotationColonPos) = consumeParamsAndRetTyAnnotation(lp,
+            startPos)
 
         var blockNode = lp.consume()
         let blockPropInfo = PropInfo(lp.cur - 1, lp.offset)
@@ -1236,47 +1413,12 @@ class SyntaxNodeImplTranslator {
         let classKeyWordPos = startPos + lp.offset
         lp.offset.move(classNode?.offset)
 
-        var (name, identifierPos) = ("", CodePosition())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-            name = getValue(v)
-            identifierPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-        }
-        var genericParamsPropInfo: ?PropInfo = None
-        var genericParamsCommasPos = Array<CodePosition>()
-        var (genericParamsLAnglePos, genericParamsRAnglePos): (Option<CodePosition>, Option<CodePosition>) = (None, None)
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.TypeArguments)) {
-            genericParamsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            (genericParamsLAnglePos, genericParamsCommasPos, genericParamsRAnglePos) = transGenericParams(v,
-                startPos + lp.offset)
-            lp.moveOffset(v)
-        }
-        var upperBoundPos: Option<CodePosition> = None
-        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
-            upperBoundPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-            let predictTypeAnnotation = {
-                kind: SyntaxNodeKind => kind.isTypeAnnotation()
-            }
-            while (lp.look(predictTypeAnnotation)) {
-                let tyAnnoNode = lp.consume()
-                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
-                lp.offset.move(tyAnnoNode?.offset)
-
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
-                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
-                    lp.moveOffset(v)
-                }
-            }
-        }
-        var genericConstraintsPropInfo: ?PropInfo = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
-            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(v.offset)
-        }
-        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
-        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        let (name, identifierPos, genericParamsPropInfo, genericParamsLAnglePos, genericParamsCommasPos,
+            genericParamsRAnglePos) = consumeNamedGenericDeclHead(lp, startPos)
+        let (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = consumeUpperBoundSuperTypes(lp,
+            startPos)
+        let genericConstraintsPropInfo = consumeGenericConstraintsPropInfo(lp)
+        let (bodyNode, bodyPropInfo) = consumeBodyNodeAndPropInfo(lp)
         lp.offset.move(bodyNode?.offset)
 
         let propInfos = ClassDeclPropInfos(bodyPropInfo, genericConstraintsPropInfo, genericParamsPropInfo,
@@ -1480,47 +1622,12 @@ class SyntaxNodeImplTranslator {
         let structKeyWordPos = startPos + lp.offset
         lp.offset.move(structNode?.offset)
 
-        var (name, identifierPos) = ("", CodePosition())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-            name = getValue(v)
-            identifierPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-        }
-        var genericParamsPropInfo: ?PropInfo = None
-        var genericParamsCommasPos = Array<CodePosition>()
-        var (genericParamsLAnglePos, genericParamsRAnglePos): (Option<CodePosition>, Option<CodePosition>) = (None, None)
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.TypeArguments)) {
-            genericParamsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            (genericParamsLAnglePos, genericParamsCommasPos, genericParamsRAnglePos) = transGenericParams(v,
-                startPos + lp.offset)
-            lp.moveOffset(v)
-        }
-        var upperBoundPos: Option<CodePosition> = None
-        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
-            upperBoundPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-            let predictTypeAnnotation = {
-                kind: SyntaxNodeKind => kind.isTypeAnnotation()
-            }
-            while (lp.look(predictTypeAnnotation)) {
-                let tyAnnoNode = lp.consume()
-                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
-                lp.offset.move(tyAnnoNode?.offset)
-
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
-                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
-                    lp.moveOffset(v)
-                }
-            }
-        }
-        var genericConstraintsPropInfo: ?PropInfo = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
-            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(v.offset)
-        }
-        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
-        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        let (name, identifierPos, genericParamsPropInfo, genericParamsLAnglePos, genericParamsCommasPos,
+            genericParamsRAnglePos) = consumeNamedGenericDeclHead(lp, startPos)
+        let (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = consumeUpperBoundSuperTypes(lp,
+            startPos)
+        let genericConstraintsPropInfo = consumeGenericConstraintsPropInfo(lp)
+        let (bodyNode, bodyPropInfo) = consumeBodyNodeAndPropInfo(lp)
         lp.offset.move(bodyNode?.offset)
 
         let propInfos = StructDeclPropInfos(bodyPropInfo, genericConstraintsPropInfo, genericParamsPropInfo,
@@ -1547,47 +1654,12 @@ class SyntaxNodeImplTranslator {
         let interfaceKeyWordPos = startPos + lp.offset
         lp.offset.move(interfaceNode?.offset)
 
-        var (name, identifierPos) = ("", CodePosition())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-            name = getValue(v)
-            identifierPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-        }
-        var genericParamsPropInfo: ?PropInfo = None
-        var genericParamsCommasPos = Array<CodePosition>()
-        var (genericParamsLAnglePos, genericParamsRAnglePos): (Option<CodePosition>, Option<CodePosition>) = (None, None)
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.TypeArguments)) {
-            genericParamsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            (genericParamsLAnglePos, genericParamsCommasPos, genericParamsRAnglePos) = transGenericParams(v,
-                startPos + lp.offset)
-            lp.moveOffset(v)
-        }
-        var upperBoundPos: Option<CodePosition> = None
-        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
-            upperBoundPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-            let predictTypeAnnotation = {
-                kind: SyntaxNodeKind => kind.isTypeAnnotation()
-            }
-            while (lp.look(predictTypeAnnotation)) {
-                let tyAnnoNode = lp.consume()
-                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
-                lp.offset.move(tyAnnoNode?.offset)
-
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
-                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
-                    lp.moveOffset(v)
-                }
-            }
-        }
-        var genericConstraintsPropInfo: ?PropInfo = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
-            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(v.offset)
-        }
-        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
-        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        let (name, identifierPos, genericParamsPropInfo, genericParamsLAnglePos, genericParamsCommasPos,
+            genericParamsRAnglePos) = consumeNamedGenericDeclHead(lp, startPos)
+        let (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = consumeUpperBoundSuperTypes(lp,
+            startPos)
+        let genericConstraintsPropInfo = consumeGenericConstraintsPropInfo(lp)
+        let (bodyNode, bodyPropInfo) = consumeBodyNodeAndPropInfo(lp)
         lp.offset.move(bodyNode?.offset)
 
         let propInfos = InterfaceDeclPropInfos(bodyPropInfo, genericConstraintsPropInfo, genericParamsPropInfo,
@@ -1635,32 +1707,10 @@ class SyntaxNodeImplTranslator {
             lp.offset.move(extendedTyNode?.offset)
         }
 
-        var upperBoundPos: Option<CodePosition> = None
-        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
-            upperBoundPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-            let predictTypeAnnotation = {
-                kind: SyntaxNodeKind => kind.isTypeAnnotation()
-            }
-            while (lp.look(predictTypeAnnotation)) {
-                let tyAnnoNode = lp.consume()
-                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
-                lp.offset.move(tyAnnoNode?.offset)
-
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
-                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
-                    lp.moveOffset(v)
-                }
-            }
-        }
-        var genericConstraintsPropInfo: ?PropInfo = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
-            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(v.offset)
-        }
-        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
-        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        let (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = consumeUpperBoundSuperTypes(lp,
+            startPos)
+        let genericConstraintsPropInfo = consumeGenericConstraintsPropInfo(lp)
+        let (bodyNode, bodyPropInfo) = consumeBodyNodeAndPropInfo(lp)
         lp.offset.move(bodyNode?.offset)
 
         let propInfos = ExtendDeclPropInfos(bodyPropInfo, extendedTyAnnotationPropInfo, genericConstraintsPropInfo,
@@ -1687,48 +1737,12 @@ class SyntaxNodeImplTranslator {
         let enumKeyWordPos = startPos + lp.offset
         lp.offset.move(enumNode?.offset)
 
-        var (name, identifierPos) = ("", CodePosition())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-            name = getValue(v)
-            identifierPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-        }
-        var genericParamsPropInfo: ?PropInfo = None
-        var genericParamsCommasPos = Array<CodePosition>()
-        var (genericParamsLAnglePos, genericParamsRAnglePos): (Option<CodePosition>, Option<CodePosition>) = (None, None)
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.TypeArguments)) {
-            genericParamsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            (genericParamsLAnglePos, genericParamsCommasPos, genericParamsRAnglePos) = transGenericParams(v,
-                startPos + lp.offset)
-            lp.moveOffset(v)
-        }
-        var upperBoundPos: Option<CodePosition> = None
-        var (superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = (ArrayList<PropInfo>(), ArrayList<CodePosition>())
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.UpperBoundToken)) {
-            upperBoundPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-            let predictTypeAnnotation = {
-                kind: SyntaxNodeKind => kind.isTypeAnnotation()
-            }
-            while (lp.look(predictTypeAnnotation)) {
-                let tyAnnoNode = lp.consume()
-                superTyAnnotationsPropInfo.add(PropInfo(lp.cur - 1, lp.offset))
-                lp.offset.move(tyAnnoNode?.offset)
-
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.BitAndToken)) {
-                    superTyAnnotationsBitAndPos.add(startPos + lp.offset)
-                    lp.moveOffset(v)
-                }
-            }
-        }
-
-        var genericConstraintsPropInfo: ?PropInfo = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.GenericConstraints)) {
-            genericConstraintsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(v.offset)
-        }
-        let bodyNode = lp.consume(kind: SyntaxNodeKind.Body)
-        let bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
+        let (name, identifierPos, genericParamsPropInfo, genericParamsLAnglePos, genericParamsCommasPos,
+            genericParamsRAnglePos) = consumeNamedGenericDeclHead(lp, startPos)
+        let (upperBoundPos, superTyAnnotationsPropInfo, superTyAnnotationsBitAndPos) = consumeUpperBoundSuperTypes(lp,
+            startPos)
+        let genericConstraintsPropInfo = consumeGenericConstraintsPropInfo(lp)
+        let (bodyNode, bodyPropInfo) = consumeBodyNodeAndPropInfo(lp)
         var body: ?Body = cast<Body>(transNode(bodyNode.getOrThrow(), startPos + lp.offset, parent))
         lp.offset.move(bodyNode?.offset)
 
@@ -1823,20 +1837,8 @@ class SyntaxNodeImplTranslator {
             lp.offset.move(v.offset)
         }
 
-        var paramNode = lp.consume()
-        let paramsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.offset.move(paramNode?.offset)
-
-        var retTyAnnotationPropInfo: Option<PropInfo> = None
-        var retTyAnnotationColonPos: Option<CodePosition> = None
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ColonToken)) {
-            retTyAnnotationColonPos = startPos + lp.offset
-            lp.offset.move(v.offset)
-
-            var tyAnnoNode = lp.consume()
-            retTyAnnotationPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.offset.move(tyAnnoNode?.offset)
-        }
+        let (paramsPropInfo, retTyAnnotationPropInfo, retTyAnnotationColonPos) = consumeParamsAndRetTyAnnotation(lp,
+            startPos)
 
         var bodyPropInfo = PropInfo()
         if (let Some(v) <- lp.consume(kind: SyntaxNodeKind.Block)) {
@@ -1852,53 +1854,9 @@ class SyntaxNodeImplTranslator {
     }
 
     private func transMacroExpandDecl(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): MacroExpandDecl {
-        var (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo) = (PropInfo(), PropInfo(), PropInfo())
-        var (lSquarePos, rSquarePos): (?CodePosition, ?CodePosition) = (None, None)
-        var (lParenPos, rParenPos): (?CodePosition, ?CodePosition) = (None, None)
         let lp = LocalParser(node.children)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.AnnotationList)) {
-            lp.offset.move(v.offset)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ModifierList)) {
-            lp.offset.move(v.offset)
-        }
-        let atNode = lp.consume(kind: SyntaxNodeKind.AtToken)
-        let atPos = startPos + lp.offset
-        lp.moveOffset(atNode)
-
-        let calleeNode = lp.consume()
-        calleePropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.moveOffset(calleeNode)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LSquareToken)) {
-            lSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-            macroAttrsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RSquareToken)) {
-            rSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LParenToken)) {
-            lParenPos = startPos + lp.offset
-            lp.moveOffset(v)
-            if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-                macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-                lp.moveOffset(v)
-            }
-
-            let rParenNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
-            rParenPos = startPos + lp.offset
-            lp.moveOffset(rParenNode)
-        } else {
-            let inputNode = lp.consume()
-            macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(inputNode)
-        }
+        let (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo, atPos, lSquarePos, rSquarePos, lParenPos,
+            rParenPos) = consumeMacroExpandCommon(lp, startPos)
 
         let propInfos = MacroExpandDeclPropInfos(calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo)
         let posInfos = MacroExpandDeclPosInfos(atPos, lSquarePos, rSquarePos, lParenPos, rParenPos)
@@ -1908,52 +1866,9 @@ class SyntaxNodeImplTranslator {
     }
 
     private func transMacroExpandParam(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): MacroExpandParam {
-        var (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo) = (PropInfo(), PropInfo(), PropInfo())
-        var (lSquarePos, rSquarePos): (?CodePosition, ?CodePosition) = (None, None)
-        var (lParenPos, rParenPos): (?CodePosition, ?CodePosition) = (None, None)
         let lp = LocalParser(node.children)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.AnnotationList)) {
-            lp.offset.move(v.offset)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ModifierList)) {
-            lp.offset.move(v.offset)
-        }
-        let atNode = lp.consume(kind: SyntaxNodeKind.AtToken)
-        let atPos = startPos + lp.offset
-        lp.moveOffset(atNode)
-
-        let calleeNode = lp.consume()
-        calleePropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.moveOffset(calleeNode)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LSquareToken)) {
-            lSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-            macroAttrsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RSquareToken)) {
-            rSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LParenToken)) {
-            lParenPos = startPos + lp.offset
-            lp.moveOffset(v)
-            if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-                macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-                lp.moveOffset(v)
-            }
-            let rParenNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
-            rParenPos = startPos + lp.offset
-            lp.moveOffset(rParenNode)
-        } else {
-            let inputNode = lp.consume()
-            macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(inputNode)
-        }
+        let (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo, atPos, lSquarePos, rSquarePos, lParenPos,
+            rParenPos) = consumeMacroExpandCommon(lp, startPos)
 
         let propInfos = MacroExpandParamPropInfos(calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo)
         let posInfos = MacroExpandParamPosInfos(atPos, lSquarePos, rSquarePos, lParenPos, rParenPos)
@@ -2109,29 +2024,13 @@ class SyntaxNodeImplTranslator {
         // BNF: LSQUARE (NL* elements)? NL* RSQUARE
         let lSquarePos = startPos
         var rSquarePos = CodePosition()
-        let commasPos = ArrayList<CodePosition>()
         let lp = LocalParser(node.children)
         lp.moveOffset(lp.consume(kind: SyntaxNodeKind.LSquareToken))
         let predictExpr = {
             kind: SyntaxNodeKind => kind.isExpr()
         }
         let sep = SyntaxNodeKind.CommaToken
-        var findStart = false
-        var exprsPropInfo = PropInfo()
-        while (lp.look(predictExpr)) {
-            if (let Some(node) <- lp.consume()) {
-                if (!findStart) {
-                    findStart = true
-                    exprsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-                }
-                lp.moveOffset(node)
-            }
-            if (lp.look(sep)) {
-                let curSep = lp.consume(kind: sep)
-                commasPos.add(startPos + lp.offset)
-                lp.moveOffset(curSep)
-            }
-        }
+        let (exprsPropInfo, commasPos) = consumeSeparatedElementsStartPropInfo(lp, startPos, predictExpr, sep)
         if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RSquareToken)) {
             rSquarePos = startPos + lp.offset
         }
@@ -2146,29 +2045,13 @@ class SyntaxNodeImplTranslator {
         // BNF: LSQUARE (NL* elements)? NL* RSQUARE
         let lParenPos = startPos
         var rParenPos = CodePosition()
-        let commasPos = ArrayList<CodePosition>()
         let lp = LocalParser(node.children)
         lp.moveOffset(lp.consume(kind: SyntaxNodeKind.LParenToken))
-        let predictExpr = {
-            kind: SyntaxNodeKind => kind.isExpr()
+        let predictTupleElement = {
+            kind: SyntaxNodeKind => kind.isExpr() || kind == SyntaxNodeKind.WildcardPattern
         }
         let sep = SyntaxNodeKind.CommaToken
-        var findStart = false
-        var exprsPropInfo = PropInfo()
-        while (lp.look(predictExpr) || lp.look(SyntaxNodeKind.WildcardPattern)) {
-            if (let Some(node) <- lp.consume()) {
-                if (!findStart) {
-                    findStart = true
-                    exprsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-                }
-                lp.moveOffset(node)
-            }
-            if (lp.look(sep)) {
-                let curSep = lp.consume(kind: sep)
-                commasPos.add(startPos + lp.offset)
-                lp.moveOffset(curSep)
-            }
-        }
+        let (exprsPropInfo, commasPos) = consumeSeparatedElementsStartPropInfo(lp, startPos, predictTupleElement, sep)
         if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RParenToken)) {
             rParenPos = startPos + lp.offset
         }
@@ -2971,23 +2854,12 @@ class SyntaxNodeImplTranslator {
     }
 
     private func transWhileExpr(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): WhileExpr {
-        var conditionPropInfo = PropInfo()
         var bodyPropInfo = PropInfo()
         let lp = LocalParser(node.children)
         var curNode = lp.consume(kind: SyntaxNodeKind.WhileToken)
         let whileKeyWordPos = startPos + lp.offset
         lp.moveOffset(curNode)
-        curNode = lp.consume(kind: SyntaxNodeKind.LParenToken)
-        let lParenPos = startPos + lp.offset
-        lp.moveOffset(curNode)
-
-        curNode = lp.consume()
-        conditionPropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.moveOffset(curNode)
-
-        curNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
-        let rParenPos = startPos + lp.offset
-        lp.moveOffset(curNode)
+        let (conditionPropInfo, lParenPos, rParenPos) = consumeParenConditionPropInfo(lp, startPos)
         if (lp.look(SyntaxNodeKind.Block)) {
             curNode = lp.consume(kind: SyntaxNodeKind.Block)
             bodyPropInfo = PropInfo(lp.cur - 1, lp.offset)
@@ -3001,7 +2873,6 @@ class SyntaxNodeImplTranslator {
     }
 
     private func transDoWhileExpr(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): DoWhileExpr {
-        var conditionPropInfo = PropInfo()
         var bodyPropInfo = PropInfo()
         let lp = LocalParser(node.children)
         var curNode = lp.consume(kind: SyntaxNodeKind.DoToken)
@@ -3016,16 +2887,7 @@ class SyntaxNodeImplTranslator {
         curNode = lp.consume(kind: SyntaxNodeKind.WhileToken)
         let whileKeyWordPos = startPos + lp.offset
         lp.moveOffset(curNode)
-        curNode = lp.consume(kind: SyntaxNodeKind.LParenToken)
-        let lParenPos = startPos + lp.offset
-        lp.moveOffset(curNode)
-
-        curNode = lp.consume()
-        conditionPropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.moveOffset(curNode)
-        curNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
-        let rParenPos = startPos + lp.offset
-        lp.moveOffset(curNode)
+        let (conditionPropInfo, lParenPos, rParenPos) = consumeParenConditionPropInfo(lp, startPos)
         let posInfo = DoWhileExprPosInfos(lParenPos, rParenPos, doKeyWordPos, whileKeyWordPos)
         let propInfo = DoWhileExprPropInfos(bodyPropInfo, conditionPropInfo)
         lp.consumeToEnd()
@@ -3313,52 +3175,9 @@ class SyntaxNodeImplTranslator {
     }
 
     private func transMacroExpandExpr(node: NonTerminal, startPos: CodePosition, parent: ?SyntaxTreeNode): MacroExpandExpr {
-        var (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo) = (PropInfo(), PropInfo(), PropInfo())
-        var (lSquarePos, rSquarePos): (?CodePosition, ?CodePosition) = (None, None)
-        var (lParenPos, rParenPos): (?CodePosition, ?CodePosition) = (None, None)
         let lp = LocalParser(node.children)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.AnnotationList)) {
-            lp.offset.move(v.offset)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.ModifierList)) {
-            lp.offset.move(v.offset)
-        }
-        let atNode = lp.consume(kind: SyntaxNodeKind.AtToken)
-        let atPos = startPos + lp.offset
-        lp.moveOffset(atNode)
-
-        let calleeNode = lp.consume()
-        calleePropInfo = PropInfo(lp.cur - 1, lp.offset)
-        lp.moveOffset(calleeNode)
-
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LSquareToken)) {
-            lSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-            macroAttrsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.RSquareToken)) {
-            rSquarePos = startPos + lp.offset
-            lp.moveOffset(v)
-        }
-        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.LParenToken)) {
-            lParenPos = startPos + lp.offset
-            lp.moveOffset(v)
-            if (lp.look(SyntaxNodeKind.TokenList) && let Some(v) <- lp.consume()) {
-                macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-                lp.moveOffset(v)
-            }
-            let rParenNode = lp.consume(kind: SyntaxNodeKind.RParenToken)
-            rParenPos = startPos + lp.offset
-            lp.moveOffset(rParenNode)
-        } else {
-            let inputNode = lp.consume()
-            macroInputsPropInfo = PropInfo(lp.cur - 1, lp.offset)
-            lp.moveOffset(inputNode)
-        }
+        let (calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo, atPos, lSquarePos, rSquarePos, lParenPos,
+            rParenPos) = consumeMacroExpandCommon(lp, startPos)
 
         let propInfos = MacroExpandExprPropInfos(calleePropInfo, macroAttrsPropInfo, macroInputsPropInfo)
         let posInfos = MacroExpandExprPosInfos(atPos, lSquarePos, rSquarePos, lParenPos, rParenPos)
@@ -3742,19 +3561,8 @@ class SyntaxNodeImplTranslator {
         elementsPropInfo = PropInfo(lp.cur - 1, lp.offset)
         lp.moveOffset(curNode)
         while (lp.look(SyntaxNodeKind.CommaToken)) {
-            curNode = lp.consume(kind: SyntaxNodeKind.CommaToken)
-            commaPos.add(startPos + lp.offset)
-            lp.moveOffset(curNode)
-
-            if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-                labels.add(getValue(v))
-                labelsPos.add(startPos + lp.offset)
-                lp.moveOffset(v)
-
-                curNode = lp.consume(kind: SyntaxNodeKind.ColonToken)
-                colonPos.add(startPos + lp.offset)
-                lp.moveOffset(curNode)
-            }
+            commaPos.add(consumeCommaPos(lp, startPos))
+            consumeOptionalTypeLabel(lp, startPos, labels, labelsPos, colonPos)
             lp.moveOffset(lp.consume())
         }
 
@@ -3796,18 +3604,8 @@ class SyntaxNodeImplTranslator {
             lp.moveOffset(curNode)
         }
         while (lp.look(SyntaxNodeKind.CommaToken)) {
-            curNode = lp.consume(kind: SyntaxNodeKind.CommaToken)
-            commaPos.add(startPos + lp.offset)
-            lp.moveOffset(curNode)
-            if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-                labels.add(getValue(v))
-                labelsPos.add(startPos + lp.offset)
-                lp.moveOffset(v)
-
-                curNode = lp.consume(kind: SyntaxNodeKind.ColonToken)
-                colonPos.add(startPos + lp.offset)
-                lp.moveOffset(curNode)
-            }
+            commaPos.add(consumeCommaPos(lp, startPos))
+            consumeOptionalTypeLabel(lp, startPos, labels, labelsPos, colonPos)
             lp.moveOffset(lp.consume())
         }
 

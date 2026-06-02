@@ -11,6 +11,47 @@ package stdx.syntax
 import std.collection.ArrayList
 import std.convert
 
+private func createTokenRanges(positions: Array<CodePosition>, kind: SyntaxNodeKind): Array<CodePositionRange> {
+    let ranges: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
+    for (pos in positions) {
+        ranges.add(CodePositionRange(pos, pos + kind.size))
+    }
+    return ranges.toArray()
+}
+
+private func createTextRanges(positions: Array<CodePosition>, texts: Array<String>): Array<CodePositionRange> {
+    let ranges: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
+    for (i in 0..positions.size) {
+        ranges.add(CodePositionRange(positions[i], positions[i] + texts[i].size))
+    }
+    return ranges.toArray()
+}
+
+private func collectLabeledTypeAnnotations(lp: LocalParser, startPos: CodePosition,
+    parentNode: ?SyntaxTreeNode): Array<TypeAnnotation> {
+    let typeAnnotations = ArrayList<TypeAnnotation>()
+    if (let Some(node) <- lp.consume()) {
+        typeAnnotations.add(
+            cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, parentNode))
+                .getOrThrow())
+        lp.moveOffset(node)
+    }
+    while (lp.look(SyntaxNodeKind.CommaToken)) {
+        lp.moveOffset(lp.consume())
+        if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
+            lp.moveOffset(v)
+            lp.moveOffset(lp.consume())
+        }
+        if (let Some(node) <- lp.consume()) {
+            typeAnnotations.add(
+                cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, parentNode))
+                    .getOrThrow())
+            lp.moveOffset(node)
+        }
+    }
+    return typeAnnotations.toArray()
+}
+
 sealed abstract class TypeAnnotation <: SyntaxTreeNode {
     init(nodePos: CodePositionRange, nodeImpl: SyntaxNodeImpl, parentNode: ?SyntaxTreeNode,
         commentsPropInfo: Array<PropInfo>) {
@@ -254,12 +295,7 @@ public class FuncType <: TypeAnnotation {
      * @return Array of CodePositionRange objects representing the positions of commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let commasPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (pos in posInfos.commasPos) {
-            let endPos = pos + SyntaxNodeKind.CommaToken.size
-            commasPos.add(CodePositionRange(pos, endPos))
-        }
-        return commasPos.toArray()
+        return createTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken)
     }
 
     /**
@@ -276,12 +312,7 @@ public class FuncType <: TypeAnnotation {
      * @return Array of CodePositionRange objects representing the positions of labels.
      */
     public func getLabelsPos(): Array<CodePositionRange> {
-        let labelsPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.labelsPos.size) {
-            let endPos = posInfos.labelsPos[i] + labels[i].size
-            labelsPos.add(CodePositionRange(posInfos.labelsPos[i], endPos))
-        }
-        return labelsPos.toArray()
+        return createTextRanges(posInfos.labelsPos, labels)
     }
 
     /**
@@ -289,12 +320,7 @@ public class FuncType <: TypeAnnotation {
      * @return Array of CodePositionRange objects representing the positions of colons.
      */
     public func getColonsPos(): Array<CodePositionRange> {
-        let colonsPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (pos in posInfos.colonsPos) {
-            let endPos = pos + SyntaxNodeKind.ColonToken.size
-            colonsPos.add(CodePositionRange(pos, endPos))
-        }
-        return colonsPos.toArray()
+        return createTokenRanges(posInfos.colonsPos, SyntaxNodeKind.ColonToken)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: FuncTypePosInfos,
@@ -334,31 +360,13 @@ public class FuncType <: TypeAnnotation {
      */
     public prop paramTypes: Array<TypeAnnotation> {
         get() {
-            let paramTypes = ArrayList<TypeAnnotation>()
             if (let Some(propInfo) <- propInfos.paramTypesPropInfo) {
                 let lp = LocalParser((nodeImpl as NonTerminal).getOrThrow().children, propInfo.offset,
                     index: propInfo.index)
-                if (let Some(node) <- lp.consume()) {
-                    paramTypes.add(
-                        cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, this))
-                            .getOrThrow())
-                    lp.moveOffset(node)
-                }
-                while (lp.look(SyntaxNodeKind.CommaToken)) {
-                    lp.moveOffset(lp.consume())
-                    if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-                        lp.moveOffset(v)
-                        lp.moveOffset(lp.consume())
-                    }
-                    if (let Some(node) <- lp.consume()) {
-                        paramTypes.add(
-                            cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, this))
-                                .getOrThrow())
-                        lp.moveOffset(node)
-                    }
-                }
+                collectLabeledTypeAnnotations(lp, startPos, this)
+            } else {
+                Array<TypeAnnotation>()
             }
-            paramTypes.toArray()
         }
     }
     /**
@@ -664,12 +672,7 @@ public class TupleType <: TypeAnnotation {
      * @return An array of CodePositionRange objects representing the position ranges of commas.
      */
     public func getCommasPos(): Array<CodePositionRange> {
-        let commasPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (pos in posInfos.commasPos) {
-            let endPos = pos + SyntaxNodeKind.CommaToken.size
-            commasPos.add(CodePositionRange(pos, endPos))
-        }
-        return commasPos.toArray()
+        return createTokenRanges(posInfos.commasPos, SyntaxNodeKind.CommaToken)
     }
 
     /**
@@ -677,12 +680,7 @@ public class TupleType <: TypeAnnotation {
      * @return An array of CodePositionRange objects representing the position ranges of labels.
      */
     public func getLabelsPos(): Array<CodePositionRange> {
-        let labelsPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (i in 0..posInfos.labelsPos.size) {
-            let endPos = posInfos.labelsPos[i] + labels[i].size
-            labelsPos.add(CodePositionRange(posInfos.labelsPos[i], endPos))
-        }
-        return labelsPos.toArray()
+        return createTextRanges(posInfos.labelsPos, labels)
     }
 
     /**
@@ -690,12 +688,7 @@ public class TupleType <: TypeAnnotation {
      * @return An array of CodePositionRange objects representing the position ranges of colons.
      */
     public func getColonsPos(): Array<CodePositionRange> {
-        let colonsPos: ArrayList<CodePositionRange> = ArrayList<CodePositionRange>()
-        for (pos in posInfos.colonsPos) {
-            let endPos = pos + SyntaxNodeKind.ColonToken.size
-            colonsPos.add(CodePositionRange(pos, endPos))
-        }
-        return colonsPos.toArray()
+        return createTokenRanges(posInfos.colonsPos, SyntaxNodeKind.ColonToken)
     }
 
     init(nodeImpl: SyntaxNodeImpl, startPos: CodePosition, parentNode: ?SyntaxTreeNode, posInfos: TupleTypePosInfos,
@@ -726,29 +719,9 @@ public class TupleType <: TypeAnnotation {
      */
     public prop elements: Array<TypeAnnotation> {
         get() {
-            let elements = ArrayList<TypeAnnotation>()
             let lp = LocalParser((nodeImpl as NonTerminal).getOrThrow().children, propInfos.elementsPropInfo.offset,
                 index: propInfos.elementsPropInfo.index)
-            if (let Some(node) <- lp.consume()) {
-                elements.add(
-                    cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, this))
-                        .getOrThrow())
-                lp.moveOffset(node)
-            }
-            while (lp.look(SyntaxNodeKind.CommaToken)) {
-                lp.moveOffset(lp.consume())
-                if (let Some(v) <- lp.lookAndConsume(SyntaxNodeKind.IdentToken)) {
-                    lp.moveOffset(v)
-                    lp.moveOffset(lp.consume())
-                }
-                if (let Some(node) <- lp.consume()) {
-                    elements.add(
-                        cast<TypeAnnotation>(SyntaxNodeImplTranslator.translate(node, startPos + lp.offset, this))
-                            .getOrThrow())
-                    lp.moveOffset(node)
-                }
-            }
-            elements.toArray()
+            collectLabeledTypeAnnotations(lp, startPos, this)
         }
     }
     /**
