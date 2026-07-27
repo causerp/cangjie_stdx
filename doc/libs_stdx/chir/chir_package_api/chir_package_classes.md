@@ -8294,25 +8294,28 @@ public func setInstTypeArg(index: Int64, arg: Type): Unit
 
 ```cangjie
 public class InvokeCallContext {
-    public init(caller: Value, virMethodCtx: FuncSigInfo, funcCallCtx: FuncCallContext)
+    public init(caller: Value, funcCallCtx: FuncCallContext, method: Function,
+        overflowStrategy!: OverflowStrategy = OverflowStrategy.NA)
 }
 ```
 
-功能：虚方法调用上下文，封装调用者值、虚方法签名信息以及函数调用上下文。
+功能：虚方法调用上下文，封装调用者值、函数调用上下文与虚方法 `Function`；可选指定 overflow strategy（用于接口 overflow 运算符调用）。
 
-### init(Value, FuncSigInfo, FuncCallContext)
+### init(Value, FuncCallContext, Function, OverflowStrategy)
 
 ```cangjie
-public init(caller: Value, virMethodCtx: FuncSigInfo, funcCallCtx: FuncCallContext)
+public init(caller: Value, funcCallCtx: FuncCallContext, method: Function,
+    overflowStrategy!: OverflowStrategy = OverflowStrategy.NA)
 ```
 
-功能：构造一个 `InvokeCallContext`，指定调用者、虚方法签名信息和函数调用上下文。
+功能：构造一个 `InvokeCallContext`，指定调用者、函数调用上下文与被调虚方法。
 
 参数：
 
-- caller: Value - 调用者值（即接收对象）。
-- virMethodCtx: [FuncSigInfo](#class-funcsiginfo) - 被调虚方法的签名信息。
+- caller: Value - 实例调用时为接收对象；静态虚调用时为 RTTI 值（如 `GetRTTIStatic` 的结果）。
 - funcCallCtx: [FuncCallContext](#class-funccallcontext) - 函数调用的实参与类型实参上下文。
+- method: [Function](#class-function) - 被调虚方法，语义类似 `Apply` 中的 `callee`。
+- overflowStrategy!: [OverflowStrategy](#enum-overflowstrategy) - overflow 策略，默认为 `NA`；非 `NA` 时会影响 `InvokeBase.methodName` 的前缀。
 
 示例：
 
@@ -8321,10 +8324,10 @@ public init(caller: Value, virMethodCtx: FuncSigInfo, funcCallCtx: FuncCallConte
 import stdx.chir.*
 
 main() {
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let pkg = Package("demo", AccessLevel.Public)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     println("init_InvokeCallContext: done")
 }
 ```
@@ -8341,7 +8344,7 @@ init_InvokeCallContext: done
 public prop caller: Value
 ```
 
-功能：调用者值（即虚方法调用的接收对象）。
+功能：调用者值。实例虚调用时为接收对象；静态虚调用时为 RTTI 值。
 
 类型：Value
 
@@ -8352,10 +8355,10 @@ public prop caller: Value
 import stdx.chir.*
 
 main() {
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("m", ft)
+    let pkg = Package("demo", AccessLevel.Public)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     println("prop_caller: ${ctx.caller.toString().size > 0}")
 }
 ```
@@ -8364,37 +8367,6 @@ main() {
 
 ```text
 prop_caller: true
-```
-
-### prop virMethodCtx
-
-```cangjie
-public prop virMethodCtx: FuncSigInfo
-```
-
-功能：被调虚方法的签名信息。
-
-类型：[FuncSigInfo](#class-funcsiginfo)
-
-示例：
-
-<!-- verify -->
-```cangjie
-import stdx.chir.*
-
-main() {
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("m", ft)
-    let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
-    println("prop_virMethodCtx: ${ctx.virMethodCtx.name}")
-}
-```
-
-运行结果：
-
-```text
-prop_virMethodCtx: m
 ```
 
 ### prop funcCallCtx
@@ -8414,10 +8386,10 @@ public prop funcCallCtx: FuncCallContext
 import stdx.chir.*
 
 main() {
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("m", ft)
+    let pkg = Package("demo", AccessLevel.Public)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     println("prop_funcCallCtx: ${ctx.funcCallCtx.args.size}")
 }
 ```
@@ -8426,6 +8398,37 @@ main() {
 
 ```text
 prop_funcCallCtx: 0
+```
+
+### prop method
+
+```cangjie
+public prop method: Function
+```
+
+功能：被调虚方法，与构造时传入的 `method` 参数一致。
+
+类型：[Function](#class-function)
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.chir.*
+
+main() {
+    let pkg = Package("demo", AccessLevel.Public)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
+    println("prop_method: ${ctx.method.srcCodeName}")
+}
+```
+
+运行结果：
+
+```text
+prop_method: m
 ```
 
 ## class Value
@@ -15536,12 +15539,48 @@ public operator func ==(other: TryIntrinsic): Bool
 sealed abstract class InvokeBase <: FuncCall & Equatable<InvokeBase> {}
 ```
 
-功能：成员方法调用（Invoke）类表达式的抽象基类，是 [Invoke](#class-invoke)、[TryInvoke](#class-tryinvoke) 的父类型，提供方法名、方法类型及方法泛型形参的查询能力。
+功能：成员方法调用（Invoke）类表达式的抽象基类，是 [Invoke](#class-invoke)、[TryInvoke](#class-tryinvoke) 的父类型，提供被调方法（`callee`）、方法名、方法类型及方法泛型形参的查询能力。
 
 父类型：
 
 - [FuncCall](#class-funccall)
 - Equatable\<[InvokeBase](#class-invokebase)>
+
+### prop callee
+
+```cangjie
+public prop callee: Function
+```
+
+功能：被调虚方法，对应构造 `InvokeCallContext` 时传入的 `method`。
+
+类型：[Function](#class-function)
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.chir.*
+
+main() {
+    let pkg = Package("demo", AccessLevel.Public)
+    let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
+    f.initBody()
+    let block = f.body.getOrThrow().entryBlock
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let invokeCtx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
+    let expr = Invoke.create(UnitType.get(), invokeCtx)
+    block.appendExpr(expr)
+    println("prop_callee: ${expr.callee.srcCodeName}")
+}
+```
+
+运行结果：
+
+```text
+prop_callee: m
+```
 
 ### prop methodGenericTypeParams
 
@@ -15549,7 +15588,7 @@ sealed abstract class InvokeBase <: FuncCall & Equatable<InvokeBase> {}
 public prop methodGenericTypeParams: Array<GenericType>
 ```
 
-功能：该成员方法调用的方法泛型形参列表。
+功能：该成员方法调用的方法泛型形参列表，取自 `callee.genericTypeParams`。
 
 类型：Array\<[GenericType](#class-generictype)>
 
@@ -15564,9 +15603,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let builder = CHIRBuilder(InsertPosition.AtEnd(block))
-    let virMethodCtx = FuncSigInfo("m", FuncType.get([], UnitType.get()))
-    let invokeCtx = InvokeCallContext(f, virMethodCtx, FuncCallContext([], [], None))
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let invokeCtx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), invokeCtx)
     block.appendExpr(expr)
     println("prop_methodGenericTypeParams: ${expr.methodGenericTypeParams.size}")
@@ -15585,7 +15624,7 @@ prop_methodGenericTypeParams: 0
 public prop methodName: String
 ```
 
-功能：该成员方法调用的方法名。
+功能：该成员方法调用的方法名，取自 `callee.srcCodeName`；若构造 `InvokeCallContext` 时指定了非 `NA` 的 overflow strategy，则名称前会带上对应前缀（如 `&`、`~`、`%`）。
 
 类型：String
 
@@ -15600,9 +15639,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let builder = CHIRBuilder(InsertPosition.AtEnd(block))
-    let virMethodCtx = FuncSigInfo("m", FuncType.get([], UnitType.get()))
-    let invokeCtx = InvokeCallContext(f, virMethodCtx, FuncCallContext([], [], None))
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let invokeCtx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), invokeCtx)
     block.appendExpr(expr)
     println("prop_methodName: ${expr.methodName}")
@@ -15621,7 +15660,7 @@ prop_methodName: m
 public prop methodType: FuncType
 ```
 
-功能：该成员方法调用的方法类型。
+功能：该成员方法调用的方法类型，取自 `callee.funcType`。
 
 类型：[FuncType](#class-functype)
 
@@ -15636,9 +15675,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let builder = CHIRBuilder(InsertPosition.AtEnd(block))
-    let virMethodCtx = FuncSigInfo("m", FuncType.get([], UnitType.get()))
-    let invokeCtx = InvokeCallContext(f, virMethodCtx, FuncCallContext([], [], None))
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let invokeCtx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), invokeCtx)
     block.appendExpr(expr)
     println("prop_methodType: ${expr.methodType.qualifiedName}")
@@ -15678,9 +15717,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let builder = CHIRBuilder(InsertPosition.AtEnd(block))
-    let virMethodCtx = FuncSigInfo("m", FuncType.get([], UnitType.get()))
-    let invokeCtx = InvokeCallContext(f, virMethodCtx, FuncCallContext([], [], None))
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "m_m", "m", "demo")
+    let fcc = FuncCallContext([], [], None)
+    let invokeCtx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), invokeCtx)
     block.appendExpr(expr)
     println("op_eq_InvokeBase: ${expr == expr}")
@@ -15734,10 +15773,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), ctx)
     block.appendExpr(expr)
     println("static_func_create: ${block.exprs.size}")
@@ -15756,7 +15794,7 @@ static_func_create: 1
 public override func getArgs(): Array<Value>
 ```
 
-功能：返回此调用表达式的实际参数列表。
+功能：返回此虚方法调用的实参列表。若 `callee.isStatic()` 为 true，返回 `operands[2..]`（跳过 method 与 RTTI caller）；否则返回 `operands[1..]`（含 receiver 与实参）。
 
 返回值：
 
@@ -15789,10 +15827,9 @@ main() {
     let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = Invoke.create(UnitType.get(), ctx)
     block.appendExpr(expr)
     println("op_eq_Invoke: ${expr == expr}")
@@ -15842,10 +15879,9 @@ main() {
     let block = bg.entryBlock
     let normalBlock = bg.appendBlock()
     let errorBlock = bg.appendBlock()
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = TryInvoke.create(UnitType.get(), ctx, normalBlock, errorBlock)
     block.appendExpr(expr)
     println("prop_normalBranch: ${expr.normalBranch == normalBlock}")
@@ -15882,10 +15918,9 @@ main() {
     let block = bg.entryBlock
     let normalBlock = bg.appendBlock()
     let errorBlock = bg.appendBlock()
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = TryInvoke.create(UnitType.get(), ctx, normalBlock, errorBlock)
     block.appendExpr(expr)
     println("prop_errorBranch: ${expr.errorBranch == errorBlock}")
@@ -15931,10 +15966,9 @@ main() {
     let block = bg.entryBlock
     let normalBlock = bg.appendBlock()
     let errorBlock = bg.appendBlock()
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = TryInvoke.create(UnitType.get(), ctx, normalBlock, errorBlock)
     block.appendExpr(expr)
     println("static_func_create: ${block.exprs.size}")
@@ -15953,7 +15987,7 @@ static_func_create: 1
 public override func getArgs(): Array<Value>
 ```
 
-功能：返回此调用表达式的实际参数列表。
+功能：返回此虚方法调用的实参列表（不含末尾 normal/error 分支块）。若 `callee.isStatic()` 为 true，返回 `operands[2..operands.size - 2]`；否则返回 `operands[1..operands.size - 2]`。
 
 返回值：
 
@@ -15989,10 +16023,9 @@ main() {
     let block = bg.entryBlock
     let normalBlock = bg.appendBlock()
     let errorBlock = bg.appendBlock()
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = TryInvoke.create(UnitType.get(), ctx, normalBlock, errorBlock)
     block.appendExpr(expr)
     println("op_eq_TryInvoke: ${expr == expr}")
@@ -22726,10 +22759,9 @@ main() {
     f.initBody()
     let block = f.body.getOrThrow().entryBlock
     let builder = CHIRBuilder(InsertPosition.AtEnd(block))
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = builder.createInvoke(UnitType.get(), ctx)
     println("createInvoke: ${expr.toString().size > 0}")
 }
@@ -23864,10 +23896,9 @@ main() {
     let normalBlock = bg.appendBlock()
     let errBlock = bg.appendBlock()
     let builder = CHIRBuilder(InsertPosition.AtEnd(entryBlock))
-    let ft = FuncType.get([], UnitType.get())
-    let sig = FuncSigInfo("method", ft)
+    let methodFn = pkg.addFunction(FuncType.get([], UnitType.get()), "method_m", "method", "demo")
     let fcc = FuncCallContext([], [], None)
-    let ctx = InvokeCallContext(BoolLiteral.get(false), sig, fcc)
+    let ctx = InvokeCallContext(BoolLiteral.get(false), fcc, methodFn)
     let expr = builder.createTryInvoke(UnitType.get(), ctx, normalBlock, errBlock)
     println("createTryInvoke: ${expr.toString().size > 0}")
 }
