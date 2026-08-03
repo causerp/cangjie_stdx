@@ -70,15 +70,12 @@ using NodeFormatExpr = flatbuffers::Offset<NodeFormat::Expr>;
 using NodeFormatType = flatbuffers::Offset<NodeFormat::Type>;
 using NodeFormatPattern = flatbuffers::Offset<NodeFormat::Pattern>;
 
-flatbuffers::Offset<NodeFormat::Range> SerializeRange(const Range& range, flatbuffers::FlatBufferBuilder& builder);
-flatbuffers::Offset<NodeFormat::DiagInfo> SerializeDiag(const DiagnosticInfo& diag, flatbuffers::FlatBufferBuilder& builder);
-flatbuffers::Offset<NodeFormat::Diags> SerializeDiags(const std::vector<DiagnosticInfo>& diags, flatbuffers::FlatBufferBuilder& builder);
-uint8_t* ExportDiags(flatbuffers::Offset<NodeFormat::Diags> diags, flatbuffers:: FlatBufferBuilder& builder);
-
 namespace AstWriter {
 const size_t INITIAL_FILE_SIZE = 65536;
 
 using namespace Cangjie;
+uint8_t* ExportDiags(const std::vector<DiagnosticInfo>& diags, flatbuffers::FlatBufferBuilder& builder);
+
 class NodeWriter {
 public:
     NodeWriter(Ptr<AST::Node> nodePtr) : nodePtr(nodePtr), builder(INITIAL_FILE_SIZE)
