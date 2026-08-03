@@ -11,9 +11,7 @@
 
 #include "ParserSyntaxImpl.h"
 
-using namespace Cangjie;
-using namespace Cangjie::AST;
-
+namespace Cangjie {
 class ParserSyntax : public Parser {
 public:
     /// Create Parser with string \ref input and the position of the first token. Only used in macro reparse.
@@ -30,5 +28,6 @@ public:
 private:
     std::unique_ptr<class ParserSyntaxImpl> implSyntax;
 };
+} // namespace Cangjie
 
 #endif /* CANGJIE_PARSER_SYNTAX_H */
