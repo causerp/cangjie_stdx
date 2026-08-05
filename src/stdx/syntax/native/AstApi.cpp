@@ -27,6 +27,8 @@
 #include "cangjie/Basic/StringConvertor.h"
 
 using namespace Cangjie;
+using StdxSyntax::ParseRes;
+using StdxSyntax::ParserSyntax;
 namespace {
 uint8_t* getDiagInfos(DiagnosticEngine& diag) {
     std::vector<DiagnosticInfo> diagInfosParse, diagInfosLex, diagInfos;

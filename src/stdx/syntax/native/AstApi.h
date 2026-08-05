@@ -11,11 +11,11 @@
 #include <string>
 #include "cangjie/AST/Node.h"
 
-namespace Cangjie {
+namespace StdxSyntax {
 struct ParseRes {
     uint8_t* node;
     uint8_t* eMsg;
 };
-} // namespace Cangjie
+} // namespace StdxSyntax
 
 #endif /* CANGJIE_AST_API_H */
