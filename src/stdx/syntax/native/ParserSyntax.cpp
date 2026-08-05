@@ -25,7 +25,10 @@
 #include "cangjie/Utils/FileUtil.h"
 #include "cangjie/Utils/Utils.h"
 
-namespace Cangjie {
+using namespace Cangjie;
+using namespace Cangjie::AST;
+
+namespace StdxSyntax {
 ParserSyntax::ParserSyntax(const std::string& input, DiagnosticEngine& diag, SourceManager& sm, const Position& pos,
     bool attachComment)
     : Parser(input, diag, sm, pos, attachComment, false),
@@ -59,4 +62,4 @@ void ParserSyntax::AttachComment(std::vector<OwnedPtr<AST::Node>>& nodes)
 {
     AttachCommentToNodes(nodes);
 }
-} // namespace Cangjie
+} // namespace StdxSyntax

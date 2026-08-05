@@ -17,7 +17,10 @@
 
 #include "cangjie/Parse/Parser.h"
 
-namespace Cangjie {
+using namespace Cangjie;
+using namespace Cangjie::AST;
+
+namespace StdxSyntax {
 class ParserSyntaxImpl final {
 public:
 
@@ -122,6 +125,6 @@ private:
     bool skipNL{true};                          /**< Skip new line token by default. */
     Position firstNLPosition{DEFAULT_POSITION}; /**< Record first nl position. */
 };
-} // namespace Cangjie
+} // namespace StdxSyntax
 
 #endif // CANGJIE_PARSER_SYNTAX_IMPL_H
