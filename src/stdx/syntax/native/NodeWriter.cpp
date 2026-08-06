@@ -47,7 +47,6 @@ uint8_t* ExportFinishedFlatBuffer(flatbuffers::FlatBufferBuilder& builder, std::
     (void)std::copy_n(bufferData.begin(), bufferData.size(), rawPtr);
     return rawPtr;
 }
-}
 
 flatbuffers::Offset<NodeFormat::Range> SerializeRange(const Range& range, flatbuffers::FlatBufferBuilder& builder)
 {
@@ -78,15 +77,18 @@ flatbuffers::Offset<NodeFormat::Diags> SerializeDiags(const std::vector<Diagnost
     auto diagInfos = builder.CreateVector(diagsVec);
     return NodeFormat::CreateDiags(builder, diagInfos);
 }
+} // namespace
 
-uint8_t* ExportDiags(flatbuffers::Offset<NodeFormat::Diags> diags, flatbuffers::FlatBufferBuilder& builder)
+namespace AstWriter {
+uint8_t* ExportDiags(const std::vector<DiagnosticInfo>& diags, flatbuffers::FlatBufferBuilder& builder)
 {
     // Serialize data into buffer.
     // Flatbuffer maximum size is 2GB, for 32-bit signed offsets.
-    builder.Finish(diags);
+    builder.Finish(SerializeDiags(diags, builder));
     std::vector<uint8_t> bufferData;
     return ExportFinishedFlatBuffer(builder, bufferData);
 }
+} // namespace AstWriter
 
 NodeFormat::Position NodeWriter::FlatPosCreateHelper(const Position& pos) const
 {

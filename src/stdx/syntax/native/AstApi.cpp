@@ -27,6 +27,8 @@
 #include "cangjie/Basic/StringConvertor.h"
 
 using namespace Cangjie;
+using StdxSyntax::ParseRes;
+using StdxSyntax::ParserSyntax;
 namespace {
 uint8_t* getDiagInfos(DiagnosticEngine& diag) {
     std::vector<DiagnosticInfo> diagInfosParse, diagInfosLex, diagInfos;
@@ -35,7 +37,7 @@ uint8_t* getDiagInfos(DiagnosticEngine& diag) {
     diagInfos = diagInfosParse;
     diagInfos.insert(diagInfos.end(), diagInfosLex.begin(), diagInfosLex.end());
     flatbuffers::FlatBufferBuilder builder(AstWriter::INITIAL_FILE_SIZE);
-    return ExportDiags(SerializeDiags(diagInfos, builder), builder);
+    return AstWriter::ExportDiags(diagInfos, builder);
 }
 
 void SetDiagEngine(DiagnosticEngine& diag, SourceManager& sm) {
