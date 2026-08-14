@@ -1203,6 +1203,7 @@ if(NOT CANGJIE_CJPM_BUILD_TYPE AND NOT CANGJIE_BUILD_WITHOUT_SYNTAX)
 
     make_cangjie_lib(
         syntax IS_SHARED
+        IOS_DEPLOYMENT_VERSION 12.0.0
         DEPENDS
             cangjie${BACKEND_TYPE}Syntax
             stdx.syntaxFFI
