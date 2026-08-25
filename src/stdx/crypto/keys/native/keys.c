@@ -374,6 +374,7 @@ static int32_t EncryptPrivateKeyImpl(EVP_PKEY* key, const char* password, char**
     if (p8 == NULL) {
         X509HandleError(exception, "Failed to configure encyption for PKCS8 encryption", dynMsg);
         DYN_PKCS8_PRIV_KEY_INFO_free(p8info, dynMsg);
+        DYN_X509_ALGOR_free(algorithm, dynMsg);
         return CJ_FAIL;
     }
     BIO* mem = DYN_BIO_new_mem(dynMsg);
