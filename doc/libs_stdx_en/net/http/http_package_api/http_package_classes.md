@@ -2489,7 +2489,7 @@ Type: [Logger](../../../log/log_package_api/log_package_classes.md#class-logger)
 protected prop maxRequestBodySize: Int64
 ```
 
-Function: Retrieves the server-configured maximum request body size for reading requests. Only applies to HTTP/1.1 requests without "Transfer-Encoding: chunked" header.
+Function: Retrieves the server-configured maximum request body size for reading requests. Only applies to HTTP/1.1 requests, including requests with "Transfer-Encoding: chunked" header.
 
 Type: Int64
 
@@ -2742,7 +2742,7 @@ Type: UInt32
 public prop maxRequestBodySize: Int64
 ```
 
-Functionality: Gets the server-set maximum size for reading request bodies, only effective for HTTP/1.1 requests without "Transfer-Encoding: chunked".
+Functionality: Gets the server-set maximum size for reading request bodies, only effective for HTTP/1.1 requests, including requests with "Transfer-Encoding: chunked".
 
 Type: Int64
 
@@ -2895,6 +2895,7 @@ h1 Request Validation and Processing:
 - Headers must include "host" header with a unique value, otherwise returns 400 response; Headers cannot simultaneously contain "content-length" and "transfer-encoding", otherwise returns 400 response;
 - For "transfer-encoding" header, the last value after splitting by "," must be "chunked", and previous values cannot contain "chunked", otherwise returns 400 response;
 - For "content-length" header, value must be parsable as Int64 type and non-negative, otherwise returns 400 response. If value exceeds server's maxRequestBodySize, returns 413 response;
+- For requests with "transfer-encoding: chunked", the cumulative size of the chunked request body is checked while reading, and if it exceeds server's maxRequestBodySize, returns 413 response;
 - If headers lack both "content-length" and "transfer-encoding: chunked", body is assumed absent by default;
 - For "trailer" header, values cannot include "transfer-encoding", "trailer", or "content-length";
 - For "expect" header, values containing anything other than "100-continue" will return 417 response;
@@ -3286,7 +3287,7 @@ Return Value:
 public func maxRequestBodySize(size: Int64): ServerBuilder
 ```
 
-Function: Sets the maximum allowed request body size for client requests. Returns a 413 status code if exceeded. Default is 2MB. Only applies to HTTP/1.1 requests without "Transfer-Encoding: chunked".
+Function: Sets the maximum allowed request body size for client requests. Returns a 413 status code if exceeded. Default is 2MB. Only applies to HTTP/1.1 requests, including requests with "Transfer-Encoding: chunked" (the cumulative body size is checked as the chunked body is read).
 
 Parameters:
 

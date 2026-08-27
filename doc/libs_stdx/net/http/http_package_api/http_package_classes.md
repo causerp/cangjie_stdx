@@ -6638,7 +6638,7 @@ protected prop logger: Logger
 protected prop maxRequestBodySize: Int64
 ```
 
-功能：获取服务器设定的读取请求的请求体最大值，仅对于 HTTP/1.1 且未设置 "Transfer-Encoding: chunked" 的请求生效。
+功能：获取服务器设定的读取请求的请求体最大值，仅对 HTTP/1.1 请求生效，包括通过 "Transfer-Encoding: chunked" 传输请求体的请求。
 
 类型：Int64
 
@@ -7317,7 +7317,7 @@ HTTP/2 最大头部列表大小：8192
 public prop maxRequestBodySize: Int64
 ```
 
-功能：获取服务器设定的读取请求的请求体最大值，仅对于 HTTP/1.1 且未设置 "Transfer-Encoding: chunked" 的请求生效。
+功能：获取服务器设定的读取请求的请求体最大值，仅对 HTTP/1.1 请求生效，包括通过 "Transfer-Encoding: chunked" 传输请求体的请求。
 
 类型：Int64
 
@@ -7785,6 +7785,7 @@ h1 request 检查和处理：
 - headers 中必须包含 "host" 请求头，且值唯一，否则返回 400 响应 headers 中不允许同时存在 "content-length" 与 "transfer-encoding" 请求头，否则返回 400 响应；
 - 请求头 "transfer-encoding" 的 value 经过 "," 分割后最后一个 value 必须为 "chunked"，且之前的 value 不允许存在 "chunked"，否则返回 400 响应；
 - 请求头 "content-length" 其 value 必须能解析为 Int64 类型，且不能为负值，否则返回 400 响应，当其 value 值超出 server 设定 maxRequestBodySize，将返回 413 响应；
+- 对于带有请求头 "transfer-encoding: chunked" 的请求，读取 chunked 请求体时会对累计的请求体大小进行校验，当累计大小超出 server 设定的 maxRequestBodySize，将返回 413 响应；
 - headers 中若不存在 "content-length" 和 "transfer-encoding: chunked" 时默认不存在 body；
 - 请求头 "trailer" 中，value 不允许存在 "transfer-encoding"，"trailer"，"content-length"；
 - 请求头 "expect" 中，value 中存在非 "100-continue" 的值，将会返回 417 响应；
@@ -8858,7 +8859,7 @@ main(): Unit {
 public func maxRequestBodySize(size: Int64): ServerBuilder
 ```
 
-功能：设置服务端允许客户端发送单个请求的请求体最大长度，请求体长度超过该值时，将返回状态码为 413 的响应。默认值为 2M。仅对于 HTTP/1.1 且未设置 "Transfer-Encoding: chunked" 的请求生效。
+功能：设置服务端允许客户端发送单个请求的请求体最大长度，请求体长度超过该值时，将返回状态码为 413 的响应。该限制既适用于通过 "Content-Length" 请求头声明请求体长度的 HTTP/1.1 请求，也适用于通过 "Transfer-Encoding: chunked" 传输请求体的 HTTP/1.1 请求（读取时会对 chunked 请求体的累计大小进行校验）。默认值为 2M。仅对 HTTP/1.1 请求生效。
 
 参数：
 
