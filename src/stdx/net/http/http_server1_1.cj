@@ -280,10 +280,11 @@ class HttpEngineConn1 <: HttpEngineConn & BodyProviderConn {
                 .remoteAddr(conn.socket.remoteAddress)
                 .build()
             request._body = match {
-                case expectContinue => HttpExpectBodyProvider(this, request, chunked, contentLength, readTimer)
+                case expectContinue => HttpExpectBodyProvider(this, request, chunked, contentLength, readTimer,
+                    maxRequestBodySize)
                 case chunked =>
                     request._bodySize = None
-                    HttpChunkedBodyProvider(this, request, readTimer)
+                    HttpChunkedBodyProvider(this, request, readTimer, maxRequestBodySize)
                 case _ => match (contentLength) {
                     case Some(contentLength) =>
                         request._bodySize = contentLength
