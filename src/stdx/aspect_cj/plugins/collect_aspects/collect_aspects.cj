@@ -144,7 +144,7 @@ class CollectAspects {
             outFile.write((output.to.recursively.toString() + "\n").toArray())
             outFile.close()
         } catch (_: Exception) {
-            printError("Failed to write annotation information to file '${fileName}'.")
+            printError("Failed to prepare or write annotation information for package '${curPackage.name}' to file '${fileName}'.")
             return false
         }
         return true
