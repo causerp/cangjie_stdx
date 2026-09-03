@@ -1576,7 +1576,7 @@ sealed abstract class CustomType <: Type & Equatable<CustomType> {
     internal prop generic2InstTypeMap: HashMap<GenericType, Type> {
         get() {
             let genericTypeParams = def.genericTypeParams
-            assert(genericTypeParams.size == genericTypeArgs.size, "Generic type parameter count '${genericTypeParams.size}' does not match generic type argument count '${genericTypeArgs.size}'.")
+            assert(genericTypeParams.size == genericTypeArgs.size, "Generic type parameter and argument counts do not match.")
             var replaceTable: HashMap<GenericType, Type> = HashMap<GenericType, Type>()
             for (i in 0..genericTypeParams.size) {
                 let genericTypeParam = genericTypeParams[i]
@@ -1666,7 +1666,7 @@ sealed abstract class CustomType <: Type & Equatable<CustomType> {
     public func getMemberVarInstantiatedType(name: String): Type {
         let memberVarInstTypes = getInstantiatedMemberVarTypes()
         let memberVarNames = allMemberVarNames
-        assert(memberVarInstTypes.size == memberVarNames.size, "Member variable type count '${memberVarInstTypes.size}' does not match member variable name count '${memberVarNames.size}'.")
+        assert(memberVarInstTypes.size == memberVarNames.size, "Member variable type and name counts do not match.")
         var index = memberVarNames.size - 1
         while (index >= 0) {
             if (memberVarNames[index] == name) {

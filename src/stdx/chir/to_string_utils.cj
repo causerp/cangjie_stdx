@@ -267,7 +267,7 @@ internal func valueIdVecToString<T>(prefix: String, values: ArrayList<T>, suffix
     }
     if (hasExceptionBranch) {
         let size = result.size
-        assert(size >= 2, "Value size must be at least 2, got '${size}'.")
+        assert(size >= 2, "Value size must be at least 2.")
         result[size - 2] = "normal: " + result[size - 2]
         result[size - 1] = "exception: " + result[size - 1]
     }

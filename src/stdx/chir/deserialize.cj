@@ -1585,7 +1585,7 @@ class CHIRDeserializerImpl {
         let base = funcCall.GetBase().getOrThrow()
         let kind = convertExprKind(base.GetKind())
         let operands = base.GetOperands()
-        assert(operands.size >= 2, "Invoke operands: expected at least 2, got '${operands.size}'.")
+        assert(operands.size >= 2, "Invoke operands must include a method and caller.")
         let method = getValueAs<Function>(operands[0])
         let caller = getValue(operands[1])
         let instantiatedTypeArgs = getType(funcCall.GetInstantiatedTypeArgs())

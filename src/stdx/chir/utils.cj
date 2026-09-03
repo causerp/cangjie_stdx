@@ -120,7 +120,7 @@ private func getFieldOfTypeImpl(baseTy: Type, index: Int64): Type {
     } else if (let Some(tt) <- (baseTy as TupleType)) {
         return tt.elementTypes[index]
     } else if (let Some(et) <- (baseTy as EnumType)) {
-        assert(index == 0, "Enum type field index must be 0, got '${index}'.")
+        assert(index == 0, "Enum type field index must be 0.")
         if (getEnumSelectorType(et.enumDef) == TypeKind.`Bool`) {
             return BoolType.get()
         }
@@ -128,7 +128,7 @@ private func getFieldOfTypeImpl(baseTy: Type, index: Int64): Type {
     } else if (let Some(ct) <- (baseTy as CustomType)) {
         // only struct type and class type have member variables
         let memberVarTypes = ct.getInstantiatedMemberVarTypes()
-        assert(memberVarTypes.size > index, "Member variable count '${memberVarTypes.size}' is not greater than index '${index}'.")
+        assert(memberVarTypes.size > index, "Member variable index is out of range.")
         return memberVarTypes[index]
     } else if (let Some(rat) <- (baseTy as RawArrayType)) {
         return rat.elementType
@@ -256,7 +256,7 @@ internal func getInstParentType(candidate: Array<ClassLikeType>, f: Function, ar
     if (f.isStatic()) {
         paramTypes.remove(at: 0)
     }
-    assert(argTypes.size == paramTypes.size, "Argument type count '${argTypes.size}' does not match parameter type count '${paramTypes.size}'.")
+    assert(argTypes.size == paramTypes.size, "Argument type and parameter type counts do not match.")
     for (p in candidate) {
         let (res, instMap) = p.def.ty.calculateGeneric2InstTypeMap(p)
         assert(res, "Failed to calculate the generic-to-instantiated type mapping.")
