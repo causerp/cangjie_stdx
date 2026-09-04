@@ -70,7 +70,7 @@ class WeaveAspects {
             builder.createExit()
             f.identifier = wrapperFunc.identifier + ".original"
         } else {
-            printError("Unknown annotation class name: ${pi.annoClassName}")
+            printError("Unknown annotation class name '${pi.annoClassName}'.")
         }
     }
 
@@ -111,7 +111,7 @@ class WeaveAspects {
         let args = ArrayList<Value>()
         if (expectedParamsNum != 0) {
             if (f.parameters.size != expectedParamsNum) {
-                printError("${f.srcCodeName} and ${pi.insert.methodMangledName} have unmatched number of parameters.")
+                printError("Parameter count mismatch: target function '${f.srcCodeName}' has '${f.parameters.size}' parameters, expected '${expectedParamsNum}' parameters from aspect metadata '${pi.insert.methodMangledName}'.")
                 return (Array<Value>(), false)
             }
             for (param in f.parameters) {
