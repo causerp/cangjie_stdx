@@ -290,6 +290,10 @@ public class HttpResponse <: ToString {
      *                  or InputStream whose length is valid.
      * @return None, means the body size is unknown, that is, the body is self-implemented InputStream
      *                  whose length is invalid.
+     *
+     * Note: for a received response with a chunked body, bodySize is None before the body is
+     * fully read, and becomes the decoded length afterwards (consistent with the content-length
+     * header added at that time).
      */
     public prop bodySize: Option<Int64> {
         get() {

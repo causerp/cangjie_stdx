@@ -1369,7 +1369,8 @@ Function: Retrieve the length of the request body.
 
 - If the body is not set, bodySize is Some(0);
 - If the body length is known (i.e., the body is passed via Array\<UInt8> or String, or the provided InputStream has a definite length (length >= 0)), bodySize is Some(Int64);
-- If the body length is unknown (i.e., the body is passed via a custom InputStream instance with an indefinite length (length < 0)), bodySize is None.
+- If the body length is unknown (i.e., the body is passed via a custom InputStream instance with an indefinite length (length < 0)), bodySize is None;
+- For a received request (e.g. with a chunked body), bodySize is None before the body is fully read, and becomes the decoded length afterwards (consistent with the content-length header added at that time).
 
 Type: Option\<Int64>
 
@@ -1521,7 +1522,7 @@ Function: Construct a new [HttpRequestBuilder](http_package_classes.md#class-htt
 public init(request: HttpRequest)
 ```
 
-Function: Construct an [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) with the properties of the provided request. Since the body member is an InputStream, operations on the original request's body will affect the copied [HttpRequest](http_package_classes.md#class-httprequest)'s body. The headers and trailers of the [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) are deep copies of the input request's headers and trailers. All other elements are shallow copies (as they are immutable objects, deep copying is unnecessary).
+Function: Construct an [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) with the properties of the provided request. Since the body member is an InputStream, operations on the original request's body will affect the copied [HttpRequest](http_package_classes.md#class-httprequest)'s body. The headers and trailers of the [HttpRequestBuilder](http_package_classes.md#class-httprequestbuilder) are deep copies of the input request's headers and trailers. All other elements are shallow copies (as they are immutable objects, deep copying is unnecessary). The bodySize of the newly built request is a snapshot of the input request's bodySize taken at copy time, reflecting only the size known before the copy; updates after the copy are not picked up. If the body is replaced by body(...), the size is computed from the new body instead.
 
 Parameters:
 
@@ -1955,6 +1956,7 @@ Function: Retrieves the length of the response body.
 > - If the body is not set, `bodySize` will be `Some(0)`.
 > - If the body length is known (i.e., passed via `Array<UInt8>` or `String`, or the provided `InputStream` has a determined length (`length >= 0`)), `bodySize` will be `Some(Int64)`.
 > - If the body length is unknown (i.e., passed via a user-defined `InputStream` instance without a determined length (`length < 0`)), `bodySize` will be `None`.
+> - For a received response (e.g. with a chunked body), `bodySize` will be `None` before the body is fully read, and becomes the decoded length afterwards (consistent with the `content-length` header added at that time).
 
 Type: `Option<Int64>`
 
