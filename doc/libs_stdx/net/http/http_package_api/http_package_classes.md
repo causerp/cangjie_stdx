@@ -3411,6 +3411,7 @@ public prop bodySize: Option<Int64>
 > - 如果未设置 body，则 bodySize 为 Some(0)。
 > - 如果 body 长度已知，即通过 Array\<UInt8> 或 String 传入 body，或传入的 InputStream 有确定的 length (length >= 0)，则 bodySize 为 Some(Int64)。
 > - 如果 body 长度未知，即通过用户自定义的 InputStream 实例传入 body 且 InputStream 实例没有确定的 length (length < 0)，则 bodySize 为 None。
+> - 对于接收到的请求（如 chunked 编码的请求），body 读取完毕前 bodySize 为 None，读取完毕后为实际解码长度（与此时补写的 content-length 头一致）。
 
 类型：Option\<Int64>
 
@@ -3978,6 +3979,7 @@ public init(request: HttpRequest)
 > - body 特殊处理：因 body 是 InputStream 类型（流式数据），对原始 request 的 body 进行读写操作，会影响通过该 Builder 构建出的新 HttpRequest 的 body。
 > - 深拷贝项：Builder 的 headers、trailers 是原始 request 对应属性的深拷贝（修改 Builder 的 headers/trailers 不会影响原始 request）。
 > - 浅拷贝项：method、url、readTimeout 等其余不可变属性，均为原始 request 的浅拷贝（不可变对象无需深拷贝）。
+> - bodySize 快照时机：新请求的 bodySize 是构造 Builder 时原始 request 的 bodySize 快照，仅反映拷贝前已知的大小，拷贝后的更新不会反映到新请求中；若通过 body(...) 替换 body，则改为按新 body 计算大小。
 
 参数：
 
@@ -5129,7 +5131,8 @@ public prop bodySize: Option<Int64>
 
 > - 如果未设置 body，则 bodySize 为 Some(0)；
 > - 如果 body 长度已知，即通过 Array\<UInt8> 或 String 传入 body，或传入的 InputStream 有确定的 length (length >= 0)，则 bodySize 为 Some(Int64)；
-> - 如果 body 长度未知，即通过用户自定义的 InputStream 实例传入 body 且 InputStream 实例没有确定的 length (length < 0)，则 bodySize 为 None。
+> - 如果 body 长度未知，即通过用户自定义的 InputStream 实例传入 body 且 InputStream 实例没有确定的 length (length < 0)，则 bodySize 为 None；
+> - 对于接收到的响应（如 chunked 编码的响应），body 读取完毕前 bodySize 为 None，读取完毕后为实际解码长度（与此时补写的 content-length 头一致）。
 
 类型：Option\<Int64>
 
