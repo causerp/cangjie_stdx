@@ -1026,12 +1026,7 @@ public class JsonReader {
 
     @OverflowWrapping
     func readFloat(): Float64 {
-        if (peeked == PEEK_STATE_NONE || peeked == PEEK_STATE_VALUE) {
-            nextNonJsonWhitespace()
-        } else if (peeked == PEEK_STATE_NUMBER) {
-            checkBuffer()
-            buffer[index]
-        } else {
+        if (peeked != PEEK_STATE_NONE && peeked != PEEK_STATE_VALUE && peeked != PEEK_STATE_NUMBER) {
             throw IllegalStateException("Failed to read JSON number.")
         }
 
