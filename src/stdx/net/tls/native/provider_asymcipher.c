@@ -718,7 +718,7 @@ static int KeylessAcEncrypt(void* vctx, unsigned char* out, size_t* outlen, size
         DYN_BN_free(bnC, dynMsg);
     }
     if (bnM) {
-        DYN_BN_free(bnM, dynMsg);
+        DYN_BN_clear_free(bnM, dynMsg);
     }
     if (bnE) {
         DYN_BN_free(bnE, dynMsg);
@@ -726,6 +726,7 @@ static int KeylessAcEncrypt(void* vctx, unsigned char* out, size_t* outlen, size
     if (bnN) {
         DYN_BN_free(bnN, dynMsg);
     }
+    DYN_OPENSSL_cleanse(em, modlen, dynMsg);
     DYN_OPENSSL_secure_free(em, dynMsg);
     KeylessCheckDynMsg(dynMsg, "KeylessAcEncrypt");
     return ret;
