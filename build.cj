@@ -111,7 +111,9 @@ main(): Int64 {
     match (getCommandLine()[1]) {
         case "pre-build" =>
             ensurePsutilInstalled(pyCommand)
-            stagePreBuild(pyCommand)              
+            stagePreBuild(pyCommand)
+        // update/check/tree also need flatbuffers.cjo for bin-dependencies verification.
+        case "pre-update" | "pre-check" | "pre-tree" => buildPrivateFlatbuffers()
         case "post-build" => stagePostBuild(pyCommand)
         case "pre-clean" => stagePreClean(pyCommand)
         case _ => 0
