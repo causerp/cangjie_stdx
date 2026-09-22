@@ -832,6 +832,12 @@ public class JsonArray <: JsonValue {
             case None => throw JsonException("The index ${index} of JsonArray does not exist.")
         }
     }
+    public exclave operator func [](this @local!, index: Int64): JsonValue @local! {
+        match (items.get(index)) {
+            case Some(v) => v
+            case None => throw JsonException("The index ${index} of JsonArray does not exist.")
+        }
+    }
 
     /**
      * Get the items data of JsonArray.
@@ -1027,7 +1033,7 @@ public class JsonObject <: JsonValue {
     public func size(): Int64 {
         return fields.size
     }
-    public exclave func size(this @local?): Int64 {
+    public func size(this @local?): Int64 {
         return fields.size
     }
 
@@ -1085,6 +1091,12 @@ public class JsonObject <: JsonValue {
      */
     public operator func [](key: String): JsonValue {
         return match (fields.get(key)) {
+            case Some(v) => v
+            case None => throw JsonException("The Value of JsonObject does not exist")
+        }
+    }
+    public exclave operator func [](this @local!, key: String @local!): JsonValue @local! {
+        match (fields.get(key)) {
             case Some(v) => v
             case None => throw JsonException("The Value of JsonObject does not exist")
         }

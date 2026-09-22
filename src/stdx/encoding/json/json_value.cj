@@ -138,6 +138,12 @@ sealed abstract class JsonValue <: ToString {
             case _ => throw JsonException("Fail to convert to JsonNull")
         }
     }
+    public exclave func asNull(this @local!): JsonNull @local! {
+        match (this) {
+            case jsonNull: JsonNull => jsonNull
+            case _ => throw JsonException("Fail to convert to JsonNull")
+        }
+    }
 
     /**
      * Convert JsonValue to JsonBool. If the failure occurs, Exception will be throwed.
@@ -154,6 +160,12 @@ sealed abstract class JsonValue <: ToString {
             case _ => throw JsonException("Fail to convert to JsonBool")
         }
     }
+    public exclave func asBool(this @local!): JsonBool @local! {
+        match (this) {
+            case jsonBool: JsonBool => jsonBool
+            case _ => throw JsonException("Fail to convert to JsonBool")
+        }
+    }
 
     /**
      * Convert JsonValue to JsonInt. If the failure occurs, Exception will be throwed.
@@ -165,6 +177,12 @@ sealed abstract class JsonValue <: ToString {
      * @throws JsonException if JsonValue cannot be converted to JsonInt.
      */
     public func asInt(): JsonInt {
+        match (this) {
+            case jsonInt: JsonInt => jsonInt
+            case _ => throw JsonException("Fail to convert to JsonInt")
+        }
+    }
+    public exclave func asInt(this @local!): JsonInt @local! {
         match (this) {
             case jsonInt: JsonInt => jsonInt
             case _ => throw JsonException("Fail to convert to JsonInt")
@@ -187,6 +205,13 @@ sealed abstract class JsonValue <: ToString {
             case _ => throw JsonException("Fail to convert to JsonFloat")
         }
     }
+    public exclave func asFloat(this @local!): JsonFloat @local! {
+        match (this) {
+            case jsonFloat: JsonFloat => jsonFloat
+            case jsonInt: JsonInt => JsonFloat(Float64(jsonInt.getValue())) @local!
+            case _ => throw JsonException("Fail to convert to JsonFloat")
+        }
+    }
 
     /**
      * Convert JsonValue to JsonString. If the failure occurs, Exception will be throwed.
@@ -198,6 +223,12 @@ sealed abstract class JsonValue <: ToString {
      * @throws JsonException if JsonValue cannot be converted to JsonString.
      */
     public func asString(): JsonString {
+        match (this) {
+            case jsonString: JsonString => jsonString
+            case _ => throw JsonException("Fail to convert to JsonString")
+        }
+    }
+    public exclave func asString(this @local!): JsonString @local! {
         match (this) {
             case jsonString: JsonString => jsonString
             case _ => throw JsonException("Fail to convert to JsonString")
@@ -219,6 +250,12 @@ sealed abstract class JsonValue <: ToString {
             case _ => throw JsonException("Fail to convert to JsonArray")
         }
     }
+    public exclave func asArray(this @local!): JsonArray @local! {
+        match (this) {
+            case jsonArray: JsonArray => jsonArray
+            case _ => throw JsonException("Fail to convert to JsonArray")
+        }
+    }
 
     /**
      * Convert JsonValue to JsonObject. If the failure occurs, Exception will be throwed.
@@ -230,6 +267,12 @@ sealed abstract class JsonValue <: ToString {
      * @throws JsonException if JsonValue cannot be converted to JsonObject.
      */
     public func asObject(): JsonObject {
+        match (this) {
+            case jsonObject: JsonObject => jsonObject
+            case _ => throw JsonException("Fail to convert to JsonObject")
+        }
+    }
+    public exclave func asObject(this @local!): JsonObject @local! {
         match (this) {
             case jsonObject: JsonObject => jsonObject
             case _ => throw JsonException("Fail to convert to JsonObject")
