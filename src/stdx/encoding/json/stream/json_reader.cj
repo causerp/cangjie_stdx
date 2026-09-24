@@ -20,6 +20,8 @@ const HIGH_4_UInt8: UInt8 = 0b11110000 // 0xf0
 const HIGH_5_UInt8: UInt8 = 0b11111000 // 0xf8
 const HIGH_6_UInt8: UInt8 = 0b11111100 // 0xfc
 const MAX_JSON_STREAM_STRING_BUFFER_SIZE: Int64 = 32 * 1024 * 1024
+const INVALID_JSON_STRING_CONTROL_CHARACTER = "Unescaped control character in JSON string."
+const JSON_STRING_CONTROL_CHARACTER_INDEX: Int64 = -2
 
 func ensureFiniteJsonFloat(value: Float64): Float64 {
     if (value.isNaN() || value.isInf()) {
@@ -497,6 +499,12 @@ public class JsonReader {
         return b == b' ' || b == b'\t' || b == b'\n' || b == b'\r'
     }
 
+    private func checkJsonStringCharacter(b: Byte): Unit {
+        if (b < 0x20) {
+            throw IllegalStateException(INVALID_JSON_STRING_CONTROL_CHARACTER)
+        }
+    }
+
     /**
      * Return the next non-whitespace character in the stream
      * throws IllegalStateException when the stream ends.
@@ -573,12 +581,17 @@ public class JsonReader {
         while (count < 2) {
             nextByte = readNext()
             sb.append(nextByte)
+            if (count > 0) {
+                checkJsonStringCharacter(nextByte)
+            }
             if (nextByte == b'"') {
                 count++
                 continue
             }
             if (nextByte == b'\\') {
-                sb.append(readNext())
+                nextByte = readNext()
+                checkJsonStringCharacter(nextByte)
+                sb.append(nextByte)
             }
         }
     }
@@ -619,7 +632,9 @@ public class JsonReader {
             match (nextByte) {
                 case b'\\' =>
                     if (inString) {
-                        sb.append(readNext())
+                        let escapedByte = readNext()
+                        checkJsonStringCharacter(escapedByte)
+                        sb.append(escapedByte)
                         continue
                     }
                     throw IllegalStateException("Unexpected character: '\\'.")
@@ -641,7 +656,10 @@ public class JsonReader {
                         continue
                     }
                     throw IllegalStateException("Failed to read symmetry end of '${Rune(start)}'.")
-                case _ => ()
+                case _ =>
+                    if (inString) {
+                        checkJsonStringCharacter(nextByte)
+                    }
             }
         }
 
@@ -682,12 +700,16 @@ public class JsonReader {
         var nextByte: Byte
         while (count < 2) {
             nextByte = readNext()
+            if (count > 0) {
+                checkJsonStringCharacter(nextByte)
+            }
             if (nextByte == b'"') {
                 count++
                 continue
             }
             if (nextByte == b'\\') {
-                readNext()
+                nextByte = readNext()
+                checkJsonStringCharacter(nextByte)
             }
         }
     }
@@ -730,7 +752,8 @@ public class JsonReader {
             match (nextByte) {
                 case b'\\' =>
                     if (inString) {
-                        readNext()
+                        let escapedByte = readNext()
+                        checkJsonStringCharacter(escapedByte)
                         continue
                     }
                     throw IllegalStateException("Unexpected character: '\\'.")
@@ -773,7 +796,10 @@ public class JsonReader {
                         continue
                     }
                     throw IllegalStateException("Failed to skip.")
-                case _ => ()
+                case _ =>
+                    if (inString) {
+                        checkJsonStringCharacter(nextByte)
+                    }
             }
         }
     }
@@ -807,6 +833,8 @@ public class JsonReader {
                 stringBuffer.appendAll(buffer[index..breakIndex])
                 availLen = 0
             // and continue
+            } else if (breakIndex == JSON_STRING_CONTROL_CHARACTER_INDEX) {
+                throw IllegalStateException(INVALID_JSON_STRING_CONTROL_CHARACTER)
             } else if (breakIndex < 0) { // utf 8 check err
                 throw IllegalStateException("Invalid UTF-8 byte sequence.")
             } else if (buffer[breakIndex] == b'\\') { // read till some character need escape
