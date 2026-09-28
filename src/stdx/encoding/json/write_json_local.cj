@@ -121,7 +121,7 @@ exclave func jsonWriteArray(json: JsonArray @local?, buff: WriteBuffer @local!, 
     buff.append(b']')
 }
 
-exclave func estimateCapacityWithDepth(json: JsonValue @local?, depth: Int64): Int64 {
+func estimateCapacityWithDepth(json: JsonValue @local?, depth: Int64): Int64 {
     checkJsonWriteDepth(depth)
     match (json) {
         case jo: JsonObject =>
@@ -141,10 +141,10 @@ exclave func estimateCapacityWithDepth(json: JsonValue @local?, depth: Int64): I
     }
 }
 
-exclave func asumecapacity(json: JsonValue @local?): Int64 {
+func asumecapacity(json: JsonValue @local?): Int64 {
     return estimateCapacityWithDepth(json, 0)
 }
 
-exclave func asumecapacity(json: JsonValue @local?, depth: Int64): Int64 {
+func asumecapacity(json: JsonValue @local?, depth: Int64): Int64 {
     return estimateCapacityWithDepth(json, depth)
 }
