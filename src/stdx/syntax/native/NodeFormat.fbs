@@ -59,6 +59,7 @@ union AnyExpr {
   ARRAY_EXPR: ArrayExpr,
   PERFORM_EXPR: PerformExpr,
   RESUME_EXPR: ResumeExpr,
+  EXCLAVE_EXPR: ExclaveExpr,
 }
 
 table MatchCase {
@@ -433,6 +434,12 @@ table SynchronizedExpr {
   left_paren_pos: Position;
   mutex_expr: Expr;
   right_paren_pos: Position;
+  body: Block;
+}
+
+table ExclaveExpr {
+  base: NodeBase;
+  exclave_pos: Position;
   body: Block;
 }
 
