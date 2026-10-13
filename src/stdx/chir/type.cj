@@ -858,7 +858,7 @@ sealed abstract class Type <: ToString & Hashable & Equatable<Type> {
      * @return A string representation of the type.
      */
     public open func toString(): String {
-        return _kind.toString()
+        return formatWithModal(_kind.toString())
     }
 
     /**
@@ -984,7 +984,8 @@ sealed abstract class Type <: ToString & Hashable & Equatable<Type> {
     }
 
     internal func setHashCode(): Unit {
-        _hashCode = formatWithModal(toString()).hashCode()
+        // toString() already includes ModalInfo; do not wrap with formatWithModal again.
+        _hashCode = toString().hashCode()
     }
 
     private func qualifiedNameOfCustomType(t: CustomType): String {
@@ -1056,7 +1057,7 @@ public class BoxType <: Type & Equatable<BoxType> {
         result.append("Box<")
         result.append(baseType.toString())
         result.append(">")
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -1218,7 +1219,7 @@ public class CPointerType <: BuiltinType & Equatable<CPointerType> {
         result.append("CPointer<")
         result.append(elementType.toString())
         result.append(">")
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     protected override func getExtendDefs(): Array<ExtendDef> {
@@ -1663,7 +1664,7 @@ public class RawArrayType <: BuiltinType & Equatable<RawArrayType> {
         for (_ in 0..dims) {
             result.append(">")
         }
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -1837,7 +1838,7 @@ public class VArrayType <: BuiltinType & Equatable<VArrayType> {
         result.append(", $")
         result.append(size.toString())
         result.append(">")
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -2028,7 +2029,7 @@ sealed abstract class CustomType <: Type & Equatable<CustomType> {
         result.append("-")
         result.append(_def.identifierWithoutPrefix)
         result.append(typeVecToString("<", genericTypeArgs, ">"))
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -2372,7 +2373,7 @@ public class FuncType <: Type & Equatable<FuncType> {
         if (_isCFunc) {
             result.append(">")
         }
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -2468,7 +2469,7 @@ public class GenericType <: Type & Equatable<GenericType> {
         result.append(this._kind.toString())
         result.append("-")
         result.append(this._identifier)
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -2558,7 +2559,7 @@ public class RefType <: Type & Equatable<RefType> {
         let result = StringBuilder()
         result.append(baseType.toString())
         result.append("&")
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**
@@ -2669,7 +2670,7 @@ public class TupleType <: Type & Equatable<TupleType> {
         let result = StringBuilder()
         result.append(this._kind.toString())
         result.append(typeVecToString("(", elementTypes, ")"))
-        return result.toString()
+        return formatWithModal(result.toString())
     }
 
     /**

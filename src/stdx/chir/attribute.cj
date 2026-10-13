@@ -67,6 +67,9 @@ internal enum Attribute <: ToString {
     HasInitedField | ///< Mark whether a node is a special flag, which marks the class instance as initialized.
     JavaHasDefault | ///< Mark whether JAVA_MIRROR interface has default method.
     PreviouslyDeserialized | ///< Mark that deserialization occurs not in the newly created node, but in an existing one.
+    Demode | ///< Mark instance member as @Demode (@~local regardless of receiver modal).
+    Exclave | ///< Mark a function whether it's exclave.
+    // Stdx-only: must stay after compiler ATTR_END so the bit does not alias Demode/Exclave on roundtrip.
     PluginAdded | ///< Mark that the declaration is added by chir plugin.
 
     AttrEnd
@@ -115,6 +118,8 @@ internal enum Attribute <: ToString {
             case HasInitedField         => "hasInitedField"
             case JavaHasDefault         => "javaHasDefault"
             case PreviouslyDeserialized => "previouslyDeserialized"
+            case Demode                 => "demode"
+            case Exclave                => "exclave"
             case PluginAdded            => "pluginAdded"
             case AttrBegin | AttrEnd => "UNKNOWN"
         }
@@ -160,7 +165,9 @@ internal enum Attribute <: ToString {
             case ObjCMirror             => HasInitedField
             case HasInitedField         => JavaHasDefault
             case JavaHasDefault         => PreviouslyDeserialized
-            case PreviouslyDeserialized => PluginAdded
+            case PreviouslyDeserialized => Demode
+            case Demode                 => Exclave
+            case Exclave                => PluginAdded
             case PluginAdded            => AttrEnd
             case AttrEnd                => AttrEnd
         }
@@ -207,7 +214,9 @@ internal enum Attribute <: ToString {
             case HasInitedField         => 35
             case JavaHasDefault         => 36
             case PreviouslyDeserialized => 37
-            case PluginAdded            => 38
+            case Demode                 => 38
+            case Exclave                => 39
+            case PluginAdded            => 40
             case AttrEnd                => ATTR_SIZE  // Invalid, return size to indicate error
         }
     }
