@@ -1256,7 +1256,11 @@ class CHIRSerializerImpl {
                 if (let Some(host) <- e._paramDftValHostParam) {
                     paramDftValHostParam = getId(host)
                 }
-                PackageFormat_Lambda.createLambda(fbBuilder, base, funcTy, isLocalFunc, identifier, srcCodeName, paramsVec, genericTypeParamsVec, body, retVal, isCompileTimeValue, paramDftValHostParam)
+                var genericDecl: UInt32 = 0
+                if (let Some(gDecl) <- e._genericDecl) {
+                    genericDecl = getId(gDecl)
+                }
+                PackageFormat_Lambda.createLambda(fbBuilder, base, funcTy, isLocalFunc, identifier, srcCodeName, paramsVec, genericTypeParamsVec, body, retVal, isCompileTimeValue, paramDftValHostParam, genericDecl)
             case e: MultiBranch =>
                 exprKind[Int64(exprId) - 1] = EnumPackageFormat_ExpressionElemValues(PackageFormat_ExpressionElem.ExpressionElem_MULTIBRANCH)
                 let caseValues = Array<UInt64>(e.caseValues.size, { i => e.caseValues[i] })

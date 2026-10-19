@@ -2486,6 +2486,7 @@ public class Lambda <: Expression & Equatable<Lambda> {
     internal let _funcType: FuncType
     internal var _genericTypeParams = ArrayList<GenericType>()
     internal let _identifier: String
+    internal var _genericDecl: ?Lambda = None
     internal var _isCompileTimeValue: Bool = false
     internal var _isLocalFunc: Bool = false
     internal var _paramDftValHostParam: ?Parameter = None
@@ -2610,6 +2611,19 @@ public class Lambda <: Expression & Equatable<Lambda> {
         }
     }
 
+    /**
+     * Generic Lambda of an instantiated nested local func, when present.
+     * @type { ?Lambda }
+     */
+    public mut prop genericDecl: ?Lambda {
+        get() {
+            return _genericDecl
+        }
+        set(v) {
+            _genericDecl = v
+        }
+    }
+
     internal init(ty: FuncType, identifier: String, srcName: String, genericTypeParams: ArrayList<GenericType>) {
         super(ExprKind.Lambda)
         this._identifier = identifier
@@ -2674,6 +2688,9 @@ public class Lambda <: Expression & Equatable<Lambda> {
         }
         if (let Some(host) <- _paramDftValHostParam) {
             comments.add(paramDftValHostParamComment(host))
+        }
+        if (let Some(gDecl) <- _genericDecl) {
+            comments.add("genericDecl: " + gDecl.identifier)
         }
         if (comments.isEmpty()) {
             return ""
