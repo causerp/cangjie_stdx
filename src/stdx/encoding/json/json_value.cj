@@ -25,7 +25,6 @@ public enum JsonKind {
  * JsonValue abstract class used for JSON manipulations.
  */
 sealed abstract class JsonValue <: ToString {
-
     /**
      * Convert JsonValue to String.
      *

@@ -528,7 +528,7 @@ public class JsonArray <: JsonValue {
         if (!indent.isContainOnlySpaceAndTab()) {
             throw IllegalArgumentException("Indent must be an empty string or any combination of spaces and tabs.")
         }
-        let buff = WriteBuffer(asumecapacity(this))
+        let buff = WriteBuffer(asumecapacity(this, depth))
         jsonWriteArray(this, buff, depth, bracketInNewLine, indent, htmlSafe: htmlSafe)
         return unsafe { String.fromUtf8Unchecked(buff.getAndClear()) }
     }
@@ -734,7 +734,7 @@ public class JsonObject <: JsonValue {
         if (!indent.isContainOnlySpaceAndTab()) {
             throw IllegalArgumentException("Indent must be an empty string or any combination of spaces and tabs.")
         }
-        let buff = WriteBuffer(asumecapacity(this))
+        let buff = WriteBuffer(asumecapacity(this, depth))
         jsonWriteObject(this, buff, depth, bracketInNewLine, indent, htmlSafe: htmlSafe)
         return unsafe { String.fromUtf8Unchecked(buff.getAndClear()) }
     }
