@@ -17397,6 +17397,46 @@ prop_paramDftValHostParam_none: true
 prop_paramDftValHostParam_some: %0
 ```
 
+### prop genericDecl
+
+```cangjie
+public mut prop genericDecl: ?Lambda
+```
+
+功能：实例化嵌套局部函数对应的泛型 `Lambda`（若有）；无时为 `None`。
+
+类型：?[Lambda](#class-lambda)
+
+示例：
+
+<!-- verify -->
+```cangjie
+import stdx.chir.*
+import std.collection.*
+
+main() {
+    let pkg = Package("demo", AccessLevel.Public)
+    let f = pkg.addFunction(FuncType.get([], UnitType.get()), "f_m", "f", "demo")
+    f.initBody()
+    let block = f.body.getOrThrow().entryBlock
+    let lambdaType = FuncType.get([], UnitType.get())
+    let genericLam = Lambda.create(lambdaType, "generic_m", "foo", ArrayList<GenericType>())
+    let instLam = Lambda.create(lambdaType, "inst_m", "foo", ArrayList<GenericType>())
+    block.appendExpr(genericLam)
+    block.appendExpr(instLam)
+    println("prop_genericDecl_none: ${instLam.genericDecl.isNone()}")
+    instLam.genericDecl = Some(genericLam)
+    println("prop_genericDecl_some: ${instLam.genericDecl.getOrThrow().identifier}")
+}
+```
+
+运行结果：
+
+```text
+prop_genericDecl_none: true
+prop_genericDecl_some: generic_m
+```
+
 ### static func create(FuncType, String, String, ArrayList\<GenericType>)
 
 ```cangjie

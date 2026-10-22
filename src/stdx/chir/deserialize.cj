@@ -921,6 +921,10 @@ class CHIRDeserializerImpl {
             lambda._paramDftValHostParam = v
             v._paramDftValFunc = lambda.result
         }
+        // Instantiated nested local func points at the generic Lambda (exprs id).
+        if (let Some(v) <- tryGetExpressionAs<Lambda>(buffer.GetGenericDecl())) {
+            lambda._genericDecl = v
+        }
     }
 
     private func convertExprKind(kind: PackageFormat_CHIRExprKind): ExprKind {
