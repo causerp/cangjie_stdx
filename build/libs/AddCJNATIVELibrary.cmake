@@ -845,6 +845,8 @@ if(NOT CANGJIE_CJPM_BUILD_TYPE AND NOT CANGJIE_BUILD_WITHOUT_CHIR
         add_custom_target(
             cangjie${BACKEND_TYPE}PluginMacroHost ALL
             DEPENDS ${_plugin_macro_modules})
+        set_target_properties(cangjie${BACKEND_TYPE}PluginMacroHost PROPERTIES
+            CJ_OUTPUT_FILE "${_plugin_macro_modules}")
     endif()
 endif()
 
